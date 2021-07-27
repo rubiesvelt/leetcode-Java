@@ -3,44 +3,47 @@ import java.util.Map;
 
 public class Recursion {
 
-    // 395
+    // 395. 至少有 K 个重复字符的最长子串
+    // 分治
     public int longestSubstring(String s, int k) {
-        return recursive(s, k);
+        return dfs(s, k);
     }
 
-    public int recursive(String s, int k) {
+    public int dfs(String s, int k) {
         if (k > s.length()) {
             return 0;
         }
-        Map<Character, Integer> mp = new HashMap<>();
+        Map<Character, Integer> map = new HashMap<>();
         for (int i = 0; i < s.length(); i++) {
             Character a = s.charAt(i);
-            if (!mp.containsKey(a)) {
-                mp.put(a, 1);
+            if (!map.containsKey(a)) {
+                map.put(a, 1);
             } else {
-                Integer integer = mp.get(a);
-                mp.put(a, integer + 1);
+                Integer integer = map.get(a);
+                map.put(a, integer + 1);
             }
         }
-        int len = -1;
+        int ans = -1;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
-            if (mp.get(s.charAt(i)) >= k) {
+            if (map.get(s.charAt(i)) >= k) {
                 sb.append(s.charAt(i));
                 if (i != s.length() - 1) {
                     continue;
-                } else if (len == -1) {
+                } else if (ans == -1) {
                     continue;
                 }
             }
-            int subLen = recursive(sb.toString(), k);
-            len = Math.max(len, subLen);
+            // 遇见小于k的，split点
+            // 全局的split点一定要分开，后续递归的split点一定也要分开
+            int subLen = dfs(sb.toString(), k);
+            ans = Math.max(ans, subLen);
             sb.delete(0, s.length());  // 清除StringBuilder中全部元素
         }
-        if (len == -1) {
+        if (ans == -1) {
             return s.length();
         }
-        return len;
+        return ans;
     }
 
     public int longestSubstring1(String s, int k) {
@@ -48,15 +51,16 @@ public class Recursion {
         return dfsSubstring(s, 0, n - 1, k);
     }
 
+    // 用左右端点 l 和 r 做递归，上面的直接用字符串（或子串）s做递归
     public int dfsSubstring(String s, int l, int r, int k) {
         int[] cnt = new int[26];  // 26个英文字母，数组初始元素都为0；用数组实现map
         for (int i = l; i <= r; i++) {
             cnt[s.charAt(i) - 'a']++;
         }
 
-        char split = 0;
+        char split = 0;  // 第一个断点字母
         for (int i = 0; i < 26; i++) {
-            if (cnt[i] > 0 && cnt[i] < k) {
+            if (cnt[i] > 0 && cnt[i] < k) {  // 找到整个串中的断点
                 split = (char) (i + 'a');
                 break;
             }
