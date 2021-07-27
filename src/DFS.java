@@ -83,6 +83,49 @@ public class DFS {
         }
     }
 
+    // 1947. 最大兼容性评分和
+    // 回溯
+    // 全排列
+    public int maxCompatibilitySum(int[][] students, int[][] mentors) {
+        int n = students.length;
+        int m = students[0].length;
+        int[][] preSum = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            int[] student = students[i];
+            for (int j = 0; j < n; j++) {
+                int[] mentor = mentors[j];
+                int t = 0;
+                for (int k = 0; k < m; k++) {
+                    if (student[k] == mentor[k]) t++;
+                }
+                preSum[i][j] = t;
+            }
+        }
+        boolean[] used = new boolean[n];  // 使用过的老师
+        dfs1947(preSum, n, 0, 0, used);
+        return ans1947;
+    }
+
+    int ans1947 = 0;
+
+    // 通过回溯来构造全排列
+    public void dfs1947(int[][] preSum, int n, int sum, int cnt, boolean[] used) {
+        if (cnt == n) {  // 第cnt个学生
+            ans1947 = Math.max(ans1947, sum);
+            return;
+        }
+        for (int i = 0; i < n; i++) {  // 第i个老师
+            if (used[i]) {
+                continue;
+            }
+            sum += preSum[cnt][i];
+            used[i] = true;
+            dfs1947(preSum, n, sum, cnt + 1, used);
+            sum -= preSum[cnt][i];
+            used[i] = false;
+        }
+    }
+
     // 可信 3
     // 回溯算法
     int ans3 = Integer.MAX_VALUE;

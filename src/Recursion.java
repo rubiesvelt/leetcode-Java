@@ -5,8 +5,7 @@ public class Recursion {
 
     // 395
     public int longestSubstring(String s, int k) {
-        int res = recursive(s, k);
-        return res;
+        return recursive(s, k);
     }
 
     public int recursive(String s, int k) {

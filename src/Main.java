@@ -11,7 +11,8 @@ public class Main {
         TreeNode tn2 = new TreeNode(2, null, tn4);
         TreeNode tn1 = new TreeNode(1, tn2, tn3);
 
-        int[][] matrix = {{0, 1, 250}, {0, 3, 10}, {1, 2, 25}, {1, 3, 80}, {2, 3, 90}};
+        int[][] matrix = {{1, 1, 0}, {1, 0, 1}, {0, 0, 1}};
+        int[][] matrix1 = {{1, 0, 0}, {0, 0, 1}, {1, 1, 0}};
         int[] dist = {1, 10, 4, 4, 2, 7};
         int[] speed = {6};
     }
