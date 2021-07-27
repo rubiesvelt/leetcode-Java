@@ -3,13 +3,19 @@ import java.util.Map;
 
 public class Recursion {
 
+    /**
+     * dfs是一种典型的递归
+     * 分治也是一种递归
+     * 都是把大问题拆解成小问题进行求解
+     */
+
     // 395. 至少有 K 个重复字符的最长子串
     // 分治
     public int longestSubstring(String s, int k) {
-        return dfs(s, k);
+        return longest(s, k);
     }
 
-    public int dfs(String s, int k) {
+    public int longest(String s, int k) {
         if (k > s.length()) {
             return 0;
         }
@@ -36,7 +42,7 @@ public class Recursion {
             }
             // 遇见小于k的，split点
             // 全局的split点一定要分开，后续递归的split点一定也要分开
-            int subLen = dfs(sb.toString(), k);
+            int subLen = longest(sb.toString(), k);
             ans = Math.max(ans, subLen);
             sb.delete(0, s.length());  // 清除StringBuilder中全部元素
         }
@@ -48,11 +54,11 @@ public class Recursion {
 
     public int longestSubstring1(String s, int k) {
         int n = s.length();
-        return dfsSubstring(s, 0, n - 1, k);
+        return longest1(s, 0, n - 1, k);
     }
 
     // 用左右端点 l 和 r 做递归，上面的直接用字符串（或子串）s做递归
-    public int dfsSubstring(String s, int l, int r, int k) {
+    public int longest1(String s, int l, int r, int k) {
         int[] cnt = new int[26];  // 26个英文字母，数组初始元素都为0；用数组实现map
         for (int i = l; i <= r; i++) {
             cnt[s.charAt(i) - 'a']++;
@@ -83,7 +89,7 @@ public class Recursion {
                 i++;
             }
 
-            int length = dfsSubstring(s, start, i - 1, k);
+            int length = longest1(s, start, i - 1, k);
             ret = Math.max(ret, length);
         }
         return ret;
