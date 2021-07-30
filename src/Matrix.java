@@ -1,11 +1,6 @@
 import java.util.*;
 
 public class Matrix {
-    public static void main(String[] args) {
-        Matrix matrix = new Matrix();
-        int[][] n = {{7,7,7}};
-        matrix.getBiggestThree(n);
-    }
 
     // 1878. 矩阵中最大的三个菱形和
     // 求矩阵中最大的三个互不相同的菱形和
