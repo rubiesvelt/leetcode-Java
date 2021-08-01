@@ -4,6 +4,58 @@ import static utils.Utils.gcd;
 
 public class Simulate {
 
+    // 1337. 矩阵中战斗力最弱的 K 行
+    // 按战斗力从小到大排序，战斗力一样的按下标从小到大排序
+    public int[] kWeakestRows(int[][] mat, int k) {
+        int n = mat.length;
+        int m = mat[0].length;
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = 0; j < m; j++) {
+                if (mat[i][j] != 1) break;
+                cnt++;
+            }
+            sum[i] = cnt * 100 + i;  // 用一个数组存储战斗力（高位）和下标（低位），直接排序即可
+        }
+        Arrays.sort(sum);
+        int[] ans = new int[k];
+        for (int i = 0; i < k; i++) {
+            ans[i] = sum[i] % 100;  // 取低位获得下标
+        }
+        return ans;
+    }
+
+    // 5831. 你可以工作的最大周数
+    // 给定一个数组，下标i的工作有多少件
+    // 每周都得工作，连续两周不能做相同工作
+    // 求不违反上面规则的情况下你 最多 能工作多少周
+    public long numberOfWeeks(int[] milestones) {
+        long sum = 0;
+        long max = 0;
+        for (int n : milestones) {
+            sum += n;
+            max = Math.max(n, max);
+        }
+        if (sum >= 2 * max) {
+            return sum;
+        }
+        return (sum - max) * 2L + 1;
+    }
+
+    // 5187. 收集足够苹果的最小花园周长
+    public long minimumPerimeter(long neededApples) {
+        long sum = 0;
+        long k = 1;
+        while (true) {
+            sum += 12 * k * k;
+            if (sum >= neededApples) {
+                return 8 * k;
+            }
+            k++;
+        }
+    }
+
     // 1942. 最小未被占据椅子的编号
     public int smallestChair(int[][] times, int targetFriend) {
         int[] t = times[targetFriend];
@@ -364,6 +416,7 @@ public class Simulate {
         int key, value;
         Node next;
         boolean isDeleted;
+
         Node(int _key, int _value) {
             key = _key;
             value = _value;

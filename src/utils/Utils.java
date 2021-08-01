@@ -2,6 +2,18 @@ package utils;
 
 public class Utils {
 
+    public static class Pair<T1, T2> {
+
+        public T1 fst;
+
+        public T2 snd;
+
+        public Pair(T1 fst, T2 snd) {
+            this.fst = fst;
+            this.snd = snd;
+        }
+    }
+
     // 快速幂，求a的b次方，结果对mod取余
     public static long quickPow(long a, long b, long mod) {
         long ans = 1;

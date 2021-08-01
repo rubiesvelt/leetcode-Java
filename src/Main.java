@@ -1,8 +1,6 @@
 import beans.TreeNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
 public class Main {
 
@@ -18,6 +16,7 @@ public class Main {
         int[][] matrix = {{1, 1, 0}, {1, 0, 1}, {0, 0, 1}};
         int[][] matrix1 = {{1, 0, 0}, {0, 0, 1}, {1, 1, 0}};
         int[] dist = {1, 10, 4, 4, 2, 7};
-        int[] speed = {6};
+        int[] speed = {0, 1, 2, 0, 1, 2};
     }
+
 }

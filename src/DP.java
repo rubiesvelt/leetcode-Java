@@ -14,6 +14,26 @@ public class DP {
      */
 
 
+    // 5833. 统计特殊子序列的数目
+    public int countSpecialSubsequences(int[] nums) {
+        long mod = (long) (1e9 + 7);
+        long a = 0;
+        long b = 0;
+        long c = 0;
+        for (int n : nums) {
+            if (n == 0) {
+                a = (2 * a + 1) % mod;
+            }
+            if (n == 1) {
+                b = (2 * b + a) % mod;
+            }
+            if (n == 2) {
+                c = (2 * c + b) % mod;
+            }
+        }
+        return (int) c;
+    }
+
     // 5815. 扣分后的最大得分
     // 双重dp解法
     public long maxPoints1(int[][] points) {
