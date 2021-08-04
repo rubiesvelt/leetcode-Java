@@ -2,6 +2,32 @@ import java.util.TreeMap;
 
 public class Array {
 
+    // 581. 最短无序连续子数组
+    public int findUnsortedSubarray(int[] arr) {
+        if(arr == null || arr.length < 2){
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        int R = 0;
+        int L = 0;
+        // 从小到大，找到违背的
+        for (int i = 0; i < arr.length; i++) {
+            if(max > arr[i]) {
+                R = i;
+            }
+            max = Math.max(max, arr[i]);
+        }
+        // 从大到小，找到违背的
+        for (int i = arr.length - 1; i >= 0; i--) {
+            if(min < arr[i]) {
+                L = i;
+            }
+            min = Math.min(min, arr[i]);
+        }
+        return R == L ? 0 : R - L + 1;
+    }
+
     // 1438. 绝对差不超过限制的最长连续子数组
     public static int longestSubarray(int[] nums, int limit) {
         int res = 0;

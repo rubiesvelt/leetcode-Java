@@ -5,8 +5,8 @@ public class DP {
     /**
      * 经典动态规划
      *
-     * 最长递增子序列
-     * 最长公共子序列
+     * 最长递增子序列 LIS
+     * 最长公共子序列 LCS
      * 打家劫舍
      * 背包问题
      * 回文字串
@@ -15,11 +15,13 @@ public class DP {
 
 
     // 5833. 统计特殊子序列的数目
+    // 给出nums求满足 0..1..2.. 的子序列数目 x..代表一个或多个x
+    // 动态规划
     public int countSpecialSubsequences(int[] nums) {
         long mod = (long) (1e9 + 7);
-        long a = 0;
-        long b = 0;
-        long c = 0;
+        long a = 0;  // n位之前满足的 0.. 数目
+        long b = 0;  // 0..1..
+        long c = 0;  // 0..1..2..
         for (int n : nums) {
             if (n == 0) {
                 a = (2 * a + 1) % mod;
@@ -34,35 +36,32 @@ public class DP {
         return (int) c;
     }
 
-    // 5815. 扣分后的最大得分
-    // 双重dp解法
+    // 1937. 扣分后的最大得分
     public long maxPoints1(int[][] points) {
         int m = points.length;
         int n = points[0].length;
-        // dp[i][j]表示，若选取第i行第j列，所得到的最大结果是多少
-        long[][] dp = new long[m][n];
-        for (int i = 0; i < n; i++) {
-            dp[0][i] = points[0][i];
-        }
-        for (int i = 1; i < m; i++) {
-            // 每行只与上一行有关，然后加上本行的
-            // 2，3，4，5，7，6；每一行也是一个小的线性规划
-            long[] ret = new long[n];  // 记录第上一行的各个位置的 最终增益
-            ret[0] = dp[i - 1][0];
-            for (int k = 1; k < n; k++) {
-                ret[k] = Math.max(dp[i - 1][k], ret[k - 1] - 1);
-            }
-            ret[n - 1] = Math.max(dp[i - 1][n - 1], ret[n - 1]);
-            for (int k = n - 2; k >= 0; k--) {
-                ret[k] = Math.max(ret[k], Math.max(dp[i - 1][k], ret[k + 1] - 1));
-            }
+        long[] dp = new long[n];  // dp[] 存储到当前行的结果
+        for (int i = 0; i < m; i++) {
+            long[] buff = new long[n];  // buff 表示下一行可以从上一行收获的"最大增益"
+            // 求增益，左扫描dp一遍，右扫描dp一遍，太秀了
+            long lmax = 0;
             for (int j = 0; j < n; j++) {
-                dp[i][j] = ret[j] + points[i][j];
+                lmax = Math.max(lmax - 1, dp[j]);
+                buff[j] = lmax;
+            }
+            long rmax = 0;
+            for (int j = n - 1; j >= 0; j--) {
+                rmax = Math.max(rmax - 1, dp[j]);
+                buff[j] = Math.max(buff[j], rmax);
+            }
+            // 更新dp[]，上一行 -> 当前行
+            for (int j = 0; j < n; j++) {
+                dp[j] = buff[j] + points[i][j];
             }
         }
-        long ans = Long.MIN_VALUE;
-        for (int i = 0; i < n; i++) {
-            ans = Math.max(ans, dp[m - 1][i]);
+        long ans = 0;
+        for (int j = 0; j < n; j++) {
+            ans = Math.max(ans, dp[j]);
         }
         return ans;
     }
@@ -99,10 +98,10 @@ public class DP {
         int m = points.length;
         int n = points[0].length;
         maxPointsDfs(points, m, n, 0, -1, 0);
-        return ans;
+        return ans1937;
     }
 
-    long ans = 0;
+    long ans1937 = 0;
 
     // 记忆map
     Map<String, Long> map = new HashMap<>();
@@ -110,7 +109,7 @@ public class DP {
     // 记忆化搜索
     public void maxPointsDfs(int[][] points, int m, int n, int height, int index, long sum) {
         if (height == m) {
-            ans = Math.max(ans, sum);
+            ans1937 = Math.max(ans1937, sum);
             return;
         }
         int[] row = points[height];
@@ -131,7 +130,7 @@ public class DP {
 
 
     // 1035. 不相交的线
-    // 动态规划，与 1143. 最长公共子序列 雷同
+    // 动态规划，与 1143. 最长公共子序列 雷同 —— LCS问题
     public int maxUncrossedLines(int[] nums1, int[] nums2) {
         int m = nums1.length, n = nums2.length;
         int[][] dp = new int[m + 1][n + 1];
@@ -150,7 +149,7 @@ public class DP {
     }
 
 
-    // 300. 最长递增子序列
+    // 300. 最长递增子序列 —— LIS问题
     // 354. 俄罗斯套娃信封问题
     // 动态规划，寻找最长递增子序列
     public static int maxEnvelopes(int[][] envelopes) {
@@ -184,7 +183,7 @@ public class DP {
 
 
     /*
-     * 1143. 最长公共子序列
+     * 1143. 最长公共子序列 —— LCS问题
      * 经典动态规划
      * dp[i][j] =
      * {
