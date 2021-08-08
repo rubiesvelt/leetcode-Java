@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.Utils.quickPow;
-
 public class Mathematics {
 
     // 1943. 描述绘画结果
@@ -64,7 +62,7 @@ public class Mathematics {
 
     public int countGoodNumbers1(long n) {
         // 直接用快速幂
-        return (int) (quickPow(5, (n + 1) / 2, 1000000007) * quickPow(4, n / 2, 1000000007) % mod);
+        return (int) (Utils.quickPow(5, (n + 1) / 2, 1000000007) * Utils.quickPow(4, n / 2, 1000000007) % mod);
     }
 
     public int countGoodNumbers(long n) {

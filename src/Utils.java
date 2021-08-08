@@ -1,5 +1,3 @@
-package utils;
-
 public class Utils {
 
     public static class Pair<T1, T2> {
@@ -12,6 +10,33 @@ public class Utils {
             this.fst = fst;
             this.snd = snd;
         }
+    }
+
+    // 二分 找到第一个 小于等于t 的元素，返回下标
+    public static int lowerBound(int[] arr, int left, int right, int t) {
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (arr[mid] >= t) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return left;
+    }
+
+    // 二分 找到第一个大于t的下标，就是 C++ 中的upper_bound函数
+    public static int upperBound(int[] arr, int left, int right, int t) {
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (arr[mid] > t) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
     }
 
     // 快速幂，求a的b次方，结果对mod取余

@@ -2,6 +2,107 @@ import java.util.*;
 
 public class Graph {
 
+    // TODO 拓扑排序，最小生成树，最短路径
+
+    // 802. 找到最终的安全状态
+    // DFS，拓扑排序，均可
+
+    // 拓扑排序
+    // 拓扑排序求的是"入度"为0的点，我们需要求从"出度"为0的点，及其相关点，所以我们使用"反图"
+    public List<Integer> eventualSafeNodes1(int[][] graph) {
+        int n = graph.length;
+        // 反图，邻接表存储
+        List<List<Integer>> new_graph = new ArrayList<>();
+        // 节点入度，拓扑排序使用
+        int[] Indeg = new int[n];
+
+        for(int i = 0; i < n; i++) {
+            new_graph.add(new ArrayList<>());
+        }
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < graph[i].length; j++) {
+                new_graph.get(graph[i][j]).add(i);
+            }
+            // 原数组记录的节点出度，在反图中就是入度
+            Indeg[i] = graph[i].length;
+        }
+
+        // 拓扑排序队列
+        Queue<Integer> q = new LinkedList<>();
+
+        // 首先将入度为 0 的点存入队列
+        for(int i = 0; i < n; i++) {
+            if(Indeg[i] == 0) {
+                q.offer(i);
+            }
+        }
+
+        while(!q.isEmpty()) {
+            // 每次弹出队头元素
+            int cur = q.poll();
+            for(int x : new_graph.get(cur)) {
+                // 将以其为起点的有向边删除，更新终点入度
+                Indeg[x]--;
+                if(Indeg[x] == 0) q.offer(x);
+            }
+        }
+
+        // 最终入度（原图中出度）为 0 的所有点均为安全点
+        List<Integer> ret = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            if(Indeg[i] == 0) ret.add(i);
+        }
+        return ret;
+    }
+
+    // DFS版本
+    Set<Integer> good = new HashSet<>();
+    Set<Integer> used = new HashSet<>();
+
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        int n = graph.length;
+        for (int i = 0; i < n; i++) {
+            if (used.contains(i)) {
+                continue;
+            }
+            dfs802(graph, i, new HashSet<>());
+        }
+        List<Integer> ans = new ArrayList<>(good);
+        ans.sort(Comparator.comparingInt(o -> o));
+        return ans;
+    }
+
+    // DFS + 回溯
+    public boolean dfs802(int[][] graph, int now, Set<Integer> current) {
+        int[] edges = graph[now];
+        used.add(now);
+        if (current.isEmpty()) current.add(now);  // 此处，只为添加开头的元素
+        if (edges.length == 0) {  // 此处也是开头元素的特判
+            good.add(now);
+            return true;
+        }
+        for (int next : edges) {
+            if (current.contains(next)) {
+                return false;
+            }
+            if (used.contains(next)) {
+                if (!good.contains(next)) {
+                    return false;
+                }
+                continue;
+            }
+            current.add(next);
+            boolean b = dfs802(graph, next, current);
+            current.remove(next);
+            if (!b) {
+                return false;
+            }
+            good.add(next);
+        }
+        good.add(now);
+        return true;
+    }
+
     // 785. 判断二分图
     // 染色法
     // 二分图：可以将图中节点分为两组，使图中所有边所连的节点，分别属于两组

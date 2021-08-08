@@ -1,6 +1,5 @@
 import java.util.*;
 
-import static utils.Utils.gcd;
 
 public class Simulate {
 
@@ -205,7 +204,7 @@ public class Simulate {
                 int x2 = ps[j][0], y2 = ps[j][1];
                 int a = x1 - x2, b = y1 - y2;
                 // 可保证正负性
-                int k = gcd(a, b);
+                int k = Utils.gcd(a, b);
                 String key = (a / k) + "_" + (b / k);
                 map.put(key, map.getOrDefault(key, 0) + 1);
                 max = Math.max(max, map.get(key));
