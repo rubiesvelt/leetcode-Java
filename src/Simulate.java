@@ -3,6 +3,45 @@ import java.util.*;
 
 public class Simulate {
 
+    // 233. 数字 1 的个数
+    // 按位模拟
+    public int countDigitOne(int n) {
+        String s = String.valueOf(n);
+        int m = s.length();
+        if (m == 1) return n > 0 ? 1 : 0;
+        // 计算第 i 位前缀代表的数值，和后缀代表的数值
+        // 例如 12345 则有
+        // ps[2] = 12
+        // ss[2] = 45
+        int[] ps = new int[m];  // 前缀大小
+        int[] ss = new int[m];  // 后缀大小
+        ss[0] = Integer.parseInt(s.substring(1));
+        for (int i = 1; i < m - 1; i++) {
+            ps[i] = Integer.parseInt(s.substring(0, i));
+            ss[i] = Integer.parseInt(s.substring(i + 1));
+        }
+        ps[m - 1] = Integer.parseInt(s.substring(0, m - 1));
+        // 分情况讨论
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            // x 为当前位数值，len 为当前位后面长度为多少
+            int x = s.charAt(i) - '0';
+            int len = m - i - 1;
+            int prefix = ps[i];
+            int suffix = ss[i];
+            int tot = 0;
+            tot += prefix * Math.pow(10, len);  // 首先加上前缀乘起来
+            if (x == 0) {  // 当前位为0什么都不做
+            } else if (x == 1) {  // 当前位为1加上 suffix + 1
+                tot += suffix + 1;
+            } else {  // 当前位大于1 "加满"
+                tot += Math.pow(10, len);
+            }
+            ans += tot;
+        }
+        return ans;
+    }
+
     // 5831. 你可以工作的最大周数
     // 给定一个数组，下标i的工作有多少件
     // 每周都得工作，连续两周不能做相同工作
@@ -18,19 +57,6 @@ public class Simulate {
             return sum;
         }
         return (sum - max) * 2L + 1;
-    }
-
-    // 5187. 收集足够苹果的最小花园周长
-    public long minimumPerimeter(long neededApples) {
-        long sum = 0;
-        long k = 1;
-        while (true) {
-            sum += 12 * k * k;
-            if (sum >= neededApples) {
-                return 8 * k;
-            }
-            k++;
-        }
     }
 
     // 1942. 最小未被占据椅子的编号

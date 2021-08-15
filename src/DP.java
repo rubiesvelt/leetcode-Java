@@ -4,15 +4,107 @@ public class DP {
 
     /**
      * 经典动态规划
-     *
+     * <p>
      * 最长递增子序列 LIS
      * 最长公共子序列 LCS
      * 打家劫舍
      * 背包问题
      * 回文字串
-     *
      */
 
+    // 516. 最长回文子序列
+    // 区间dp
+    // 给定一个字符串，求 最长的，回文的，子序列(从原序列去除任意个字符，字符顺序不变)的长度
+    public int longestPalindromeSubseq(String s) {
+        int n = s.length();
+        int[][] f = new int[n][n];
+        // f[j][i] 为下标j到i之间的子串中的最长回文数
+        // 状态转移方程
+        // f[j][i] = f[j + 1][i - 1] + 2             —— s.charAt(i) == s.charAt(j)
+        // f[j][i] = max(f[j + 1][i], f[j][i - 1])   —— s.charAt(i) != s.charAt(j)
+
+        // i从后往前，j从i往后
+        for (int i = n - 1; i >= 0; i--) {
+            f[i][i] = 1;
+            for (int j = i + 1; j < n; j++) {
+                if (s.charAt(i) == s.charAt(j)) {
+                    f[i][j] = f[i + 1][j - 1] + 2;  // j = i + 1 时候达到"无人区"，0 + 2 = 2
+                } else {
+                    f[i][j] = Math.max(f[i + 1][j], f[i][j - 1]);
+                }
+            }
+        }
+        // 或者j从前往后，i从j - 1往前
+        return f[0][n - 1];
+    }
+
+    // 1959. K 次调整数组大小浪费的最小总空间
+    // 区间dp
+    //
+    // 题目等价于：
+    // 给定数组 nums 以及整数 k
+    // 需要把数组完整地分成 k+1 段连续的子数组
+    // 每一段的权值是"这一段的最大值乘以这一段的长度"
+    // 求最小化总权值(减去原值之和)
+    public int minSpaceWastedKResizing(int[] nums, int k) {
+        int n = nums.length;
+        int sum = 0;
+        int[][] g = new int[n][n];  // g[i][j] 表示i到j区间内，这一段的最大值乘以这一段的长度
+        for (int i = 0; i < n; i++) {
+            int m = 0;
+            for (int j = i; j < n; j++) {
+                m = Math.max(m, nums[j]);
+                g[i][j] = m * (j + 1 - i);
+            }
+            sum += nums[i];
+        }
+
+        int INF = 0x3f3f3f3f;  // 适用于，需要很大的数，但还没到顶，可以往上加的情景
+        int[][] dp = new int[n][k + 2];  // dp[i][j] 表示将 nums[0..i] 分成 j 段的最小总权值
+        // dp[i][j] =
+        // min(
+        //      g[0][i],
+        //      dp[0][j - 1]+g[1][i],
+        //      dp[1][j - 1]+g[2][i],
+        //      ... ,
+        //      dp[i - 1][j - 1]+g[i][i]
+        // )
+        for (int i = 0; i < n; i++) Arrays.fill(dp[i], INF);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= k + 1; j++) {
+                for (int l = 0; l <= i; l++) {
+                    if (l == 0) {
+                        dp[i][j] = Math.min(dp[i][j], g[l][i]);
+                    } else {
+                        dp[i][j] = Math.min(dp[i][j], dp[l - 1][j - 1] + g[l][i]);
+                    }
+                }
+            }
+        }
+        return dp[n - 1][k + 1] - sum;
+    }
+
+    // 446. 等差数列划分 II - 子序列
+    // 返回为等差数列的子序列(从原序列去除任意个字符，字符顺序不变)个数
+    // 序列 dp
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        int ans = 0;
+        List<Map<Long, Integer>> dp = new ArrayList<>();  // dp.get(i).get(diff) 表示为以 nums[i] 结尾，公差为 diff 的子序列的数量
+        for (int i = 0; i < n; i++) {
+            Map<Long, Integer> mp = new HashMap<>();
+            dp.add(mp);
+            for (int j = 0; j < i; j++) {
+                long diff = nums[i] * 1L - nums[j];
+                int t = dp.get(j).getOrDefault(diff, 0);
+                ans += t;
+                int t1 = mp.getOrDefault(diff, 0);  // 此处直接用 mp, 不使用dp.get(i), 减少对map的访问，可轻微提速
+                mp.put(diff, t1 + t + 1);  // 此处也一样
+            }
+        }
+        return ans;
+    }
 
     // 5833. 统计特殊子序列的数目
     // 给出nums求满足 0..1..2.. 的子序列数目 x..代表一个或多个x
@@ -155,7 +247,7 @@ public class DP {
     // 有两种解法，一种 n方 的朴素解法，一种像如下这样 nlogn 解法
     public int lengthOfLIS(int[] nums) {
         int n = nums.length;
-        int[] arr = new int[n];
+        int[] arr = new int[n];  // 用做状态传递的数组，以这种方式 巧妙的记录了之前的状态
         int ans = -1;
         int len = 0;
         for (int x : nums) {
@@ -174,7 +266,7 @@ public class DP {
     // 必须 nlogn 解法，否则超时
     public int[] longestObstacleCourseAtEachPosition1(int[] obstacles) {
         int n = obstacles.length;
-        int[] arr = new int[n];  // 用做状态传递的一个数组
+        int[] arr = new int[n];  // 用做状态传递的数组
         int[] res = new int[n];  // 存储结果
         int len = 0, idx = 0;
         for (int x : obstacles) {

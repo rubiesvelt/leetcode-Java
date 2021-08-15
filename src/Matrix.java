@@ -2,6 +2,55 @@ import java.util.*;
 
 public class Matrix {
 
+    // 1958. 检查操作是否合法
+    public boolean checkMove(char[][] board, int rMove, int cMove, char color) {
+        for (int i = -1; i <= 1; i++) {  // 使用i, j模拟出8个方向
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+                int[] direction = new int[]{i, j};
+                if (isGoodMove(board, rMove, cMove, color, direction)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 检查向单个方向的一次操作是否合法
+    boolean isGoodMove(char[][] board, int rMove, int cMove, char color, int[] direction) {
+        char anotherColor;
+        if (color == 'W') {
+            anotherColor = 'B';
+        } else {
+            anotherColor = 'W';
+        }
+        int rNext = rMove;
+        int cNext = cMove;
+        boolean start = false;
+        while (true) {
+            rNext = rNext + direction[0];
+            cNext = cNext + direction[1];
+            if (rNext > 7 || cNext > 7 || rNext < 0 || cNext < 0) {
+                return false;
+            }
+            if (board[rNext][cNext] == '.') {
+                return false;
+            }
+            if (!start && board[rNext][cNext] == color) {
+                return false;
+            }
+            if (board[rNext][cNext] == anotherColor && !start) {
+                start = true;
+                continue;
+            }
+            if (board[rNext][cNext] == color) {
+                return true;
+            }
+        }
+    }
+
     // 1878. 矩阵中最大的三个菱形和
     // 求矩阵中最大的三个互不相同的菱形和
     public int[] getBiggestThree(int[][] grid) {

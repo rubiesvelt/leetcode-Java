@@ -2,6 +2,27 @@ import java.util.TreeMap;
 
 public class Array {
 
+    // 413. 等差数列划分
+    // 将一个数组划分成几个子数组，使每个都是等差数列
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        if (n < 3) {
+            return 0;
+        }
+        int delta = nums[1] - nums[0];
+        int addition = 0;
+        int ans = 0;
+        for (int i = 2; i < n; i++) {
+            if (nums[i] - nums[i - 1] == delta) {
+                ans += ++addition;  // 有技巧
+            } else {
+                addition = 0;
+                delta = nums[i] - nums[i - 1];
+            }
+        }
+        return ans;
+    }
+
     // 581. 最短无序连续子数组
     public int findUnsortedSubarray(int[] arr) {
         if(arr == null || arr.length < 2){
