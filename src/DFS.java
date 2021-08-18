@@ -86,6 +86,13 @@ public class DFS {
     // 1947. 最大兼容性评分和
     // 回溯
     // 全排列
+
+    // 排列 Anm 表示从n个元素中取出 m 个元素，"并将其按不同顺序排列" 的方案总数
+    // Anm = n(n - 1)(n - 2)...(n - m + 1) = n! / (n - m)!
+
+    // 组合 Cnm 表示从n个元素中取出 m 个元素，的方案总数
+    // Cnm = Anm / m! = n! / m!(n - m)!
+    // Cnm = Cn(n - m), n >= m
     public int maxCompatibilitySum(int[][] students, int[][] mentors) {
         int n = students.length;
         int m = students[0].length;
