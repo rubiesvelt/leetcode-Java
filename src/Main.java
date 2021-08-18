@@ -21,6 +21,28 @@ public class Main {
         return;
     }
 
+    // 526. 优美的排列
+    public int countArrangement(int n) {
+        return dfs(n, 1, new boolean[n + 1]);  // i表示第i个位置
+    }
+
+    private int dfs(int n, int i, boolean[] visited) {
+        if (i > n) {
+            return 1;  // 到头来返回1
+        }
+
+        int ans = 0;
+        for (int num = 1; num <= n; num++) {
+            if (!visited[num] && (num % i == 0 || i % num == 0)) {
+                visited[num] = true;
+                ans += dfs(n, i + 1, visited);
+                visited[num] = false;
+            }
+        }
+
+        return ans;
+    }
+
     // 1960. 两个回文子字符串长度的最大乘积
     public long maxProduct(String s) {
         int n = s.length();
