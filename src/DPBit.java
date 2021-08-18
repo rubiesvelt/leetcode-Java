@@ -5,6 +5,11 @@ public class DPBit {
      */
 
     // 526. 优美的排列
+    // 一个数组，包含1-n的整数，每一位都满足以下条件时，称为优美的排列
+    // 1. 第 i 位的数字能被 i 整除
+    // 2. i 能被第 i 位上的数字整除
+    // 现在给定一个整数 N，请问可以构造多少个优美的排列？
+
     // 爆搜
     public int countArrangement(int n) {
         return dfs526(n, 1, new boolean[n + 1]);
@@ -56,7 +61,7 @@ public class DPBit {
 
     // 动态规划
     // dp[i][visited] += ∑(dp[i-1][visited打掉一个1])
-    public int countArrangement3(int n) {
+    public int countArrangement2(int n) {
         // visited的最终状态为 (1 << n) - 1
         int mask = 1 << n;
 
