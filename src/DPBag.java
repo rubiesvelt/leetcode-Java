@@ -2,7 +2,6 @@ import java.util.Arrays;
 
 /**
  * DP —— 背包问题
- *
  */
 public class DPBag {
 
@@ -44,9 +43,20 @@ public class DPBag {
         return ans;
     }
 
+    public static void main(String[] args) {
+        DPBag dpBag = new DPBag();
+        int[] nums = {1,5,10,6};
+        dpBag.canPartition(nums);
+    }
+
     /*
      * 416. 分割等和子集
+     * 给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等
+     *
      * 动态规划：01背包问题
+     *
+     * [2,2,1,1]
+     * [14,9,8,4,3,2]
      */
     public boolean canPartition(int[] nums) {
         int sum = 0;
@@ -58,10 +68,50 @@ public class DPBag {
         }
         int count = sum >> 1;
         int n = nums.length;
-        boolean[] f = new boolean[count + 1];
+        // 二维
+        boolean[][] dp = new boolean[n][count + 1];  // dp[i][j]表示从数组的 [0, i] 这个子区间内挑选一些正整数，每个数只能用一次，使得这些数的和恰好等于 j
+        // 状态转移方程
+        // dp[i][j] =
+        // dp[i - 1][j] 或 dp[i - 1][j - nums[i]]
+        // true   (nums[i] == j, 即 dp[i][num[i]])
+        if (nums[0] <= count) {
+            dp[0][nums[0]] = true;
+        }
+        if (count == nums[0]) {
+            return true;
+        }
+        for (int i = 1; i < n; i++) {
+            if (nums[i] <= count) {
+                dp[i][nums[i]] = true;
+            }
+            for (int j = 0; j <= count; j++) {
+                if (j >= nums[i]) {
+                    dp[i][j] = dp[i][j] || dp[i - 1][j - nums[i]] || dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i][j] || dp[i - 1][j];
+                }
+                if (dp[i][count]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean canPartition1(int[] nums) {
+        int sum = 0;
+        for (int i : nums) {
+            sum += i;
+        }
+        if ((sum & 1) == 1) {
+            return false;
+        }
+        int count = sum >> 1;
+        // 压缩成一维
+        boolean[] f = new boolean[count + 1];  // f[i]表示数组是否可以和为i
         f[0] = true;
         for (int num : nums) {
-            // 每一个从后往前
+            // 不能借鉴本轮的，所以从后往前遍历
             for (int j = count; j >= num; j--) {
                 f[j] = f[j] || f[j - num];
                 if (f[count]) {
@@ -91,6 +141,7 @@ public class DPBag {
     }
 
     /*
+     * 1049. 最后一块石头的重量 II
      * 动态规划，01背包问题
      */
     public int lastStoneWeightII(int[] ss) {
