@@ -19,7 +19,9 @@ public class DPBag {
      * 给你一个 只包含正整数 的 非空 数组 nums ，请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等
      *
      * 动态规划：01背包问题
-     * 选取的数字之和需要 恰好等于 规定的和的一半。
+     * 选取的数字之和需要 恰好等于 规定的和的一半
+     *
+     * 问题转化为，选取xxx个元素，使这些元素和为count，求是否可行
      */
     // 二维版
     public boolean canPartition(int[] nums) {
@@ -32,6 +34,9 @@ public class DPBag {
         }
         int count = sum >> 1;
         int n = nums.length;
+
+        // 问题转化为，选取xxx个元素，使这些元素和为count，求是否可行
+
         // 二维
         boolean[][] dp = new boolean[n][count + 1];  // dp[i][j]表示从数组的 [0, i] 这个子区间内挑选一些正整数，每个数只能用一次，使得这些数的和恰好等于 j
         // 状态转移方程
@@ -98,17 +103,18 @@ public class DPBag {
      *
      * 转换为
      * —> 为 stones 中的每个数字添加 +/-，使得形成的「计算表达式」结果绝对值最小
-     * -> 在 stones 中选出若干元素，使这些元素之和最大，但不可大于 sum/2  —— 标准的背包问题
+     * -> 在 stones 中选出若干元素，使这些元素之和最大，但不可大于 sum/2，求最大和
+     *
+     * 问题转化为，选取xxx个元素，使这些元素之和最大，但不能大于 count，求最大和
      */
     public int lastStoneWeightII(int[] stones) {
-        int n = stones.length;
         int sum = 0;
         for (int i : stones) {
             sum += i;
         }
         int t = sum / 2;
         // dp[i][j] 表示前 i 个物品，凑成总和不超过 j 的最大价值
-        int[] f = new int[t + 1];  // f[i] 表示凑成总和不超过i的最大价值
+        int[] f = new int[t + 1];  // f[i] 表示凑成总和不超过i的最大价值，即f[i]不大于i
         for (int x : stones) {
             for (int j = t; j >= x; j--) {
                 f[j] = Math.max(f[j], f[j - x] + x);
@@ -121,29 +127,51 @@ public class DPBag {
     // 01背包问题
     // 向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式，返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目
     // 动态规划
+    // 化为：选出 xxx 个元素，使这些元素的和为 m，求方案总数
+    // 二维
     public int findTargetSumWays(int[] nums, int target) {
         int n = nums.length;
-        int s = 0;
-        for (int i : nums) s += Math.abs(i);
-        if (target > s || (s - target) % 2 != 0) {
+        int sum = 0;
+        for (int i : nums) sum += Math.abs(i);
+        if (target > sum || (sum - target) % 2 != 0) {
             return 0;
         }
-        int m = (s - target) / 2;
+        int m = (sum - target) / 2;
 
-        int[][] f = new int[n + 1][m + 1];  // f[i][j] 为从数组nums中 0 - i 的元素进行 累加 可得到 j 的方法数量
-        f[0][0] = 1;
+        // 问题转化为：选出 xxx 个元素，使这些元素的和为 m，求方案总数
+        int[][] dp = new int[n + 1][m + 1];  // dp[i][j] 为从数组nums中 0 - i 的元素进行 累加 可得到 j 的方法数量
+        dp[0][0] = 1;
         for (int i = 1; i <= n; i++) {
             int x = nums[i - 1];
             for (int j = 0; j <= m; j++) {
-                f[i][j] += f[i - 1][j];
+                dp[i][j] += dp[i - 1][j];
                 if (j >= x) {
-                    f[i][j] += f[i - 1][j - x];
+                    dp[i][j] += dp[i - 1][j - x];
                 }
             }
         }
-        return f[n][m];
+        return dp[n][m];
     }
 
+    // 一维
+    public int findTargetSumWays0(int[] nums, int target) {
+        int sum = 0;
+        for(int num : nums) {
+            sum += num;
+        }
+        if(target > sum || (target + sum) % 2 == 1) {
+            return 0;
+        }
+        int m = (sum - target) / 2;
+        int[] f = new int[m + 1];
+        f[0] = 1;
+        for(int num : nums){
+            for(int j = m; j >= num; j--){
+                f[j] = f[j] + f[j - num];
+            }
+        }
+        return f[m];
+    }
 
     // 记忆化搜索
     public int findTargetSumWays1(int[] nums, int t) {
