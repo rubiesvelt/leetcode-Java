@@ -9,9 +9,8 @@ public class DPBag {
 
     /**
      * --------------------------------------- 01背包 ---------------------------------------
-     *
+     * <p>
      * 0-1 背包问题选取的物品的容积总量 不能超过 规定的总量，物品不可重复选
-     *
      */
 
     /*
@@ -34,8 +33,6 @@ public class DPBag {
         }
         int count = sum >> 1;
         int n = nums.length;
-
-        // 问题转化为，选取xxx个元素，使这些元素和为count，求是否可行
 
         // 二维
         boolean[][] dp = new boolean[n][count + 1];  // dp[i][j]表示从数组的 [0, i] 这个子区间内挑选一些正整数，每个数只能用一次，使得这些数的和恰好等于 j
@@ -138,7 +135,7 @@ public class DPBag {
         }
         int m = (sum - target) / 2;
 
-        // 问题转化为：选出 xxx 个元素，使这些元素的和为 m，求方案总数
+        // 问题转化为：选出 xxx 个元素，不可重复选，使这些元素的和为 m，求方案总数
         int[][] dp = new int[n + 1][m + 1];  // dp[i][j] 为从数组nums中 0 - i 的元素进行 累加 可得到 j 的方法数量
         dp[0][0] = 1;
         for (int i = 1; i <= n; i++) {
@@ -156,17 +153,17 @@ public class DPBag {
     // 一维
     public int findTargetSumWays0(int[] nums, int target) {
         int sum = 0;
-        for(int num : nums) {
+        for (int num : nums) {
             sum += num;
         }
-        if(target > sum || (target + sum) % 2 == 1) {
+        if (target > sum || (target + sum) % 2 == 1) {
             return 0;
         }
         int m = (sum - target) / 2;
         int[] f = new int[m + 1];
         f[0] = 1;
-        for(int num : nums){
-            for(int j = m; j >= num; j--){
+        for (int num : nums) {
+            for (int j = m; j >= num; j--) {
                 f[j] = f[j] + f[j - num];
             }
         }
@@ -214,16 +211,19 @@ public class DPBag {
 
     /*
      * 279. 完全平方数
+     * 给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少，求最少数目
      * 动态规划，完全背包问题
+     *
+     * 化为：从数组中选出 xxx 个元素，可重复选，使这些元素的和为 n，最少选多少元素，求数量
      */
     public int numSquares(int n) {
-        int[] f = new int[n + 1];
+        int[] f = new int[n + 1];  // f[i] 表示和为i的情况下，最小选多少元素
         Arrays.fill(f, 0x3f3f3f3f);
         f[0] = 0;
         for (int i = 1; i * i <= n; i++) {
             int k = i * i;
             for (int x = k; x <= n; x++) {
-                f[x] = Math.min(f[x], f[x - k] + 1);
+                f[x] = Math.min(f[x], f[x - k] + 1);  // 需要参考本轮结果，所以"从前往后"遍历！元素的重用也体现在此处！
             }
         }
         return f[n];
@@ -231,39 +231,32 @@ public class DPBag {
 
     /*
      * 1449. 数位成本和为目标值的最大数字
+     * 从数组中选出 xxx 个"数位(1-9)"（可以重复选），每个"数位"有自己的代价，代价之和需要等于target。现要求这些数位组成的数最大，求最大数
      * 动态规划：完全背包问题
      */
-    public String largestNumber3(int[] cost, int t) {
-        // f[j]表示当和为j时，需要多少个数字
-        int[] f = new int[t + 1];
+    public String largestNumber3(int[] cost, int target) {
+        int[] f = new int[target + 1];  // f[i]表示当和为i时，需要多少个数字
         // 这块需要填MIN_VALUE，因为会偶尔 +1 +1
         Arrays.fill(f, Integer.MIN_VALUE);
         f[0] = 0;
         for (int i = 0; i < 9; i++) {
             // 一个一个数字过
             int u = cost[i];
-            for (int j = u; j <= t; j++) {
-                // 由于f[j]和f[j - u]都参考的是上一个i的状态，所以这里必须倒序
-                // —— 错，因为这是完全背包问题，可以重用，所以正序
-
-                // 如 cost = [6,3,2], target = 12, u = 2
-                // j = 4 时用 u 可以 在j = 2 基础上 + 1
-                // j = 6 时用 u 也可以在j = 4 基础上继续用 u 来 +1，总共 +2
-                // j = 8 ...
+            for (int j = u; j <= target; j++) {  // 完全背包问题，可以重用，故正序
                 f[j] = Math.max(f[j], f[j - u] + 1);
             }
         }
-        if (f[t] < 0) return "0";
-        String ans = "";
-        int j = t;
+        if (f[target] < 0) return "0";
+        StringBuilder ans = new StringBuilder();
+        int j = target;
         for (int i = 9; i > 0; i--) {
             // 判断，第i位可以作为ans中的下一位吗？由于只能 99887 或 99865 递减，所以不用发愁i又来了
             int u = cost[i - 1];
-            while (j >= u && f[j] == f[j - u] + 1) {
-                ans += i;
+            while (j >= u && f[j] == f[j - u] + 1) {  // 秀儿
+                ans.append(i);
                 j = j - u;
             }
         }
-        return ans;
+        return ans.toString();
     }
 }
