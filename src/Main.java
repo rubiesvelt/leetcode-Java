@@ -1,6 +1,8 @@
 import beans.TreeNode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -21,12 +23,38 @@ public class Main {
         return;
     }
 
-    // 526. 优美的排列
-    public int countArrangement(int n) {
-        return dfs(n, 1, new boolean[n + 1]);  // i表示第i个位置
+    // 77. 组合
+    List<List<Integer>> ans = new ArrayList<>();
+
+    public List<List<Integer>> combine(int n, int k) {
+        int[] num = new int[n];
+        for(int i = 0;i<n;i++) {
+            num[i] = i + 1;
+        }
+        List<Integer> current = new ArrayList<>();
+        dfs(num, k, 0, current);
+        return ans;
     }
 
-    private int dfs(int n, int i, boolean[] visited) {
+    public void dfs(int[] num, int k, int index, List<Integer> current) {
+        if(current.size() == k) {
+            ans.add(new ArrayList<>(current));
+            return;
+        }
+
+        for(int i = index;i < num.length;i++) {
+            current.add(num[i]);
+            dfs(num, k, i + 1, current);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    // 526. 优美的排列
+    public int countArrangement(int n) {
+        return dfs526(n, 1, new boolean[n + 1]);  // i表示第i个位置
+    }
+
+    private int dfs526(int n, int i, boolean[] visited) {
         if (i > n) {
             return 1;  // 到头来返回1
         }
@@ -35,7 +63,7 @@ public class Main {
         for (int num = 1; num <= n; num++) {
             if (!visited[num] && (num % i == 0 || i % num == 0)) {
                 visited[num] = true;
-                ans += dfs(n, i + 1, visited);
+                ans += dfs526(n, i + 1, visited);
                 visited[num] = false;
             }
         }
