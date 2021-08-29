@@ -28,6 +28,32 @@ public class Main {
         return;
     }
 
+    // 77. 组合
+    List<List<Integer>> ans = new ArrayList<>();
+
+    public List<List<Integer>> combine(int n, int k) {
+        int[] num = new int[n];
+        for(int i = 0;i<n;i++) {
+            num[i] = i + 1;
+        }
+        List<Integer> current = new ArrayList<>();
+        dfs77(num, k, 0, current);
+        return ans;
+    }
+
+    public void dfs77(int[] num, int k, int index, List<Integer> current) {
+        if(current.size() == k) {
+            ans.add(new ArrayList<>(current));
+            return;
+        }
+
+        for(int i = index;i < num.length;i++) {
+            current.add(num[i]);
+            dfs77(num, k, i + 1, current);
+            current.remove(current.size() - 1);
+        }
+    }
+
     // 940. 不同的子序列 II
     // 给定一个字符串 S，计算 S 的"不同"非空子序列的个数，
     // 如 "aba" -> 6 ("a", "b", "ab", "ba", "aa", "aba")
