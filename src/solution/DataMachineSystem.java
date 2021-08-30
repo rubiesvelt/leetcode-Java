@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// 可信 2
 public class DataMachineSystem {
 
     public int num;
