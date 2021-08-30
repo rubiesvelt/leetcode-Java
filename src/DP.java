@@ -14,6 +14,93 @@ public class DP {
      * 区间DP
      */
 
+    // 940. 不同的子序列 II
+    // 给定一个字符串 S，计算 S 的"不同"非空子序列的个数，
+    // 如 "aba" -> 6 ("a", "b", "ab", "ba", "aa", "aba")
+    public int distinctSubseqII(String S) {
+        int MOD = 1_000_000_007;
+        int N = S.length();
+        int[] dp = new int[N + 1];  // dp[i]表示，考虑前i个数（下标 0 - i-1）不同非空子序列个数
+        dp[0] = 1;
+        int[] last = new int[26];  // last[i]（i为当前字符与'a'的差值）表示"上一次"以"该字符"结尾时，获得了多少增益
+        Arrays.fill(last, -1);
+
+        for (int i = 0; i < N; ++i) {
+            int x = S.charAt(i) - 'a';
+            dp[i + 1] = dp[i] * 2 % MOD;
+            if (last[x] >= 0) {
+                dp[i + 1] -= dp[last[x]];
+            }
+            dp[i + 1] %= MOD;
+            last[x] = i;
+        }
+
+        dp[N]--;
+        if (dp[N] < 0) dp[N] += MOD;
+        return dp[N];
+    }
+
+    // 5857. 不同的好子序列数目
+    // 给出一个以 0, 1 组成的String，求 "好子序列" 的数目。好子序列，即以1开头的子序列，如 "1", "101" 等
+    public int numberOfUniqueGoodSubsequences(String binary) {
+        int n = binary.length();
+        int dp0 = 0, dp1 = 0;  // 以0，1开头的子序列的数目
+        int has0 = 0;
+        int MOD = (int) (1e9 + 7);
+        // 0 0 0
+        for (int i = n - 1; i >= 0; i--) {
+            if (binary.charAt(i) == '0') {
+                has0 = 1;
+                dp0 = (dp0 + dp1 + 1) % MOD;
+            } else {
+                dp1 = (dp0 + dp1 + 1) % MOD;
+            }
+        }
+        return dp1 + has0;
+    }
+
+    // 5856. 完成任务的最少工作时间段
+    // 化为多次 0-1 背包问题
+    public int minSessions(int[] oritasks, int sessionTime) {
+        int cnt = 0;
+        int n = oritasks.length;
+        int left = oritasks.length;
+        int[] tasks = new int[oritasks.length];
+        Arrays.sort(oritasks);
+        for (int i = 0; i < tasks.length; i++) {
+            tasks[i] = oritasks[tasks.length - i - 1];
+        }
+        while (left > 0) {
+            Block[] f = new Block[sessionTime + 1];  // f[i] 表示元素和不超过 i 的时候，背包中装的物品最大和
+            for (int i = 0; i < sessionTime + 1; i++) {
+                f[i] = new Block();
+            }
+            for (int i = 0; i < n; i++) {
+                for (int j = sessionTime; j >= tasks[i]; j--) {
+                    if (f[j].total >= f[j - tasks[i]].total + tasks[i]) {
+                        continue;
+                    }
+                    Block block = f[j];
+                    block.total = f[j - tasks[i]].total + tasks[i];
+                    block.used = new ArrayList<>(f[j - tasks[i]].used);
+                    block.used.add(i);
+                }
+            }
+            List<Integer> used = f[sessionTime].used;
+            for (int t : used) {
+                tasks[t] = 0;
+                left--;
+            }
+            cnt++;
+        }
+        return cnt;
+    }
+
+    public static class Block {
+        int total = 0;
+        List<Integer> used = new ArrayList<>();
+    }
+
     // 139. 单词拆分
     // 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词，单词可重复使用
     // 经典动态规划

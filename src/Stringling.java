@@ -1,4 +1,30 @@
+import java.util.Arrays;
+import java.util.Comparator;
+
 public class Stringling {
+
+    // 1985. 找出数组中的第 K 大整数
+    // 找出数组中的第 K 大整数，数字以字符串形式给出
+    // 字符串表示数字 的比较排序
+    public String kthLargestNumber(String[] nums, int k) {
+        Arrays.sort(nums, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                int l1 = o1.length();
+                int l2 = o2.length();
+                if (l1 > l2) return 1;
+                if (l1 < l2) return -1;
+                for (int i = 0; i < l1; i++) {
+                    char c1 = o1.charAt(i);
+                    char c2 = o2.charAt(i);
+                    if (c1 > c2) return 1;
+                    if (c1 < c2) return -1;
+                }
+                return 0;
+            }
+        });
+        return nums[nums.length - k];
+    }
 
     // 1963. 使字符串平衡的最小交换次数
     // [][][]

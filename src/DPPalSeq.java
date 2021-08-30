@@ -5,6 +5,57 @@ import java.util.Arrays;
  */
 public class DPPalSeq {
 
+    // 1960. 两个回文子字符串长度的最大乘积
+    // 只能用马拉车做
+    public long maxProduct(String s) {
+        int n = s.length();
+        boolean[][] g = new boolean[n][n];
+        for (int i = 0; i < n; ++i) {
+            Arrays.fill(g[i], true);
+        }
+        // 发现一个的时候，在之前的里面取最长的
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = i + 1; j < n; ++j) {
+                g[i][j] = s.charAt(i) == s.charAt(j) && g[i + 1][j - 1];
+            }
+        }
+        int[] longest = new int[n];
+        Arrays.fill(longest, 1);
+        for (int i = 1; i < n; i++) {  // 包含i的longest
+            for (int j = 0; j <= i; j++) {
+                if (g[j][i]) {
+                    int cur = i - j + 1;
+                    if (cur % 2 == 0) {
+                        continue;
+                    }
+                    longest[i] = Math.max(longest[i - 1], cur);
+                    break;
+                }
+                longest[i] = Math.max(longest[i - 1], longest[i]);
+            }
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (g[j][i]) {
+                    long cur = i - j + 1;
+                    if (cur % 2 == 0) {
+                        continue;
+                    }
+                    long bef;
+                    if (j == 0) {
+                        continue;
+                    } else {
+                        bef = longest[j - 1];
+                    }
+                    long l = cur * bef % 1000000007;
+                    ans = Math.max(ans, l);
+                }
+            }
+        }
+        return ans;
+    }
+
     // 516. 最长回文子序列
     // 区间dp
     // 给定一个字符串，求 最长的，回文的，子序列(从原序列去除任意个字符，字符顺序不变)的长度

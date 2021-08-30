@@ -133,6 +133,34 @@ public class DFS {
         }
     }
 
+    // 77. 组合
+    // 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合
+    // 回溯
+    List<List<Integer>> ans = new ArrayList<>();
+
+    public List<List<Integer>> combine(int n, int k) {
+        int[] num = new int[n];
+        for (int i = 0; i < n; i++) {
+            num[i] = i + 1;
+        }
+        List<Integer> current = new ArrayList<>();
+        dfs77(num, k, 0, current);
+        return ans;
+    }
+
+    public void dfs77(int[] num, int k, int index, List<Integer> current) {
+        if (current.size() == k) {
+            ans.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = index; i < num.length; i++) {
+            current.add(num[i]);
+            dfs77(num, k, i + 1, current);
+            current.remove(current.size() - 1);
+        }
+    }
+
     // 可信 3
     // 回溯算法
     int ans3 = Integer.MAX_VALUE;
@@ -242,16 +270,16 @@ public class DFS {
     // 78. 子集
     // 给你一个整数数组 nums ，数组中的元素"互不相同" 。返回该数组所有可能的子集
     // 经典回溯
-    List<List<Integer>> ans = new ArrayList<>();
+    List<List<Integer>> ans78 = new ArrayList<>();
 
     public List<List<Integer>> subsets(int[] nums) {
         List<Integer> current = new ArrayList<>();
         dfs78(nums, -1, current);
-        return ans;
+        return ans78;
     }
 
     public void dfs78(int[] nums, int start, List<Integer> current) {
-        ans.add(new ArrayList<>(current));
+        ans78.add(new ArrayList<>(current));
 
         for (int i = start + 1; i < nums.length; i++) {
             current.add(nums[i]);
