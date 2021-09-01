@@ -4,6 +4,7 @@ public class Array {
 
     // 413. 等差数列划分
     // 将一个数组划分成几个子数组，使每个都是等差数列
+    // 1,2,4,6
     public int numberOfArithmeticSlices(int[] nums) {
         int n = nums.length;
         if (n < 3) {

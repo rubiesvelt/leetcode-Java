@@ -83,6 +83,63 @@ public class DFS {
         }
     }
 
+    /**
+     * shopee 笔试二题
+     * <br/>回溯
+     * <p/>给出 由数字组成的，编码后的 字符串s，求字符串解码的方案数目
+     * <br/>编码规则
+     * <br/>a -> 1
+     * <br/>b -> 2
+     * <br/>...
+     * <br/>z -> 26
+     * <br/>
+     * e.g.
+     * s = "12" -> 2 (can be "a, b" or "l")
+     * <p/>
+     *
+     * @param s 编码后的 由数字组成的 字符串
+     * @return 解码的方案数目
+     */
+    public int waysToDecode(String s) {
+        int n = s.length();
+        Map<Integer, Integer> map = new HashMap<>();  // record index -> totalNum
+        return dfs2(s, n, map, 0);
+    }
+
+    public int dfs2(String s, int n, Map<Integer, Integer> map, int index) {
+        if (map.containsKey(index)) {
+            return map.get(index);
+        }
+        if (index == n - 1) {
+            return 1;
+        } if (index == n) {
+            return 1;
+        } if (index > n) {
+            return 0;
+        }
+
+        char c = s.charAt(index);
+        int t = c - '0';
+        int ret = 0;
+        if (t == 1 || t == 2) {
+            int nextT = s.charAt(index + 1) - '0';
+            if (nextT == 0) {
+                ret = dfs2(s, n, map, index + 2);
+            } else if (t == 2 && nextT > 6) {
+                ret = dfs2(s, n, map, index + 1);
+            } else {
+                int ret1 = dfs2(s, n, map, index + 1);
+                int ret2 = dfs2(s, n, map, index + 2);
+                ret += ret1 + ret2;
+            }
+        } else {
+            int ret1 = dfs2(s, n, map, index + 1);
+            ret += ret1;
+        }
+        map.put(index, ret);
+        return ret;
+    }
+
     // 1947. 最大兼容性评分和
     // 回溯
     // 全排列

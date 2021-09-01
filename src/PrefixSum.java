@@ -5,6 +5,10 @@ import java.util.Stack;
 
 public class PrefixSum {
 
+    /**
+     * 典型应用：求数组 nums[i] - nums[j] 区间的和
+     */
+
     // 560. 和为K的子数组
     // 前缀和 + hashMap 模板题目
     public int subarraySum1(int[] nums, int k) {

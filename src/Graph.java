@@ -4,27 +4,100 @@ public class Graph {
 
     // TODO 拓扑排序，最小生成树，最短路径
 
+    /**
+     * --------------------------------------- 拓扑排序 ---------------------------------------
+     * <p>
+     * 拓扑排序，需要:
+     * <br/>原图，
+     * <br/>节点入度数组，
+     * <br/>拓扑排序队列
+     */
+
+    /*
+     * 1857. 有向图中最大颜色值
+     * 给你一个字符串colors ，其中colors[i]是小写英文字母，表示图中第 i个节点的 颜色（下标从 0开始）
+     * 同时给你一个二维数组edges，其中edges[j] = [aj, bj]表示从节点aj到节点bj有一条有向边
+     * 求给定图中有效路径里面的 最大颜色值。如果图中含有环，请返回 -1
+     *
+     * 拓朴排序，根据拓朴序dp
+     * 拓朴排序，适用于"有向图"；入度为0的进入队列，然后不断拆边，直到所有入度为0都进入队列
+     */
+    public int largestPathValue1(String colors, int[][] edges) {
+        int n = colors.length();
+        // 邻接表，描述节点间的邻接关系
+        // 1 -> 2, 3
+        // 2 -> 3, 4, 5
+        List<List<Integer>> g = new ArrayList<>(n);
+        for (int i = 0; i < n; ++i) {
+            g.add(new ArrayList<>());
+        }
+        // 统计节点入度
+        int[] inDegree = new int[n];
+        for (int[] edge : edges) {
+            inDegree[edge[1]]++;
+            g.get(edge[0]).add(edge[1]);
+        }
+        // 邻接表、入度均为拓朴排序所需要
+
+        // 记录拓扑排序中遇到节点个数
+        int found = 0;
+        int[][] dp = new int[n][26];  // dp[i][j] 表示在i号节点，j号颜色(x - 'a')，所能得到的 串联起来的 最大出现次数
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) q.offer(i);
+        }
+
+        while (!q.isEmpty()) {
+            found++;
+            int u = q.poll();
+            // 将节点对应颜色加1
+            dp[u][colors.charAt(u) - 'a']++;
+            // 枚举 u 后所有结点 v
+            for (int v : g.get(u)) {
+                inDegree[v]--;
+                // 将 dp(v,c) 更新为其与 dp(u,c) 的较大值
+                for (int c = 0; c < 26; ++c) {
+                    dp[v][c] = Math.max(dp[v][c], dp[u][c]);
+                }
+                if (inDegree[v] == 0) q.offer(v);
+            }
+        }
+
+        if (found != n) return -1;
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = Math.max(ans, Arrays.stream(dp[i]).max().getAsInt());
+        }
+        return ans;
+    }
+
     // 802. 找到最终的安全状态
+    // 给出一个有向图graph
+    // 对于一个起始节点，如果从该节点出发，无论每一步选择沿哪条有向边行走，最后必然在有限步内到达终点，则将该起始节点称作是 安全 的
     // DFS，拓扑排序，均可
 
-    // 拓扑排序
-    // 拓扑排序求的是"入度"为0的点，我们需要求从"出度"为0的点，及其相关点，所以我们使用"反图"
+    /*
+     * 所有在环上，有路径通向环的点，都是不安全点
+     * 求不在环上，且没有路径通向环的点
+     * 拓扑排序，拆不掉 环上 及 环上元素通往的点，故我们使用"反图"做拓扑排序，除去拆不掉的点，剩下点都是安全点
+     *
+     */
     public List<Integer> eventualSafeNodes1(int[][] graph) {
         int n = graph.length;
         // 反图，邻接表存储
-        List<List<Integer>> new_graph = new ArrayList<>();
+        List<List<Integer>> reverseGraph = new ArrayList<>();
         // 节点入度，拓扑排序使用
-        int[] Indeg = new int[n];
+        int[] inDegree = new int[n];
 
         for(int i = 0; i < n; i++) {
-            new_graph.add(new ArrayList<>());
+            reverseGraph.add(new ArrayList<>());
         }
         for(int i = 0; i < n; i++) {
             for(int j = 0; j < graph[i].length; j++) {
-                new_graph.get(graph[i][j]).add(i);
+                reverseGraph.get(graph[i][j]).add(i);
             }
             // 原数组记录的节点出度，在反图中就是入度
-            Indeg[i] = graph[i].length;
+            inDegree[i] = graph[i].length;
         }
 
         // 拓扑排序队列
@@ -32,7 +105,7 @@ public class Graph {
 
         // 首先将入度为 0 的点存入队列
         for(int i = 0; i < n; i++) {
-            if(Indeg[i] == 0) {
+            if(inDegree[i] == 0) {
                 q.offer(i);
             }
         }
@@ -40,17 +113,17 @@ public class Graph {
         while(!q.isEmpty()) {
             // 每次弹出队头元素
             int cur = q.poll();
-            for(int x : new_graph.get(cur)) {
+            for(int x : reverseGraph.get(cur)) {
                 // 将以其为起点的有向边删除，更新终点入度
-                Indeg[x]--;
-                if(Indeg[x] == 0) q.offer(x);
+                inDegree[x]--;
+                if(inDegree[x] == 0) q.offer(x);
             }
         }
 
-        // 最终入度（原图中出度）为 0 的所有点均为安全点
+        // 最终入度（原图中出度）为 0 的所有点均为安全点。由于要求升序排列，所以整这么一出
         List<Integer> ret = new ArrayList<>();
         for(int i = 0; i < n; i++) {
-            if(Indeg[i] == 0) ret.add(i);
+            if(inDegree[i] == 0) ret.add(i);
         }
         return ret;
     }
@@ -68,7 +141,7 @@ public class Graph {
             dfs802(graph, i, new HashSet<>());
         }
         List<Integer> ans = new ArrayList<>(good);
-        ans.sort(Comparator.comparingInt(o -> o));
+        ans.sort((o1, o2) -> o1 - o2);
         return ans;
     }
 
@@ -132,8 +205,13 @@ public class Graph {
         return true;
     }
 
-    // 547. 省份数量
-    // 找图中连通块数量
+    /*
+     * 547. 省份数量
+     * 给你一个 n x n 的矩阵 isConnected ，其中 isConnected[i][j] = 1 表示第 i 个城市和第 j 个城市直接相连
+     * 而 isConnected[i][j] = 0 表示二者不直接相连
+     * 返回矩阵中 省份 的数量
+     * 找图中连通块数量
+     */
     public int findCircleNum(int[][] isConnected) {
         int res = 0;
         int[] isVisited = new int[isConnected.length];
@@ -141,78 +219,22 @@ public class Graph {
             if (isVisited[i] == 1) {
                 continue;
             }
-            dfs1(isConnected, isVisited, i);
+            dfs547(isConnected, isVisited, i);
             res++;
         }
         return res;
     }
 
-    public void dfs1(int[][] isConnected, int[] isVisited, int u) {
+    public void dfs547(int[][] isConnected, int[] isVisited, int u) {
         isVisited[u] = 1;
         for (int i = 0; i < isConnected.length; i++) {
             if (isVisited[i] == 0 && isConnected[u][i] == 1) {
-                dfs1(isConnected, isVisited, i);
+                dfs547(isConnected, isVisited, i);
             }
         }
     }
 
-    /*
-     * 1857. 有向图中最大颜色值
-     *
-     * 拓朴排序，根据拓朴序dp
-     * 拓朴排序，适用于"有向图"；入度为0的进入队列，然后不断拆边，直到所有入度为0都进入队列
-     */
-    public int largestPathValue1(String colors, int[][] edges) {
-        int n = colors.length();
-        // 邻接表，描述节点间的邻接关系
-        // 1 -> 2, 3
-        // 2 -> 3, 4, 5
-        List<List<Integer>> g = new ArrayList<>(n);
-        for (int i = 0; i < n; ++i) {
-            g.add(new ArrayList<>());
-        }
-        // 统计节点入度
-        int[] indeg = new int[n];
-        for (int[] edge : edges) {
-            indeg[edge[1]]++;
-            g.get(edge[0]).add(edge[1]);
-        }
-        // 邻接表、入度均为拓朴排序所需要
-
-        // 记录拓扑排序中遇到节点个数
-        int found = 0;
-        int[][] f = new int[n][26];  // dp
-        Queue<Integer> q = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
-            if (indeg[i] == 0) q.offer(i);
-        }
-
-        while (!q.isEmpty()) {
-            found++;
-            int u = q.poll();
-            // 将节点对应颜色加1
-            f[u][colors.charAt(u) - 'a']++;
-            // 枚举 u 后所有结点 v
-            for (int v : g.get(u)) {
-                indeg[v]--;
-                // 将 f(v,c) 更新为其与 f(u,c) 的较大值
-                for (int c = 0; c < 26; ++c) {
-                    f[v][c] = Math.max(f[v][c], f[u][c]);
-                }
-                if (indeg[v] == 0) q.offer(v);
-            }
-        }
-
-        if (found != n) return -1;
-
-        int ans = 0;
-        for (int i = 0; i < n; ++i) {
-            ans = Math.max(ans, Arrays.stream(f[i]).max().getAsInt());
-        }
-        return ans;
-    }
-
-    // 210
+    // 210. 课程表 II
     // 存储有向图
     List<List<Integer>> edges;
     // 标记每个节点的状态：0=未搜索，1=搜索中，2=已完成
@@ -238,7 +260,7 @@ public class Graph {
         // 每次挑选一个「未搜索」的节点，开始进行深度优先搜索
         for (int i = 0; i < numCourses && valid; ++i) {
             if (visited[i] == 0) {
-                dfs(i);
+                dfs210(i);
             }
         }
         if (!valid) {
@@ -248,7 +270,7 @@ public class Graph {
         return result;
     }
 
-    public void dfs(int u) {
+    public void dfs210(int u) {
         // 将节点标记为「搜索中」
         visited[u] = 1;
         // 搜索其相邻节点
@@ -256,7 +278,7 @@ public class Graph {
         for (int v : edges.get(u)) {
             // 如果「未搜索」那么搜索相邻节点
             if (visited[v] == 0) {
-                dfs(v);
+                dfs210(v);
                 if (!valid) {
                     return;
                 }

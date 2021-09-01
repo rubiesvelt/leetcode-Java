@@ -5,10 +5,15 @@ public class BinarySearch {
       前一段可以，后一段不行，则可使用二分
      */
 
-    // 可信 1
-    // 二分
+    public static void main(String[] args) {
+        BinarySearch binarySearch = new BinarySearch();
+        int[] nums = {1, 4, 2, 5, 5, 1, 6};
+        binarySearch.manageTourists(nums, 13);
+    }
     /**
-     * 现给出展厅列表，下标0，1...代表0号，1号...展厅，数组的值为展厅中来参观的人数，总参观人数为 nums[0] + nums[1] + ... + nums[n - 1]
+     * 可信 1
+     * <br/>二分
+     * <br/>现给出展厅列表，下标0，1...代表0号，1号...展厅，数组的值为展厅中来参观的人数，总参观人数为 nums[0] + nums[1] + ... + nums[n - 1]
      * <br/>但本次参观最多容纳人数为cnt，如果总共来参观的人数大于cnt，我们需要对人数进行限流，给每个展厅进入人数设置一个上限
      * <br/>每个展厅最多容纳上限个人，总人数不可超过cnt
      * <p/>
@@ -29,16 +34,17 @@ public class BinarySearch {
             return -1;
         }
         // 限制每个展厅的人数 limit，使"实际到达"的总人数不超过cnt
-        int l = 1;
-        int r = cnt + 1;
+        int l = 1;  // l取最小，可能取到l
+        int r = cnt + 1;  // r取最大，可能取到r
         while (l < r) {
             int m = (l + r) >> 1;
-            if (isCapable2(nums, m, cnt)) {
+            if (isCapable2(nums, m, cnt)) {  // 限定每个展厅人数为 m 时候，可以将总人数限制在 cnt 以内，故尝试将m调大
                 l = m + 1;
             } else {
                 r = m;
             }
         }
+        // 从小到大，从 能够限制 到 不能限制，l是第一个 不能限制 的；我们求的是最大的 能够限制 的
         return l - 1;
     }
 
@@ -48,13 +54,13 @@ public class BinarySearch {
             long t = Math.min(n, limit);
             sum += t;
             if (sum > cnt) {
-                return false;
+                return false;  // 按这个限制，进入人数就超过cnt了，不合适
             }
         }
-        return true;
+        return true;  // 完全OK
     }
 
-    // 74
+    // 74. 搜索二维矩阵
     public boolean searchMatrix(int[][] matrix, int target) {
         int rowIndex = binarySearchFirstColumn(matrix, target);
         if (rowIndex < 0) {
@@ -65,29 +71,29 @@ public class BinarySearch {
 
     // 二分查找到比target小的数字
     public int binarySearchFirstColumn(int[][] matrix, int target) {
-        int low = -1, high = matrix.length - 1;
-        while (low < high) {
-            int mid = (high - low + 1) / 2 + low;
-            if (matrix[mid][0] <= target) {
-                low = mid;
+        int l = -1, r = matrix.length - 1;
+        while (l < r) {
+            int m = (r - l + 1) / 2 + l;
+            if (matrix[m][0] <= target) {
+                l = m;
             } else {
-                high = mid - 1;
+                r = m - 1;
             }
         }
-        return low;
+        return l;
     }
 
     // 二分查找，查找存不存在
     public boolean binarySearchRow(int[] row, int target) {
-        int low = 0, high = row.length - 1;
-        while (low <= high) {
-            int mid = (high - low) / 2 + low;
-            if (row[mid] == target) {  // 找到一个点，可以明确是否是想要的值
+        int l = 0, r = row.length - 1;
+        while (l <= r) {
+            int m = (r - l) / 2 + l;
+            if (row[m] == target) {  // 找到一个点，可以明确是否是想要的值
                 return true;
-            } else if (row[mid] > target) {
-                high = mid - 1;
+            } else if (row[m] > target) {
+                r = m - 1;
             } else {
-                low = mid + 1;
+                l = m + 1;
             }
         }
         return false;
@@ -104,9 +110,7 @@ public class BinarySearch {
         int l = 1;
         int r = n;
         while (l < r) {
-            long t = (long) r + l >> 1;  // 需要这样写
-            // 不能这样写 long t = (r + l) >> 1; 这样是将 (r + l) >> 1 的结果转换成long
-            int m = (int) t;
+            int m = r + l >> 1;
             if (isBadVersion(m)) r = m;
             else l = m + 1;
         }
@@ -121,7 +125,7 @@ public class BinarySearch {
     }
 
     /*
-     * 周赛 1898. 可移除字符的最大数目
+     * 1898. 可移除字符的最大数目
      * 区间二分
      *
      * s = "abcbddddd", p = "abcd", removable = [3,1,0]
@@ -175,7 +179,7 @@ public class BinarySearch {
         int l = max;
         int r = sum;
         while (l < r) {
-            int m = l + (r - l) / 2;  // 二分查找，先确定 m
+            int m = (l + r) >> 1;  // 二分查找，先确定 m
             if (isCapable(weights, m, D)) {
                 // 考虑刚好命中结果的场景，应当走这里
                 // 我们目的是找到符合中的最小的，所以符合的话 r = m，r 永远符合要求

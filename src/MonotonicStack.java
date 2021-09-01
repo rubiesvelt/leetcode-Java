@@ -30,6 +30,7 @@ public class MonotonicStack {
     }
 
     // 面试题 17.21 直方图的水量
+    // 给定一个直方图(也称柱状图)，假设有人从上面源源不断地倒水，最后直方图能存多少水量
     public int trap(int[] height) {
         Deque<Integer> stack = new LinkedList<>();  // 单调递减栈，存下标
         int length = height.length;
@@ -49,6 +50,8 @@ public class MonotonicStack {
     }
 
     // 456. 132模式
+    // 给你一个整数数组 nums ，数组中共有 n 个整数。132 模式的子序列 由三个整数 nums[i]、nums[j] 和 nums[k] 组成，并同时满足：i < j < k 和 nums[i] < nums[k] < nums[j] 。
+    // 如果 nums 中存在 132 模式的子序列 ，返回 true ；否则，返回 false 。
     public boolean find132pattern(int[] nums) {
         int n = nums.length;
         int last = Integer.MIN_VALUE;  // 132中的2
@@ -74,7 +77,7 @@ public class MonotonicStack {
         int n = nums.length;
         int[] ret = new int[n];
         Arrays.fill(ret, -1);
-        //  单调栈，栈中元素都是从底单调递减的
+        // 单调栈，栈中元素都是从底单调递减的
         Deque<Integer> stack = new LinkedList<Integer>();
         for (int i = 0; i < n * 2 - 1; i++) {
             while (!stack.isEmpty() && nums[stack.peek()] < nums[i % n]) {
@@ -91,7 +94,7 @@ public class MonotonicStack {
     // hook没有动态，单调栈动态了，hook方法基准没有移动，是不可行的
     public int[] finalPrices(int[] prices) {
         int len = prices.length;
-        Stack<Integer> stack = new Stack<>();
+        Stack<Integer> stack = new Stack<>();  // 单调递减栈
 
         for (int i = 0; i < len; i++) {
             while (!stack.isEmpty() && prices[stack.peek()] >= prices[i]) {

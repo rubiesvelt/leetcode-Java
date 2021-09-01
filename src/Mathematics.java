@@ -1,13 +1,69 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Mathematics {
 
-    // 1943. 描述绘画结果
-    // 扫描线，差分
+    /**
+     * shopee 笔试一题
+     * <br/>差分数组
+     * <p/>
+     * <br/>数组array由0，1组成，求数组中最长的 "连续子序列"，使子序列中0和1的个数相等，返回其长度
+     * <br/>e.g.
+     * <br/>array = [0,1,0]
+     * <br/>-> 2
+     * <p/>
+     *
+     * @param array 数组
+     * @return 最大
+     */
+    public int findMax(int[] array) {
+        int n = array.length;
+        int[] diff = new int[n + 1];  // diff records how much 1 more than 0
+        if (n == 0) {
+            return 0;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 0);
+        int t;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (array[i] == 1) {
+                t = diff[i] + 1;
+                diff[i + 1] = t;
+            } else {
+                t = diff[i] - 1;
+                diff[i + 1] = t;
+            }
+            if (map.containsKey(t)) {
+                int t1 = map.get(t);
+                max = Math.max(max, i + 1 - t1);
+            } else {
+                map.put(t, i + 1);
+            }
+        }
+        return max;
+    }
+
+
+
+    /*
+     * 1943. 描述绘画结果
+     *
+     * segments[i] = [starti, endi, colori]表示starti和endi之间的颜色为colori，多个颜色重合时，将颜色加起来
+     * 求最终绘画结果
+     * e.g.
+     * segments = [[1,4,5],[4,7,7],[1,7,9]]
+     * -> [[1,4,14],[4,7,16]]
+     * segments = [[1,7,9],[6,8,15],[8,10,7]]
+     * -> [[1,6,9],[6,7,24],[7,8,15],[8,10,7]]
+     *
+     * 扫描线(差分)
+     */
     public List<List<Long>> splitPainting(int[][] segments) {
         boolean[] startPoints = new boolean[100006];
-        long[] acc = new long[100006];
+        long[] acc = new long[100006];  // 扫描线
         for (int[] seg : segments) {
             acc[seg[0]] += seg[2];
             acc[seg[1]] -= seg[2];

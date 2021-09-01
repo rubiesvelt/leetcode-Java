@@ -6,33 +6,32 @@ public class BinaryTree {
 
     // 863. 二叉树中所有距离为 K 的结点
     // 求二叉树中距离 target 为 K 的结点；树建图，后从target遍历图
-    Map<Integer, TreeNode> parents863 = new HashMap<>();
     List<Integer> ans863 = new ArrayList<>();
 
     public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
         // 从 root 出发 DFS，记录每个结点的父结点；BFS也可
         // 将图转化为邻接表，此接邻表前两条边连在节点上，第三条边存在Map里
-        findParents(root);
+        Map<Integer, TreeNode> parents = new HashMap<>();
+        findParents(root, parents);
 
         // 从 target 出发 DFS，寻找所有深度为 k 的结点
-        findAns(target, null, 0, k);
-
+        findAns(target, parents, null, 0, k);
         return ans863;
     }
 
-    public void findParents(TreeNode node) {
+    public void findParents(TreeNode node, Map<Integer, TreeNode> parents) {
         if (node.left != null) {
-            parents863.put(node.left.val, node);
-            findParents(node.left);
+            parents.put(node.left.val, node);
+            findParents(node.left, parents);
         }
         if (node.right != null) {
-            parents863.put(node.right.val, node);
-            findParents(node.right);
+            parents.put(node.right.val, node);
+            findParents(node.right, parents);
         }
     }
 
-    // 遍历邻接表，from防回头
-    public void findAns(TreeNode node, TreeNode from, int depth, int k) {
+    // 遍历邻接表，from 防回头
+    public void findAns(TreeNode node, Map<Integer, TreeNode> parents, TreeNode from, int depth, int k) {
         if (node == null) {
             return;
         }
@@ -43,82 +42,13 @@ public class BinaryTree {
 
         // 此邻接表前两条边连在节点上，第三条边存在Map里
         if (node.left != from) {
-            findAns(node.left, node, depth + 1, k);
+            findAns(node.left, parents, node, depth + 1, k);
         }
         if (node.right != from) {
-            findAns(node.right, node, depth + 1, k);
+            findAns(node.right, parents, node, depth + 1, k);
         }
-        if (parents863.get(node.val) != from) {
-            findAns(parents863.get(node.val), node, depth + 1, k);
-        }
-    }
-
-    // 链式前向星
-    // 链式前向星是一个存图方法，是 邻接表 和 邻接矩阵 之间一个折中的方案
-    // 稀疏图比 邻接矩阵 省空间，比 邻接表 容易创建
-    // 根据数据范围最多有 501 个点，每个点最多有 2 条无向边（两个子节点）
-    int N = 510, M = N * 4;
-    int[] he = new int[N];  // key: 节点值; value: index
-    int[] e = new int[M];   // key: id; value: 指向的节点值
-    int[] ne = new int[M];  // key: id; value: next id
-
-    int idx;
-
-    // 添加一条a到b的边
-    void add(int a, int b) {
-        e[idx] = b;
-        ne[idx] = he[a];
-        he[a] = idx++;
-    }
-
-    // 遍历一个节点指向的下一节点
-    void edgeForNode(int a) {
-        for (int i = he[a]; i != -1; i++) {  // he[] 初始化为 -1
-            int j = e[i];  // 下一节点值
-        }
-    }
-
-    boolean[] vis = new boolean[N];
-
-    public List<Integer> distanceK1(TreeNode root, TreeNode t, int k) {
-        List<Integer> ans = new ArrayList<>();
-        Arrays.fill(he, -1);
-        dfs(root);
-        Deque<Integer> d = new ArrayDeque<>();
-        d.addLast(t.val);
-        vis[t.val] = true;
-        while (!d.isEmpty() && k >= 0) {
-            int size = d.size();
-            while (size-- > 0) {
-                int poll = d.pollFirst();
-                if (k == 0) {
-                    ans.add(poll);
-                    continue;
-                }
-                for (int i = he[poll]; i != -1; i = ne[i]) {
-                    int j = e[i];
-                    if (!vis[j]) {
-                        d.addLast(j);
-                        vis[j] = true;
-                    }
-                }
-            }
-            k--;
-        }
-        return ans;
-    }
-
-    void dfs(TreeNode root) {
-        if (root == null) return;
-        if (root.left != null) {
-            add(root.val, root.left.val);
-            add(root.left.val, root.val);
-            dfs(root.left);
-        }
-        if (root.right != null) {
-            add(root.val, root.right.val);
-            add(root.right.val, root.val);
-            dfs(root.right);
+        if (parents.get(node.val) != from) {
+            findAns(parents.get(node.val), parents, node, depth + 1, k);
         }
     }
 
@@ -239,7 +169,7 @@ public class BinaryTree {
     }
 
     // 173. 二叉搜索树迭代器
-    // 解法一，直接遍历
+    // 解法一，中序遍历，先将结果存在 arr 中
     private int index1 = 0;
     private final List<Integer> arr = new ArrayList<>();
 
@@ -264,13 +194,13 @@ public class BinaryTree {
         inorderTraversal(root.right, arr);
     }
 
-    // 解法二
+    // 解法二，使用栈，动态中序遍历
     private TreeNode cur;
     private Deque<TreeNode> stack173;
 
     public void BSTIterator2(TreeNode root) {
         cur = root;
-        stack173 = new LinkedList<TreeNode>();
+        stack173 = new LinkedList<>();
     }
 
     public int next2() {  // 使用栈，动态中序遍历
@@ -320,10 +250,10 @@ public class BinaryTree {
 
     public int rangeSumBST(TreeNode root, int low, int high) {
         if (root == null) {
-            return sum938;
+            return 0;
         }
         if (root.val > high) {
-            return sum938;
+            return 0;
         }
         rangeSumBST(root.left, low, high);
         if (low <= root.val && root.val <= high) {
@@ -335,11 +265,12 @@ public class BinaryTree {
 
 
     // 897. 递增顺序搜索树
+    // 把一个二叉搜索树"捋直"，使一个个节点向右递增
     // 二叉树，中序遍历
-    static TreeNode tn = new TreeNode();
-    static TreeNode next = tn;
+    TreeNode tn = new TreeNode();
+    TreeNode next = tn;
 
-    public static TreeNode increasingBST(TreeNode root) {
+    public TreeNode increasingBST(TreeNode root) {
         if (root == null) {
             return null;
         }

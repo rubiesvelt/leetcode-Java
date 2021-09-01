@@ -40,12 +40,18 @@ public class Utils {
     }
 
     // 快速幂，求a的b次方，结果对mod取余
+    // 思路
+    // a ^ 2x = (a ^ 2) ^ x
+    // a ^ 2x+1 = (a ^ 2) ^ x * a
+    // a ^ 19 = a * a * a * (a^8) * (a^8)
     public static long quickPow(long a, long b, long mod) {
         long ans = 1;
         while (b > 0) {
-            if ((b & 1) == 1) ans = a * ans % mod;
+            if ((b & 1) == 1) {
+                ans = a * ans % mod;
+            }
             a = a * a % mod;
-            b >>= 1;  // 相当于 b /=2
+            b >>= 1;  // 相当于 b /= 2
         }
         return ans;
     }

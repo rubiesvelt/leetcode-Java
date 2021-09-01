@@ -77,8 +77,44 @@ public class Matrix {
         List<Integer> list = new ArrayList<>(set);
         list.sort((o1, o2) -> o2 - o1);
         int[] ans = new int[3];
-        for (int i = 0;i<3;i++) {
+        for (int i = 0; i < 3; i++) {
             ans[i] = list.get(i);
+        }
+        return ans;
+    }
+
+    // 计算以i, j为中心的所有菱形和
+    public List<Integer> calculateOne(int[][] grid, int i, int j) {
+        List<Integer> ans = new ArrayList<>();
+        ans.add(grid[i][j]);
+        int m = grid.length;
+        int n = grid[0].length;
+        int imin = Math.min(i, m - i - 1);
+        int jmin = Math.min(j, n - 1 - j);
+        int rmax = Math.min(imin, jmin);  // 最大半径
+        int r = 1;
+        while (r <= rmax) {
+            int count = r;
+            int t = 0;
+            int p = i - count;
+            int q = j;
+            while (count-- > 0) {
+                t += grid[p++][q++];
+            }
+            count = r;
+            while (count-- > 0) {
+                t += grid[p++][q--];
+            }
+            count = r;
+            while (count-- > 0) {
+                t += grid[p--][q--];
+            }
+            count = r;
+            while (count-- > 0) {
+                t += grid[p--][q++];
+            }
+            ans.add(t);
+            r++;
         }
         return ans;
     }
@@ -144,42 +180,6 @@ public class Matrix {
         }
     }
 
-    // 计算以i, j为中心的所有菱形和
-    public List<Integer> calculateOne(int[][] grid, int i, int j) {
-        List<Integer> ans = new ArrayList<>();
-        ans.add(grid[i][j]);
-        int m = grid.length;
-        int n = grid[0].length;
-        int imin = Math.min(i, m - i - 1);
-        int jmin = Math.min(j, n - 1 - j);
-        int rmax = Math.min(imin, jmin);  // 最大半径
-        int r = 1;
-        while (r <= rmax) {
-            int count = r;
-            int t = 0;
-            int p = i - count;
-            int q = j;
-            while (count-- > 0) {
-                t += grid[p++][q++];
-            }
-            count = r;
-            while (count-- > 0) {
-                t += grid[p++][q--];
-            }
-            count = r;
-            while (count-- > 0) {
-                t += grid[p--][q--];
-            }
-            count = r;
-            while (count-- > 0) {
-                t += grid[p--][q++];
-            }
-            ans.add(t);
-            r++;
-        }
-        return ans;
-    }
-
     // 1914. 循环轮转矩阵
     // 一圈一圈的，每一圈往前移动k个元素
     // 矩阵中带方向带模拟
@@ -225,7 +225,7 @@ public class Matrix {
     }
 
     // LCP29. 乐团站位
-    // 也是螺旋矩阵，1-9螺旋排列，求[xPos, yPos]的数
+    // 也是螺旋矩阵，1-9 螺旋排列，求[xPos, yPos]的数
     public int orchestraLayout(int num, int xPos, int yPos) {
         int[][] resArray = generateMatrixSpan(num);
         return resArray[xPos][yPos];
