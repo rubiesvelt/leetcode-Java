@@ -265,7 +265,8 @@ public class DFS {
     }
 
     // 698. 划分为k个相等的子集
-    // nums = [1,1,1,1,2,2,2,2], k = 4 是否能将nums数组划分为k个元素和相等的子集？
+    // 是否能将nums数组划分为k个元素和相等的子集？
+    // nums = [1,1,1,1,2,2,2,2], k = 4
     // 回溯算法
     public boolean canPartitionKSubsets(int[] cp, int k) {
         Integer[] nums = new Integer[cp.length];
@@ -309,7 +310,8 @@ public class DFS {
             if (used[i]) {
                 continue;
             }
-            if (i > index + 1 && !used[i - 1] && num[i].equals(num[i - 1])) {
+            // 5, 4, 4, 3, 2
+            if (i > index + 1 && !used[i - 1] && num[i].equals(num[i - 1])) {  // 剪枝，如果该元素前一个一样的不能用，那这个也不能用
                 continue;
             }
             sum += num[i];

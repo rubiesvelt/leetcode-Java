@@ -1,4 +1,4 @@
 package solution.cache;
 
-public class LRU {
+public class LRUCache {
 }
