@@ -126,10 +126,6 @@ public class Graph {
         for (int i = 0; i < n; i++) {
             if (inDegree[i] == 0) ret.add(i);
         }
-
-        TreeMap treeMap;
-        String s;
-        ConcurrentSkipListSet set;
         return ret;
     }
 
