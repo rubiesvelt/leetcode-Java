@@ -67,8 +67,9 @@ public class PrefixSum {
     // 二维数组前缀和
     public int numSubmatrixSumTarget(int[][] mat, int t) {
         // 二维数组前缀和标准模板
-        int n = mat.length, m = mat[0].length;
-        int[][] sum = new int[n + 1][m + 1];
+        int n = mat.length;
+        int m = mat[0].length;
+        int[][] sum = new int[n + 1][m + 1];  // 前缀和数组
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= m; j++) {
                 sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + mat[i - 1][j - 1];
@@ -83,18 +84,13 @@ public class PrefixSum {
                 // 使用map记录出现过的值的和，看起来是合理的
                 for (int r = 1; r <= m; r++) {
                     cur = sum[bot][r] - sum[top - 1][r];
-                    if (cur == t) ans++;
+                    if (cur == t) {  // 从0开始，到r，和恰好是t
+                        ans++;
+                    }
                     /*
-                     * t = 5
-                     * cur = 1, 4, 6, 7, 10, 12
-                     * 1, 1
-                     * 4, 1
-                     * 6, 1, ans = 1
-                     * 7, 1
-                     * 10, 1
-                     * 12, 1, ans = 2
+                     * 涉及前缀和，和为x的子序列
                      */
-                    if (map.containsKey(cur - t)) {
+                    if (map.containsKey(cur - t)) {  // 从0开始，到r，和为cur，但之前有和为 cur - t 的，此时就凑成一对
                         ans += map.get(cur - t);
                     }
                     map.put(cur, map.getOrDefault(cur, 0) + 1);
