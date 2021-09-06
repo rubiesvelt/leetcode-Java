@@ -1,15 +1,14 @@
 public class BinarySearch {
 
     /*
-      连续的一段
-      前一段可以，后一段不行，则可使用二分
+     * 连续的一段
+     * 前一段可以，后一段不行，则可使用二分
+     *
+     * 注意二分边界：
+     * - 我们需要的是什么？
+     * - 我们需要的东西最大最小取值到哪里？
      */
 
-    public static void main(String[] args) {
-        BinarySearch binarySearch = new BinarySearch();
-        int[] nums = {1, 4, 2, 5, 5, 1, 6};
-        binarySearch.manageTourists(nums, 13);
-    }
     /**
      * 可信 1
      * <br/>二分
@@ -33,9 +32,9 @@ public class BinarySearch {
         if (sum <= cnt) {
             return -1;
         }
-        // 限制每个展厅的人数 limit，使"实际到达"的总人数不超过cnt
+        // 限制每个展厅的人数 limit，使 "实际到达" 的总人数不超过cnt
         int l = 1;  // l取最小，可能取到l
-        int r = cnt + 1;  // r取最大，可能取到r
+        int r = cnt + 1;  // 最大能取到r ; 我们需要的结果是 r - 1; r - 1 也可以取到 cnt; 所以 r 取到 cnt + 1
         while (l < r) {
             int m = (l + r) >> 1;
             if (isCapable2(nums, m, cnt)) {  // 限定每个展厅人数为 m 时候，可以将总人数限制在 cnt 以内，故尝试将m调大

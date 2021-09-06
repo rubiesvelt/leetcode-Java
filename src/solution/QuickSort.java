@@ -2,14 +2,6 @@ package solution;
 
 public class QuickSort {
 
-    public static void main(String[] args) {
-        int[] num = {2,4,3,1,5};
-        QuickSort quickSort = new QuickSort();
-        quickSort.quickSort(num);
-
-        return;
-    }
-
     public void quickSort(int[] num) {
         sort(num, 0, num.length - 1);
     }

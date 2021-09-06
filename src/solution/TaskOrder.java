@@ -3,11 +3,11 @@ package solution;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * 百度一面
+ * 拓扑排序
+ */
 public class TaskOrder {
-
-    public static void main(String[] args) {
-
-    }
 
     // [[b,a], [c,a], [d,b], [d,c]]
     public String[] getOrder(int n, String[][] requests) {
