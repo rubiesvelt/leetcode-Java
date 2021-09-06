@@ -5,19 +5,6 @@ import java.util.List;
 
 public class LockingTree {
 
-    public static void main(String[] args) {
-        LockingTree lockingTree = new LockingTree(new int[]{-1,5,5,5,0,4,2,9,0,4});
-        boolean b = lockingTree.lock(2, 2);
-
-        b = lockingTree.unlock(2, 3);
-        b = lockingTree.unlock(2, 2);
-
-        b = lockingTree.lock(4, 5);
-
-        b = lockingTree.upgrade(0, 1);
-
-        b = lockingTree.lock(0, 1);
-    }
     public static class Lok {
         int treeId;
         int userId;

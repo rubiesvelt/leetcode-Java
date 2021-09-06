@@ -14,6 +14,7 @@ public class Simulate {
         }
 
         Arrays.sort(strNums, (o1, o2) -> {
+            // 比较 o1o2 和 o2o1 大小
             String s1 = o1 + o2;
             String s2 = o2 + o1;
             return s2.compareTo(s1);
@@ -59,11 +60,14 @@ public class Simulate {
     }
 
     // 233. 数字 1 的个数
+    // 给定一个整数 n，计算所有小于等于 n 的非负整数中数字 1 出现的个数
     // 按位模拟
     public int countDigitOne(int n) {
         String s = String.valueOf(n);
         int m = s.length();
-        if (m == 1) return n > 0 ? 1 : 0;
+        if (m == 1) {
+            return n > 0 ? 1 : 0;
+        }
         // 计算第 i 位前缀代表的数值，和后缀代表的数值
         // 例如 12345 则有
         // ps[2] = 12
@@ -76,31 +80,41 @@ public class Simulate {
             ss[i] = Integer.parseInt(s.substring(i + 1));
         }
         ps[m - 1] = Integer.parseInt(s.substring(0, m - 1));
-        // 分情况讨论
+
         int ans = 0;
-        for (int i = 0; i < m; i++) {
-            // x 为当前位数值，len 为当前位后面长度为多少
+        for (int i = 0; i < m; i++) {  // 第i位为1有多少情况
+            /*
+             * x 为当前位数值，len 为当前位后面长度为多少
+             * 如 n = 12345, i = 2
+             * prefix = 12
+             * suffix = 45
+             * 12 3 45
+             */
             int x = s.charAt(i) - '0';
             int len = m - i - 1;
             int prefix = ps[i];
             int suffix = ss[i];
             int tot = 0;
-            tot += prefix * Math.pow(10, len);  // 首先加上前缀乘起来
+            tot += prefix * Math.pow(10, len);  // 0 -> 12 000 区间内 第2位出现次数 12 * 100
             if (x == 0) {  // 当前位为0什么都不做
             } else if (x == 1) {  // 当前位为1加上 suffix + 1
                 tot += suffix + 1;
             } else {  // 当前位大于1 "加满"
-                tot += Math.pow(10, len);
+                tot += Math.pow(10, len);  // 12 000 -> 12 345 区间内 第2位出现1的次数 100
             }
             ans += tot;
         }
         return ans;
     }
 
-    // 5831. 你可以工作的最大周数
-    // 给定一个数组，下标i的工作有多少件
-    // 每周都得工作，连续两周不能做相同工作
-    // 求不违反上面规则的情况下你 最多 能工作多少周
+    /*
+     * 1953. 你可以工作的最大周数
+     * 给定一个数组，下标i的工作有多少件
+     * 每周都得工作，连续两周不能做相同工作
+     * 求不违反上面规则的情况下你 最多 能工作多少周
+     *
+     * 能工作多少周，瓶颈在任务最多的那个项目
+     */
     public long numberOfWeeks(int[] milestones) {
         long sum = 0;
         long max = 0;
@@ -270,7 +284,7 @@ public class Simulate {
     /*
      * 149. 直线上最多的点数
      *
-     * 给出一些点，找出在一条线上点最多的点
+     * 给你一个数组 points，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，求最多有多少个点在同一条直线上。
      */
     public int maxPoints(int[][] ps) {
         int n = ps.length;
@@ -280,10 +294,13 @@ public class Simulate {
             Map<String, Integer> map = new HashMap<>();
             // 由当前点 i 发出的直线所经过的最多点数量
             int max = 0;
-            int x1 = ps[i][0], y1 = ps[i][1];
-            for (int j = i + 1; j < n; j++) {
-                int x2 = ps[j][0], y2 = ps[j][1];
-                int a = x1 - x2, b = y1 - y2;
+            int x1 = ps[i][0];
+            int y1 = ps[i][1];
+            for (int j = i + 1; j < n; j++) {  // 确实，从i + 1开始就行，时间复杂度 n^2 -> n log n
+                int x2 = ps[j][0];
+                int y2 = ps[j][1];
+                int a = x1 - x2;
+                int b = y1 - y2;
                 // 可保证正负性
                 int k = Utils.gcd(a, b);
                 String key = (a / k) + "_" + (b / k);

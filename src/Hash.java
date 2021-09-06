@@ -3,7 +3,7 @@ import java.util.Map;
 
 public class Hash {
 
-    // 5803. 最长公共子路径
+    // 1923. 最长公共子路径
     // 二分 + 区间哈希
     long[] h = new long[100010];
     long[] p = new long[100010];
@@ -20,10 +20,12 @@ public class Hash {
         }
         while (l < r) {
             int mid = (l + r + 1) >> 1;
-            if (check(mid))
+            if (check(mid)) {
                 l = mid;
-            else
+            }
+            else {
                 r = mid - 1;
+            }
         }
         return l;
     }

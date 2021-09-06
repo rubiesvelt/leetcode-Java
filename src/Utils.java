@@ -1,7 +1,6 @@
 public class Utils {
 
     public static class Pair<T1, T2> {
-
         public T1 fst;
 
         public T2 snd;

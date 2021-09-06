@@ -15,7 +15,7 @@ public class Main {
         TreeNode tn2 = new TreeNode(2, null, tn4);
         TreeNode tn1 = new TreeNode(1, tn2, tn3);
 
-        int[][] matrix = {{1,0,0}, {0,1,1}, {0,1,1}};
+        int[][] matrix = {{1, 0, 0}, {0, 1, 1}, {0, 1, 1}};
         int[][] matrix1 = {{1, 0, 0}, {0, 0, 1}, {1, 1, 0}};
         int[] dist = {1, 0, 1};
         int[] diff = {0, 1, 0, 1, 0};
@@ -25,6 +25,9 @@ public class Main {
         return;
     }
 
+    public int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
 
     public int[][] findFarmland(int[][] land) {
         List<int[]> farmLand = new ArrayList<>();
@@ -74,7 +77,7 @@ public class Main {
             }
             i++;
         }
-        while (land[x][j] == 1){
+        while (land[x][j] == 1) {
             if (j == m - 1) {
                 j++;
                 break;
