@@ -59,9 +59,90 @@ public class DP {
         return dp1 + has0;
     }
 
-    // 5856. 完成任务的最少工作时间段
-    // 化为多次 0-1 背包问题
-    public int minSessions(int[] oritasks, int sessionTime) {
+    /*
+     * 1986. 完成任务的最少工作时间段
+     * 你被安排了 n 个任务。任务需要花费的时间用长度为 n 的整数数组tasks表示，第 i 个任务需要花费tasks[i]小时完成
+     * 一个 工作时间段中，你可以 至多连续工作 sessionTime 个小时
+     * 求最少需要多少时间段，能够完成所有任务
+     *
+     * [2,10,1,10,4,4,7,10,7,4,10,2] -> [10,10,10,10,7,7,4,4,4,2,2,1]
+     * [13,14,14,1,1,2]
+     * 15
+     *
+     * 答案为5 而不是6
+     * 若第一次取 10 + 4 + 1 那后面 7 + 7就没法安排，多出个2
+     *
+     * 状压dp
+     */
+    public int minSessions(int[] tasks, int sessionTime) {
+        int n = tasks.length;
+        int m = 1 << n;
+        final int INF = 20;
+        int[] dp = new int[m];  // dp[i] 为选择状态为i(二进制)时，最小的分段数目
+        Arrays.fill(dp, INF);
+
+        // 预处理每个状态，合法状态预设为 1
+        for (int i = 1; i < m; i++) {
+            int state = i;
+            int idx = 0;
+            int spend = 0;
+            while (state > 0) {
+                int bit = state & 1;
+                if (bit == 1) {
+                    spend += tasks[idx];
+                }
+                state >>= 1;
+                idx++;
+            }
+            if (spend <= sessionTime) {
+                dp[i] = 1;
+            }
+        }
+
+        // 对每个状态枚举子集，跳过已经有最优解的状态
+        for (int i = 1; i < m; i++) {
+            if (dp[i] == 1) {
+                continue;
+            }
+            for (int j = i; j > 0; j = (j - 1) & i) {  // j永远是i的子集
+                // 111(3) 或 110(1) + 001(1)
+                dp[i] = Math.min(dp[i], dp[j] + dp[i ^ j]);  // ^ 为 异或
+            }
+        }
+
+        return dp[m - 1];
+    }
+
+     /*
+     * 化为多次 0-1 背包问题 —— 不可取
+     * 可以通过贪心得到最优解，但当背包中元素最多当时候，不能确认都装了哪些东西
+     *
+     * 先入为主策略
+     * 15 -> 7,4,4
+     * 14 -> 10,4
+     *
+     * 后来居上策略
+     * 15 -> 10,2,2,1
+     * 14 -> 10,2,2
+     *
+     * -> 到最后一个元素的时候，实行后来居上策略
+     *
+     * [2,10,1,10,4,4,7,10,7,4,10,2] -> [10,10,10,10,7,7,4,4,4,2,2,1]
+     * 15
+     * 答案为5 而不是6
+     *
+     * 完全没法控制 先入为主 或者 后来居上
+     *
+     *
+     * [2,3,3,4,4,4,6,7,8,9,10]
+     * 10, 3, 2
+     * [3,4,4,4,6,7,8,9]
+     * 9,6
+     * 8,7
+     * [3,4,4,4]
+     *
+     */
+    public int minSessions1(int[] oritasks, int sessionTime) {
         int cnt = 0;
         int n = oritasks.length;
         int left = oritasks.length;
@@ -71,13 +152,31 @@ public class DP {
             tasks[i] = oritasks[tasks.length - i - 1];
         }
         while (left > 0) {
-            Block[] f = new Block[sessionTime + 1];  // f[i] 表示元素和不超过 i 的时候，背包中装的物品最大和
+            Block[] f = new Block[sessionTime + 1];  // f[i] 表示元素和不超过 i 的时候，背包中装的物品最大和; f[i]永远小于i
             for (int i = 0; i < sessionTime + 1; i++) {
                 f[i] = new Block();
             }
             for (int i = 0; i < n; i++) {
+                if (i == n - 1) {
+                    if (tasks[i] == 0) {
+                        continue;
+                    }
+                    for (int j = sessionTime; j >= tasks[i]; j--) {
+                        if (f[j].total > f[j - tasks[i]].total + tasks[i]) {  // 后来居上策略
+                            continue;
+                        }
+                        Block block = f[j];
+                        block.total = f[j - tasks[i]].total + tasks[i];
+                        block.used = new ArrayList<>(f[j - tasks[i]].used);
+                        block.used.add(i);
+                    }
+                    continue;
+                }
+                if (tasks[i] == 0) {
+                    continue;
+                }
                 for (int j = sessionTime; j >= tasks[i]; j--) {
-                    if (f[j].total >= f[j - tasks[i]].total + tasks[i]) {
+                    if (f[j].total >= f[j - tasks[i]].total + tasks[i]) {  // 先入为主
                         continue;
                     }
                     Block block = f[j];
@@ -117,7 +216,7 @@ public class DP {
         dp[0] = true;
         for (int i = 0; i <= s.length(); i++) {
             for (int j = (Math.max(i - maxWordLength, 0)); j < i; j++) {
-                if (dp[j] && wordSet.contains(s.substring(j, i))) {
+                if (dp[j] && wordSet.contains(s.substring(j, i))) {  // substring(j, i)含j不含i
                     dp[i] = true;
                     break;
                 }

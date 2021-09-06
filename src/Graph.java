@@ -89,11 +89,11 @@ public class Graph {
         // 节点入度，拓扑排序使用
         int[] inDegree = new int[n];
 
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             reverseGraph.add(new ArrayList<>());
         }
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < graph[i].length; j++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < graph[i].length; j++) {
                 reverseGraph.get(graph[i][j]).add(i);
             }
             // 原数组记录的节点出度，在反图中就是入度
@@ -104,26 +104,26 @@ public class Graph {
         Queue<Integer> q = new LinkedList<>();
 
         // 首先将入度为 0 的点存入队列
-        for(int i = 0; i < n; i++) {
-            if(inDegree[i] == 0) {
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
                 q.offer(i);
             }
         }
 
-        while(!q.isEmpty()) {
+        while (!q.isEmpty()) {
             // 每次弹出队头元素
             int cur = q.poll();
-            for(int x : reverseGraph.get(cur)) {
+            for (int x : reverseGraph.get(cur)) {
                 // 将以其为起点的有向边删除，更新终点入度
                 inDegree[x]--;
-                if(inDegree[x] == 0) q.offer(x);
+                if (inDegree[x] == 0) q.offer(x);
             }
         }
 
         // 最终入度（原图中出度）为 0 的所有点均为安全点。由于要求升序排列，所以整这么一出
         List<Integer> ret = new ArrayList<>();
-        for(int i = 0; i < n; i++) {
-            if(inDegree[i] == 0) ret.add(i);
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) ret.add(i);
         }
         return ret;
     }
