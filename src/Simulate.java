@@ -8,11 +8,9 @@ public class Simulate {
     public String largestNumber(int[] nums) {
         int n = nums.length;
         String[] strNums = new String[n];
-
-        for (int i = 0;i<n;i++) {
+        for (int i = 0; i < n; i++) {
             strNums[i] = String.valueOf(nums[i]);
         }
-
         Arrays.sort(strNums, (o1, o2) -> {
             // 比较 o1o2 和 o2o1 大小
             String s1 = o1 + o2;
@@ -27,6 +25,50 @@ public class Simulate {
             ret.append(num);
         }
         return ret.toString();
+    }
+
+    // 42. 接雨水; 面试题 17.21 直方图的水量
+    // 给定一个直方图(也称柱状图)，假设有人从上面源源不断地倒水，最后直方图能存多少水量
+    public int trap(int[] height) {
+        int n = height.length;
+        int[] leftMax = new int[n];
+        int[] rightMax = new int[n];
+        int leftM = 0, rightM = 0;
+        for (int i = 1; i < n; i++) {
+            leftM = Math.max(leftM, height[i - 1]);
+            leftMax[i] = leftM;
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            rightM = Math.max(rightM, height[i + 1]);
+            rightMax[i] = rightM;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int t = Math.min(leftMax[i], rightMax[i]) - height[i];
+            if (t > 0) {
+                ans += t;
+            }
+        }
+        return ans;
+    }
+
+    // 单调栈解法（没必要）
+    public int trap1(int[] height) {
+        Deque<Integer> stack = new LinkedList<>();  // 单调递减栈，存下标
+        int length = height.length;
+        int ans = 0;
+        for (int i = 0; i < length; i++) {
+            while (!stack.isEmpty() && height[i] > height[stack.peek()]) {
+                int t = stack.pop();  // t 是弹出来的
+                if (stack.isEmpty()) {  // 调用stack.pop(), stack.peek()之前一定判空
+                    break;
+                }
+                int j = stack.peek();  // j 是当前栈顶
+                ans += (i - j - 1) * (Math.min(height[i], height[j]) - height[t]);
+            }
+            stack.push(i);
+        }
+        return ans;
     }
 
     public String largestNumber1(int[] nums) {

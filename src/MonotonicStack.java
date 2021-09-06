@@ -6,7 +6,9 @@ import java.util.Stack;
 public class MonotonicStack {
 
     /**
-     * 典型应用：下一个更大的元素
+     * 典型应用：
+     * 下一个更大的元素 —— 单调递减栈
+     * 下一个更小的元素 —— 单调递增栈
      */
 
     // 1944. 队列中可以看到的人数
@@ -29,24 +31,56 @@ public class MonotonicStack {
         return ans;
     }
 
-    // 面试题 17.21 直方图的水量
-    // 给定一个直方图(也称柱状图)，假设有人从上面源源不断地倒水，最后直方图能存多少水量
-    public int trap(int[] height) {
-        Deque<Integer> stack = new LinkedList<>();  // 单调递减栈，存下标
-        int length = height.length;
-        int ans = 0;
-        for (int i = 0; i < length; ++i) {
-            while (!stack.isEmpty() && height[i] > height[stack.peek()]) {
-                int top = stack.pop();
-                if (stack.isEmpty()) {  // 调用stack.pop(), stack.peek()之前一定判空
-                    break;
-                }
-                int j = stack.peek();
-                ans += (i - j - 1) * (Math.min(height[i], height[j]) - height[top]);
+    // 1856. 子数组最小乘积的最大值
+    // 一个数组的 最小乘积 定义为这个数组中 最小值 乘以 数组的 和
+    // 比方说，数组 [3,2,5] （最小值是 2）的最小乘积为 2 * (3+2+5) = 2 * 10 = 20
+    // 求 子数组最小乘积的最大值
+    // 单调栈
+    public int maxSumMinProduct(int[] nums) {
+        int n = nums.length;
+
+        // 数组前缀和
+        long[] pre = new long[n + 1];  // 存储下标“之前”的元素和
+        pre[0] = nums[0];
+        for (int i = 1; i <= n; i++) {
+            pre[i] = pre[i - 1] + nums[i - 1];
+        }
+
+        // 单递增调栈
+        Stack<Integer> stack = new Stack<>();
+        // 求元素右边第一个比其小的
+        int[] rightLower = new int[n];
+        Arrays.fill(rightLower, n);  // 默认为n，即没发现
+        for (int i = 0; i < n; i++) {
+            // 单调递增栈
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) {
+                int t = stack.pop();
+                rightLower[t] = i;
             }
             stack.push(i);
         }
-        return ans;
+
+        // 求元素左边第一个比其小的
+        int[] leftLower = new int[n];
+        Arrays.fill(rightLower, -1);  // 默认为-1，即没发现
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) {
+                int t = stack.pop();
+                leftLower[t] = i;
+            }
+            stack.push(i);
+        }
+
+        // 在前缀和及单调栈基础上，求最终解
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            int r = rightLower[i];
+            int l = leftLower[i] + 1;
+            long t = pre[r] - pre[l];
+            ans = Math.max(ans, t * nums[i]);
+        }
+        long mod = (long) 1e9 + 7;  // 注意，取模时的定义方法
+        return (int) (ans % mod);
     }
 
     // 456. 132模式

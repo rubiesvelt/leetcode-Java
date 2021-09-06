@@ -6,11 +6,36 @@ import java.util.Stack;
 public class PrefixSum {
 
     /**
-     * 典型应用：求数组 nums[i] - nums[j] 区间的和
+     * 典型应用：
+     * 求数组 nums[i] -> nums[j] 区间的和
+     * 求子数组的和
      */
 
+    // 前缀和模板
+    public void prefixSumDemo(int[] nums) {
+        int n = nums.length;
+        int[] pre = new int[n + 1];
+        pre[0] = 0;  // pre[i] 表示 nums[0] 到 nums[i - 1] 的和
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+    }
+
+    // 二维前缀和模版
+    public void prefixSumDemo(int[][] nums) {
+        int m = nums.length;
+        int n = nums[0].length;
+        int[][] pre = new int[m][n];  // pre[i][j] 表示 nums[0][0] 到 nums[i - 1][j - 1] 区间元素之和
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                pre[i + 1][j + 1] = pre[i + 1][j] + pre[i][j + 1] - pre[i][j] + nums[i][j];
+            }
+        }
+    }
+
     // 560. 和为K的子数组
-    // 前缀和 + hashMap 模板题目
+    // 给定一个整数数组和一个整数 k，你需要找到该数组中和为 k 的连续的子数组的个数
+    // 前缀和 + hashMap 模板
     public int subarraySum1(int[] nums, int k) {
         // 前缀和 -> 出现次数
         // 由于nums的元素可为负数，故前缀和不是单调递增的
@@ -42,23 +67,6 @@ public class PrefixSum {
             int t = sum - goal;
             ans += map.getOrDefault(t, 0);
             map.put(sum, map.getOrDefault(sum, 0) + 1);
-        }
-        return ans;
-    }
-
-    // 前缀和模板题目
-    public int subarraySum(int[] nums, int k) {
-        int n = nums.length;
-        int[] pre = new int[n + 1];
-        pre[0] = 0;
-        for (int i = 0; i < n; i++) {
-            pre[i + 1] = pre[i] + nums[i];
-        }
-        int ans = 0;
-        for (int i = 0; i < n + 1; i++) {
-            for (int j = i + 1; j < n + 1; j++) {
-                if (pre[j] - pre[i] == k) ans++;
-            }
         }
         return ans;
     }
@@ -142,54 +150,5 @@ public class PrefixSum {
             ans[i] = sum[r] ^ sum[l - 1];
         }
         return ans;
-    }
-
-    // 5752. 子数组最小乘积的最大值
-    // 单调栈
-    public int maxSumMinProduct(int[] nums) {
-        int n = nums.length;
-
-        // 数组前缀和
-        long[] pre = new long[n + 1];  // 存储下标“之前”的元素和
-        pre[0] = nums[0];
-        for (int i = 1; i <= n; i++) {
-            pre[i] = pre[i - 1] + nums[i - 1];
-        }
-
-        // 单递增调栈
-        Stack<Integer> stack = new Stack<>();
-        // 求元素右边第一个比其小的
-        int[] rightLower = new int[n];
-        Arrays.fill(rightLower, n);  // 默认为n，即没发现
-        for (int i = 0; i < n; i++) {
-            // 单调递增栈
-            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) {
-                int t = stack.pop();
-                rightLower[t] = i;
-            }
-            stack.push(i);
-        }
-
-        // 求元素左边第一个比其小的
-        int[] leftLower = new int[n];
-        Arrays.fill(rightLower, -1);  // 默认为-1，即没发现
-        for (int i = n - 1; i >= 0; i--) {
-            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) {
-                int t = stack.pop();
-                leftLower[t] = i;
-            }
-            stack.push(i);
-        }
-
-        // 在前缀和及单调栈基础上，求最终解
-        long ans = 0;
-        for (int i = 0; i < n; i++) {
-            int r = rightLower[i];
-            int l = leftLower[i] + 1;
-            long t = pre[r] - pre[l];
-            ans = Math.max(ans, t * nums[i]);
-        }
-        long mod = (long) 1e9 + 7;  // 注意，取模时的定义方法
-        return (int) (ans % mod);
     }
 }
