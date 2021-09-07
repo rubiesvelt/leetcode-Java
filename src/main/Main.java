@@ -17,7 +17,7 @@ public class Main {
         TreeNode tn2 = new TreeNode(2, null, tn4);
         TreeNode tn1 = new TreeNode(1, tn2, tn3);
 
-        int[][] matrix = {{1,0,0}, {0,1,1}, {0,1,1}};
+        int[][] matrix = {{1, 0, 0}, {0, 1, 1}, {0, 1, 1}};
         int[][] matrix1 = {{1, 0, 0}, {0, 0, 1}, {1, 1, 0}};
         int[] dist = {1, 0, 1};
         int[] diff = {0, 1, 0, 1, 0};
