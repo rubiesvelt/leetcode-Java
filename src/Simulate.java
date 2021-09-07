@@ -436,7 +436,7 @@ public class Simulate {
     }
 
     // 705. 计哈希集合
-    private static final int BASE = 769;
+    private final int BASE = 769;
     private LinkedList[] data;  // Java原生链表的列表
 
     /**
@@ -488,7 +488,7 @@ public class Simulate {
         return false;
     }
 
-    private static int hash(int key) {
+    private int hash(int key) {
         return key % BASE;
     }
 
