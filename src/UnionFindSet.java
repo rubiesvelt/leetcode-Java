@@ -5,10 +5,13 @@ import java.util.Map;
 public class UnionFindSet {
 
     // 765. 情侣牵手
+    // 03, 26, 15, 47 —— 原
+    // 0<-1, 1<-3, 0<-2, 2<-3 —— 分组
+    // 0123, 0, 0, 0 —— 并查集
     public int minSwapsCouples(int[] row) {
         int n = row.length;
         int tot = n / 2;
-        int[] f = new int[tot];  // 数组形式的并查集，每个元素的父节点初始化为自己
+        int[] f = new int[tot];  // 代表每一个组；数组形式的并查集，每个元素的父节点初始化为自己
         for (int i = 0; i < tot; i++) {
             f[i] = i;
         }
