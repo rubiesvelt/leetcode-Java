@@ -4,6 +4,39 @@ import java.util.*;
 
 public class BinaryTree {
 
+    /*
+     * 美团一面
+     * 寻找二叉树最大路径
+     * 给定一个二叉树，请计算节点值之和最大的路径的节点值之和是多少
+     * 这个路径的开始节点和结束节点可以是二叉树中的任意节点
+     * 后序遍历
+     */
+    int ans = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        // write code here
+        dfs(root);
+        return ans;
+    }
+
+    public int dfs(TreeNode root) {
+        // write code here
+        if (root == null) {
+            return 0;
+        }
+        int left = dfs(root.left);
+        int right = dfs(root.right);
+        int val = root.val;
+        if (left > 0) {
+            val += left;
+        }
+        if (right > 0) {
+            val += right;
+        }
+        ans = Math.max(ans, val);
+        return val;
+    }
+
     // 863. 二叉树中所有距离为 K 的结点
     // 求二叉树中距离 target 为 K 的结点；树建图，后从target遍历图
     List<Integer> ans863 = new ArrayList<>();
@@ -53,16 +86,20 @@ public class BinaryTree {
     }
 
     // 1104. 二叉树寻路
+    // 二叉树
+    // 奇数行（即，第一行、第三行、第五行……）中，按从左到右的顺序进行标记
+    // 偶数行（即，第二行、第四行、第六行……）中，按从右到左的顺序进行标记
+    // 给定一个数 label 求 从底到顶的路径
     public List<Integer> pathInZigZagTree(int label) {
         List<Integer> ans = new ArrayList<>();
         while (label > 0) {
-            ans.add(label);
+            ans.add(label);  // 1, 3, 7, 14
             label /= 2;
         }
         Collections.reverse(ans);
         for (int i = 0; i < ans.size(); i++) {
             int depth = i + 1;
-            if ((depth & 1) == (ans.size() & 1)) {
+            if ((depth & 1) == (ans.size() & 1)) {  // 由于最后一位不需要反转，所以前面相邻的位需要反转
                 continue;
             }
             int n = ans.get(i);
