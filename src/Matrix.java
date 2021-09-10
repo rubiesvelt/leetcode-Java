@@ -2,6 +2,77 @@ import java.util.*;
 
 public class Matrix {
 
+    /*
+     * 剑指 Offer 12. 矩阵中的路径
+     * 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false
+     */
+    public boolean exist(char[][] board, String word) {
+        int m = board.length;
+        int n = board[0].length;
+        boolean[][] isVisited = new boolean[m][n];
+        char[] chs = word.toCharArray();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == chs[0]) {
+                    if (dfs(board, i, j, isVisited, chs, 0)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // 这种不要用fromI, fromJ, 使用isVisited[]数组。
+    // from的话强制不可回头，但可以绕一个圈回去
+    private boolean dfs(char[][] board, int i, int j, boolean[][] isVisited, char[] chs, int index) {
+        if (index == chs.length) {
+            return true;
+        }
+        if (i < 0 || j < 0 || i == board.length || j == board[0].length || isVisited[i][j] || board[i][j] != chs[index]) {
+            return false;
+        }
+        isVisited[i][j] = true;
+        boolean res = dfs(board, i + 1, j, isVisited, chs, index + 1)
+                || dfs(board, i - 1, j, isVisited, chs, index + 1)
+                || dfs(board, i, j + 1, isVisited, chs, index + 1)
+                || dfs(board, i, j - 1, isVisited, chs, index + 1);
+        isVisited[i][j] = false;
+        return res;
+    }
+
+    /*
+     * 剑指 Offer 04. 二维数组中的查找
+     * 在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序
+     * 请完成一个高效的函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数
+     *
+     * 从右上角看，类似一个二叉查找树
+     */
+    public boolean findNumberIn2DArray(int[][] matrix, int target) {
+        int m = matrix.length;
+        if (m == 0) {
+            return false;
+        }
+        int n = matrix[0].length;
+        if (n == 0) {
+            return false;
+        }
+        int i = 0;
+        int j = n - 1;
+        while (i < m && j >= 0) {
+            int now = matrix[i][j];
+            if (now == target) {
+                return true;
+            }
+            if (now < target) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return false;
+    }
+
     // 1992. 找到所有的农场组
     public int[][] findFarmland(int[][] land) {
         List<int[]> res = new ArrayList<>();

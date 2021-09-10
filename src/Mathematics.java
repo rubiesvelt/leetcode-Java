@@ -5,6 +5,31 @@ import java.util.Map;
 
 public class Mathematics {
 
+    /*
+     * 剑指 Offer 10- I. 斐波那契数列
+     * 写一个函数，输入 n ，求斐波那契（Fibonacci）数列的第 n 项（即 F(N)）
+     * 斐波那契数列的定义如下
+     * F(0) = 0,   F(1) = 1
+     * F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
+     */
+    public int fib(int n) {
+        int n0 = 0;
+        int n1 = 1;
+        int mod = 1_000_000_007;
+        if (n == 0) {
+            return 0;
+        }
+        if (n == 1) {
+            return 1;
+        }
+        while (n-- > 1) {
+            int n2 = (n0 + n1) % mod;
+            n0 = n1;
+            n1 = n2;
+        }
+        return n1;
+    }
+
     /**
      * shopee 笔试一题
      * <br/>差分数组
@@ -45,7 +70,6 @@ public class Mathematics {
         }
         return max;
     }
-
 
 
     /*

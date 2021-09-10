@@ -14,7 +14,6 @@ public class BinaryTree {
     int ans = Integer.MIN_VALUE;
 
     public int maxPathSum(TreeNode root) {
-        // write code here
         dfs(root);
         return ans;
     }

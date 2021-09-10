@@ -22,7 +22,7 @@ public class UnionFindSet {
             add(f, l, r);  // 合并，r指向l
         }
 
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> map = new HashMap<>();
         for (int i = 0; i < tot; i++) {  // 对于每一组
             int fx = getf(f, i);  // 看下哪一组跑偏了
             // map的getOrDefault用法，再也不用担心map初始化问题了

@@ -2,13 +2,12 @@ package solution;
 
 public class LargestMagicSquare {
 
-    public static void main(String[] args) {
-        LargestMagicSquare largestMagicSquare = new LargestMagicSquare();
-        int[][] grid = {{7, 1, 4, 5, 6}, {2, 5, 1, 6, 4}, {1, 5, 4, 3, 2}, {1, 2, 7, 3, 4}};
-        largestMagicSquare.largestMagicSquare(grid);
-    }
-
-    // 5202. 最大的幻方
+    /*
+     * 1895. 最大的幻方
+     * 一个 k * k 的幻方指的是一个 k * k 填满整数的方格阵，且每一行、每一列以及两条对角线的和 全部相等。幻方中的整数 不需要互不相同
+     * 显然，每个 1 * 1 的方格都是一个幻方
+     * 给你一个 m * n 的整数矩阵 grid，请你返回矩阵中最大幻方的尺寸（即边长 k）
+     */
     int[][] row;
     int[][] col;
     int[][] lr;
