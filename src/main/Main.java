@@ -3,6 +3,7 @@ package main;
 import beans.TreeNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,13 +43,13 @@ public class Main {
         for (int i = 0; i < preorder.length; i++) {
             map.put(inorder[i], i);
         }
-        return recursive(0,0,inorder.length-1);
+        return recursive(0, 0, inorder.length - 1);
     }
 
     /**
-     * @param pre_root_idx  先序遍历的索引
-     * @param in_left_idx  中序遍历的索引
-     * @param in_right_idx 中序遍历的索引
+     * @param pre_root_idx 根节点索引
+     * @param in_left_idx  左边（到头）索引
+     * @param in_right_idx 右边（到头）索引
      */
     public TreeNode recursive(int pre_root_idx, int in_left_idx, int in_right_idx) {
         // 相等就是自己
@@ -67,7 +68,7 @@ public class Main {
 
         // 右子树的根，就是右子树（前序遍历）的第一个, 就是当前根节点 加上左子树的数量
         // pre_root_idx 当前的根  左子树的长度 = 左子树的左边-右边 (idx-1 - in_left_idx +1) 。最后+1就是右子树的根了
-        root.right = recursive(pre_root_idx + (idx-1 - in_left_idx +1)  + 1, idx + 1, in_right_idx);
+        root.right = recursive(pre_root_idx + (idx - in_left_idx) + 1, idx + 1, in_right_idx);
         return root;
     }
 
