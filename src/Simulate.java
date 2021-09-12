@@ -3,6 +3,35 @@ import java.util.*;
 
 public class Simulate {
 
+    /*
+     * 36. 有效的数独
+     */
+    public boolean isValidSudoku(char[][] board) {
+        // 记录某行，某位数字是否已经被摆放
+        boolean[][] row = new boolean[9][9];
+        // 记录某列，某位数字是否已经被摆放
+        boolean[][] col = new boolean[9][9];
+        // 记录某 3x3 宫格内，某位数字是否已经被摆放
+        boolean[][] block = new boolean[9][9];
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    int num = board[i][j] - '1';
+                    int blockIndex = i / 3 * 3 + j / 3;
+                    if (row[i][num] || col[j][num] || block[blockIndex][num]) {
+                        return false;
+                    } else {
+                        row[i][num] = true;
+                        col[j][num] = true;
+                        block[blockIndex][num] = true;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     // 179. 最大数
     // 给定一组非负整数 nums，重新排列每个数的顺序（每个数不可拆分）使之组成一个最大的整数
     public String largestNumber(int[] nums) {
@@ -69,36 +98,6 @@ public class Simulate {
             stack.push(i);
         }
         return ans;
-    }
-
-    public String largestNumber1(int[] nums) {
-        int n = nums.length;
-        String[] strNums = new String[n];
-        // 转换成包装类型，以便传入 Comparator 对象（此处为 lambda 表达式）
-        Integer[] numsArr = new Integer[n];
-        for (int i = 0; i < n; i++) {
-            numsArr[i] = nums[i];
-        }
-
-        Arrays.sort(numsArr, (x, y) -> {
-            long sx = 10, sy = 10;
-            while (sx <= x) {
-                sx *= 10;
-            }
-            while (sy <= y) {
-                sy *= 10;
-            }
-            return (int) (-sy * x - y + sx * y + x);
-        });
-
-        if (numsArr[0] == 0) {
-            return "0";
-        }
-        StringBuilder ret = new StringBuilder();
-        for (int num : numsArr) {
-            ret.append(num);
-        }
-        return ret.toString();
     }
 
     // 233. 数字 1 的个数
@@ -243,68 +242,6 @@ public class Simulate {
         return (int) ((ans - max) % 1000000007);
     }
 
-    // dfs做法(没必要)
-    int ansPal = 0;
-
-    public int countPalindromicSubsequence(String s) {
-        char[] t = new char[3];
-        dfsSearch(s, 0, t, 0);
-        return ansPal;
-    }
-
-    public void dfsSearch(String s, int index, char[] t, int tIndex) {
-        if (tIndex == 3) {
-            if (t[0] == t[2]) {
-                ansPal++;
-            }
-            return;
-        }
-        // 去重，跳过value相同的子节点的遍历
-        Set<Character> set = new HashSet<>();
-        for (int i = index; i < s.length(); i++) {
-            if (set.contains(s.charAt(i))) {
-                continue;
-            }
-            set.add(s.charAt(i));
-            t[tIndex] = s.charAt(i);
-            dfsSearch(s, i + 1, t, tIndex + 1);
-        }
-    }
-
-    public String frequencySort(String s) {
-        Map<Character, Integer> map = new HashMap<>();
-        int n = s.length();
-        // 建立 key -> 次数的 map
-        for (int i = 0; i < n; i++) {
-            if (map.containsKey(s.charAt(i))) {
-                int t = map.get(s.charAt(i)) + 1;
-                map.put(s.charAt(i), t);
-                continue;
-            }
-            map.put(s.charAt(i), 1);
-        }
-        // 建立 次数 -> key 的数组
-        List<Character>[] array = new List[n + 1];
-        for (Map.Entry<Character, Integer> entry : map.entrySet()) {
-            if (array[entry.getValue()] == null) {
-                array[entry.getValue()] = new ArrayList<Character>(entry.getKey());
-            }
-            array[entry.getValue()].add(entry.getKey());
-        }
-        // 构建
-        StringBuilder sb = new StringBuilder();
-        for (int i = n; i > 0; i--) {
-            if (array[i] == null) continue;
-            List<Character> list = array[i];
-            for (char c : list) {
-                for (int j = 0; j < i; j++) {
-                    sb.append(c);
-                }
-            }
-        }
-        return sb.toString();
-    }
-
     // 554. 砖墙
     public int leastBricks(List<List<Integer>> wall) {
         Map<Integer, Integer> map = new HashMap<>();  // 使用数组内存越界，考虑使用 map
@@ -354,8 +291,12 @@ public class Simulate {
         return ans;
     }
 
-
-    // LCP30. 魔塔游戏
+    /*
+     * LCP30. 魔塔游戏
+     * 初始血量为 1，每次仅能将一个怪物房间（负数的房间）调整至访问顺序末尾；请返回最少需要调整几次，才能顺利访问所有房间
+     *
+     * 当血不够的时候，将之前扣血最多的移到末尾
+     */
     public int magicTower(int[] nums) {
         List<Integer> lastList = new ArrayList<>();  // 直接累加即可，不必放入lastList
         PriorityQueue<Integer> negativeBuffer = new PriorityQueue<>();  // 使用PriorityQueue数据结构
@@ -363,7 +304,7 @@ public class Simulate {
         for (int num : nums) {
             hp += num;
             if (num < 0) {
-                negativeBuffer.add(num);
+                negativeBuffer.add(num);  // 从小到大排序，poll出来的是最小的（扣血最多的）
             }
             if (hp <= 0) {
                 int min = negativeBuffer.poll();
