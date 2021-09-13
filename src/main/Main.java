@@ -3,7 +3,6 @@ package main;
 import beans.TreeNode;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -72,7 +71,6 @@ public class Main {
         return root;
     }
 
-    // 美团一面
     // 给定一个二叉树，请计算节点值之和最大的路径的节点值之和是多少
     // 这个路径的开始节点和结束节点可以是二叉树中的任意节点
     int ans = Integer.MIN_VALUE;

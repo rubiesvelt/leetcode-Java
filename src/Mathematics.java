@@ -61,6 +61,7 @@ public class Mathematics {
                 t = diff[i] - 1;
                 diff[i + 1] = t;
             }
+
             if (map.containsKey(t)) {
                 int t1 = map.get(t);
                 max = Math.max(max, i + 1 - t1);
@@ -114,8 +115,13 @@ public class Mathematics {
         return ans;
     }
 
-    // 995. K 连续位的最小翻转次数
-    // 差分数组
+    /*
+     * 995. K 连续位的最小翻转次数
+     * 在仅包含 0 和 1 的数组 A 中，每一次将 K 位连续子数组翻转 0变1 1变0
+     * 求最少操作几次能使数组所有都是 1，如果不能，返回 -1
+     *
+     * 差分数组
+     */
     public int minKBitFlips(int[] A, int K) {
         int n = A.length;
         int[] diff = new int[n + 1];  // 差分数组

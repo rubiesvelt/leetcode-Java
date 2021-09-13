@@ -4,7 +4,38 @@ import java.util.Map;
 
 public class UnionFindSet {
 
+    /**
+     * 并查集模版
+     */
+
+    public static class DemoUnionFindSet {
+        int[] f;
+
+        public DemoUnionFindSet(int n) {
+            f = new int[n];
+            for (int i = 0; i < n; i++) {
+                f[i] = i;
+            }
+        }
+
+        public int getf(int[] f, int x) {
+            if (f[x] == x) {
+                return x;
+            }
+            int newf = getf(f, f[x]);
+            f[x] = newf;  // 路径压缩
+            return newf;
+        }
+
+        public void union(int x, int y) {
+            int fa = getf(f, x);
+            int fb = getf(f, y);
+            f[fb] = fa;
+        }
+    }
+
     // 765. 情侣牵手
+    // 01, 23, 45 分组问题，考虑 id / 2 = 组号
     // 03, 26, 15, 47 —— 原
     // 0<-1, 1<-3, 0<-2, 2<-3 —— 分组
     // 0123, 0, 0, 0 —— 并查集
@@ -116,7 +147,7 @@ public class UnionFindSet {
             }
         }
 
-        // x是y的value倍
+        // x 是 y 的 value 倍
         public void union(int x, int y, double value) {
             int rootX = find(x);
             int rootY = find(y);
