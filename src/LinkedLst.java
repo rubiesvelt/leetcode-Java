@@ -2,7 +2,8 @@ import beans.ListNode;
 
 public class LinkedLst {
 
-    // 微软面试 1
+    // 微软面试
+    // 求两个链表是否相交，链表中有可能存在环
     // 带环的 相交链表
     public boolean isConnected(ListNode a, ListNode b) {
         ListNode aLoop = getLoop(a);
@@ -26,6 +27,10 @@ public class LinkedLst {
         return false;
     }
 
+    /*
+     * 判断链表中是否有环
+     * 两个指针，一个跳一格，一个跳两格，如果有环必定相遇
+     */
     public ListNode getLoop(ListNode a) {
         ListNode a1 = a;
         ListNode a2 = a;

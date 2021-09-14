@@ -50,7 +50,7 @@ public class UnionFindSet {
         for (int i = 0; i < n; i += 2) {
             int l = row[i] / 2;  // l 和 r 是组号
             int r = row[i + 1] / 2;
-            add(f, l, r);  // 合并，r指向l
+            union(f, l, r);  // 合并，r指向l
         }
 
         Map<Integer, Integer> map = new HashMap<>();
@@ -78,7 +78,7 @@ public class UnionFindSet {
     }
 
     // union 操作
-    public void add(int[] f, int x, int y) {
+    public void union(int[] f, int x, int y) {
         int fx = getf(f, x);
         int fy = getf(f, y);
         f[fx] = fy;
