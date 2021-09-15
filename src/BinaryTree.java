@@ -9,22 +9,22 @@ public class BinaryTree {
      * 寻找二叉树最大路径
      * 给定一个二叉树，请计算节点值之和最大的路径的节点值之和是多少
      * 这个路径的开始节点和结束节点可以是二叉树中的任意节点
+     *
      * 后序遍历
      */
     int ans = Integer.MIN_VALUE;
 
     public int maxPathSum(TreeNode root) {
-        dfs(root);
+        dfsmt(root);
         return ans;
     }
 
-    public int dfs(TreeNode root) {
-        // write code here
+    public int dfsmt(TreeNode root) {
         if (root == null) {
             return 0;
         }
-        int left = dfs(root.left);
-        int right = dfs(root.right);
+        int left = dfsmt(root.left);
+        int right = dfsmt(root.right);
         int val = root.val;
         if (left > 0) {
             val += left;
@@ -37,7 +37,9 @@ public class BinaryTree {
     }
 
     // 863. 二叉树中所有距离为 K 的结点
-    // 求二叉树中距离 target 为 K 的结点；树建图，后从target遍历图
+    // 求二叉树中距离 target 为 K 的结点，树上的每个结点都具有唯一的值
+    //
+    // 树建图，后从target遍历图
     List<Integer> ans863 = new ArrayList<>();
 
     public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
@@ -199,11 +201,6 @@ public class BinaryTree {
         return tn;
     }
 
-    public static TreeNode getNode(int val) {
-        if (val == -1) return null;
-        else return new TreeNode(val, null, null);
-    }
-
     // 173. 二叉搜索树迭代器
     // 解法一，中序遍历，先将结果存在 arr 中
     private int index1 = 0;
@@ -255,12 +252,12 @@ public class BinaryTree {
     }
 
     // 563.二叉树的坡度
-    public static int findTilt(TreeNode root) {
+    public int findTilt(TreeNode root) {
         reformat(root);
         return calSum(root);
     }
 
-    public static int reformat(TreeNode root) {
+    public int reformat(TreeNode root) {
         if (root == null) {
             return 0;
         }
@@ -271,7 +268,7 @@ public class BinaryTree {
         return left + right + val;
     }
 
-    public static int calSum(TreeNode root) {
+    public int calSum(TreeNode root) {
         if (root == null) {
             return 0;
         }
@@ -281,6 +278,7 @@ public class BinaryTree {
     }
 
     // 938. 二叉搜索树的范围和
+    // 给定二叉搜索树的根结点 root，返回值位于范围 [low, high] 之间的所有结点的值的和
     // 二叉搜索树，dfs
     int sum938 = 0;
 
@@ -288,14 +286,16 @@ public class BinaryTree {
         if (root == null) {
             return 0;
         }
-        if (root.val > high) {
-            return 0;
+
+        if (root.val > low) {
+            rangeSumBST(root.left, low, high);
         }
-        rangeSumBST(root.left, low, high);
         if (low <= root.val && root.val <= high) {
             sum938 += root.val;
         }
-        rangeSumBST(root.right, low, high);
+        if (root.val < high) {
+            rangeSumBST(root.right, low, high);
+        }
         return sum938;
     }
 
@@ -303,7 +303,7 @@ public class BinaryTree {
     // 897. 递增顺序搜索树
     // 把一个二叉搜索树"捋直"，使一个个节点向右递增
     // 二叉树，中序遍历
-    TreeNode tn = new TreeNode();
+    TreeNode tn = new TreeNode();  // 所有的祖先
     TreeNode next = tn;
 
     public TreeNode increasingBST(TreeNode root) {
@@ -311,10 +311,54 @@ public class BinaryTree {
             return null;
         }
         increasingBST(root.left);
+
         next.right = new TreeNode(root.val);  // 注意要new一个
         next = next.right;
+
         increasingBST(root.right);
         return tn.right;
     }
 
+    // 剑指 Offer 07. 重建二叉树
+    // 给定先序遍历和中序遍历，重建二叉树
+    // 利用原理,先序遍历的第一个节点就是根。在中序遍历中通过根 区分哪些是左子树的，哪些是右子树的
+    // 左右子树，递归
+    HashMap<Integer, Integer> map = new HashMap<>();  //标记中序遍历
+    int[] preorder;  // 保留的先序遍历
+
+    // preorder = [3, 9, 20, 15, 7]
+    // inorder = [9, 3, 15, 20, 7]
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        this.preorder = preorder;
+        for (int i = 0; i < preorder.length; i++) {
+            map.put(inorder[i], i);
+        }
+        return recursive(0, 0, inorder.length - 1);
+    }
+
+    /**
+     * @param preRootIndex 根节点索引
+     * @param InLeftIndex  左边（到头）索引
+     * @param InRightIndex 右边（到头）索引
+     */
+    public TreeNode recursive(int preRootIndex, int InLeftIndex, int InRightIndex) {
+        // 相等就是自己
+        if (InLeftIndex > InRightIndex) {
+            return null;
+        }
+        // root_idx是在先序里面的
+        TreeNode root = new TreeNode(preorder[preRootIndex]);
+        // 有了先序的，再根据先序的，在中序中获 当前根的索引
+        int idx = map.get(preorder[preRootIndex]);
+
+        // 左子树的根节点就是 左子树的(前序遍历）第一个, 就是+1, 左边边界就是left, 右边边界是中间区分的idx-1
+        root.left = recursive(preRootIndex + 1, InLeftIndex, idx - 1);
+
+        // 由根节点在中序遍历的idx 区分成2段, idx 就是根
+
+        // 右子树的根，就是右子树（前序遍历）的第一个, 就是当前根节点 加上左子树的数量
+        // preRootIndex 当前的根  左子树的长度 = 左子树的左边-右边 (idx-1 - InLeftIndex +1) 。最后+1就是右子树的根了
+        root.right = recursive(preRootIndex + (idx - InLeftIndex) + 1, idx + 1, InRightIndex);
+        return root;
+    }
 }

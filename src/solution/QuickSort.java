@@ -28,7 +28,7 @@ public class QuickSort {
                 num[j--] = num[i];
             }
         }
-        num[i] = index;
+        num[i] = index;  // 此处，原来的 num[i] 已经被移到别处，或者 num[i] 就没变
         sort(num, left, i - 1);
         sort(num, i + 1, right);
     }
