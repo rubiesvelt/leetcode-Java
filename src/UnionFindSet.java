@@ -5,13 +5,12 @@ import java.util.Map;
 public class UnionFindSet {
 
     /**
-     * 并查集模版
+     * 并查集模版 —— 数组形式
      */
-
-    public static class DemoUnionFindSet {
+    public static class ArrayUnionFindSet {
         int[] f;
 
-        public DemoUnionFindSet(int n) {
+        public ArrayUnionFindSet(int n) {
             f = new int[n];
             for (int i = 0; i < n; i++) {
                 f[i] = i;
@@ -31,6 +30,47 @@ public class UnionFindSet {
             int fa = getf(f, x);
             int fb = getf(f, y);
             f[fb] = fa;
+        }
+    }
+
+    /**
+     * 并查集模版 —— Map形式
+     */
+    public static class MapUnionFindSet {
+        public Map<Integer, Integer> map = new HashMap<>();
+
+        public void connect(int a, int b) {
+            if (!map.containsKey(a)) {
+                map.put(a, a);
+            }
+            if (!map.containsKey(b)) {
+                map.put(b, b);
+            }
+            union(a, b);  // 2 -> 2, 10 -> 1
+        }
+
+        public boolean isConnect(int a, int b) {
+            if (map.containsKey(a) && map.containsKey(b)) {
+                int fa = getf(a);
+                int fb = getf(b);
+                return fa == fb;
+            }
+            return false;
+        }
+
+        public int getf(int a) {
+            if (map.get(a).equals(a)) {
+                return a;
+            }
+            int fa = getf(map.get(a));
+            map.put(a, fa);
+            return fa;
+        }
+
+        public void union(int a, int b) {
+            int fa = getf(a);
+            int fb = getf(b);
+            map.put(fb, fa);
         }
     }
 
