@@ -7,18 +7,22 @@ public class DoublePointers {
     // 滑动窗口
     public int maxFrequency(int[] nums, int k) {
         Arrays.sort(nums);
-        int max = 0, tempSum = 0;
-        for (int i = 0, j = 0; j < nums.length; j++) {
+        int max = 0;
+        int tempSum = 0;  // 记录当前 实体 的和
+        int i = 0;
+        for (int j = 0; j < nums.length; j++) {
             while (nums[j] * (j - i) - tempSum > k) {
                 tempSum -= nums[i++];
             }
             tempSum += nums[j];
+            // 到此处 由 i 到 j 都是合理状态
             max = Math.max(max, j - i + 1);
         }
         return max;
     }
 
     // LCP28. 采购方案
+    // 小力将 N 个零件的报价存于数组 nums。小力预算为 target，假定小力仅购买两个零件，要求购买零件的花费不超过预算，请问他有多少种采购方案
     // 双指针
     public int purchasePlans2(int[] nums, int target) {
         Arrays.sort(nums);
@@ -33,7 +37,7 @@ public class DoublePointers {
             ans += right - left;
             left++;
         }
-        return (int) (ans % 1000000007);
+        return (int) (ans % 1_000_000_007);
     }
 
     // 另一种方法，比双指针更快
@@ -48,7 +52,7 @@ public class DoublePointers {
                 res += pre[target - i];
         for (int i : nums) if (2 * i <= target) res--;  // 删掉自己匹配自己的
         res >>= 1;  // 右移一位，相当于 /2，a匹配b和b匹配a只能算一个
-        return (int) (res % 1000000007);
+        return (int) (res % 1_000_000_007);
     }
 
     // 220. 存在重复元素 III

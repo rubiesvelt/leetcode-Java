@@ -10,18 +10,17 @@ public class SimulateThreeTuple {
     public int triangleNumber(int[] nums) {
         Arrays.sort(nums);
         int result = 0;
-        for (int i = nums.length - 1; i >= 2; i--) {
-            int k = 0;
-            int j = i - 1;
+        for (int i = nums.length - 1; i >= 2; i--) {  // 确定一条边 i
+            int k = 0;  // 第二条边 k (小边)
+            int j = i - 1;  // 第三条边 i - 1 (中边)
             while (k < j) {
                 // 三角形三条边从短到长分别是 a, b, c
                 // 选 c (num[i]) 和 b (num[j])，求 a (num[k - j], 可范围，批量求)
                 if (nums[k] + nums[j] > nums[i]) {  // 满足该条件，说明从num[k]到num[j]的数都满足要求
                     result += j - k;
-                    j--;
+                    j--;  // 减小中边
                 } else {
-                    // 否则k自增，重新判断
-                    k++;
+                    k++;  // 提高小边
                 }
             }
         }
