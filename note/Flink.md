@@ -4,25 +4,59 @@
 
 ## state and checkpoint
 
-### Keyed State
+### State
+
++ 其实 非 keyBy 的 function，可以通过自己定义字段，实现state
+
++ keyBy 的 function 就不好这样做，一般通过实现聚合函数从而进行聚合
+
+#### Keyed State
 
 Keyed State 支持如下***状态***，状态通过 `RuntimeContext` 进行访问，因此只能在 *rich functions* 中使用
 
-> `ValueState<T>`
+> `ValueState<T>`: 保存一个可以更新和检索的值，可以通过`update(T)`进行更新，通过`T value()`进行检索
 >
-> `ListState<T>`
+> `ListState<T>`: 保存一个元素的列表，可以通过`add(T)`或者`addAll(List<T>)`进行添加元素，通过`Iterable<T> get()`获得整个列表。还可以通过`update(List<T>)`覆盖当前的列表
 >
-> `ReducingState<T>`
+> `ReducingState<T>`: 保存一个单值，表示添加到状态的所有值的聚合，使用`add(T)`增加元素，会使用提供的 ReduceFunction 进行聚合
 >
-> `AggregatingState<IN, OUT>`
+> `AggregatingState<IN, OUT>`: 保留一个单值，表示添加到状态的所有值的聚合，***聚合类型可能与 添加到状态的元素的类型不同***，使用`add(IN)`添加的元素会用指定的`AggregateFunction`进行聚合
 >
-> `MapState<UK, UV>`
+> `MapState<UK, UV>`: 保留一个映射表，广播流里在用
 
-### Operator State (or non-keyed state)
+#### Operator State (or non-keyed state)
 
-`SingleOutputStreamOperator` extends `DataStream` —— `SingleOutputStreamOperator` represents a user defined transformation applied on a DataStream with one predefined output type
+Operator State 与单个并行算子相关，与key无关 —— Operator State (or non-keyed state) is state that is bound to one parallel operator instance.
+
+Kafka Connector 是一个很好的例子 —— The Kafka Connector is a good motivating example for the use of Operator State in Flink.
+
+每一个 Kafka Consumer 并行实例都保存了一个 topic partitions -> offset 的 map —— Each parallel instance of the Kafka consumer maintains a map of topic partitions and offsets as its Operator State.
+
+#### Broadcast State
+
+Broadcast State 是 Operator State 的一种特殊的形式 —— Broadcast State is a special type of Operator State.
+
+由于当前流需要广播到下游算子，故下游算子需要维护相同的 state，该 state 可在处理第二个流元素时候被访问 —— It was introduced to support use cases where records of one stream need to be broadcasted to all downstream tasks, 
+where they are used to maintain the same state among all subtasks. This state can then be accessed while processing records of a second stream. 
+
+最佳使用场景：吞吐量小的流，拥有规则，提供给其他流中的元素 —— As an example where broadcast state can emerge as a natural fit, one can imagine a low-throughput stream containing a set of rules which we want to evaluate against all elements coming from another stream. 
+
+综上所述，Broadcast State 区分于其他 Operator State 在一下几个方面：
+1. `map`形式
+2. 只适用于可处理广播流的算子
+3. 单个算子可以拥有多个不同名字的 Broadcast State
+
+—— Having the above type of use cases in mind, broadcast state differs from the rest of operator states in that:
+1. it has a map format
+2. it is only available to specific operators that have as inputs a broadcasted stream and a non-broadcasted one, and
+3. such an operator can have multiple broadcast states with different names.
 
 
+### 状态有效期(TTl)
+
+任何类型的 keyed state 都可以有 有效期 (TTL)
+
+如果配置了 TTL 且状态值已过期，则会尽最大可能清除对应的值
 
 ### checkpoint
 
@@ -107,9 +141,9 @@ Built-in Triggers extents `Trigger`
 
 `ProcessFunction` —— The `ProcessFunction` is a low-level stream processing operation, giving access to the basic building blocks of all (acyclic) streaming applications:
 
-- events (stream elements)
-- state (fault-tolerant, consistent, only on keyed stream)
-- timers (event time and processing time, only on keyed stream)
++ **events** (stream elements)
++ **state** (fault-tolerant, consistent, only on keyed stream)
++ **timers** (event time and processing time, only on keyed stream)
 
 It handles events by being invoked for each event received in the input stream(s).
 
