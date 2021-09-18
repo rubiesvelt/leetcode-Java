@@ -3,8 +3,11 @@
 ### 术语
 
 term: 倒排索引的 key
+
 posting list: 倒排索引的 value
+
 term dictionary: 将term以字典序排序，可以二分查找term 的字典
+
 term index: lucene将部分term dictionary中的前缀抽取出来，以trie的数据结构进行组织并存储在内存中，这就是term index
 
 ---
