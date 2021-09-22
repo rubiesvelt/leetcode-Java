@@ -14,18 +14,23 @@ public class DP {
      * 区间DP
      */
 
+    public static void main(String[] args) {
+        DP dp = new DP();
+        dp.distinctSubseqII("aba");
+    }
+
     // 940. 不同的子序列 II
     // 给定一个字符串 S，计算 S 的"不同"非空子序列的个数，
     // 如 "aba" -> 6 ("a", "b", "ab", "ba", "aa", "aba")
     public int distinctSubseqII(String S) {
         int MOD = 1_000_000_007;
-        int N = S.length();
-        int[] dp = new int[N + 1];  // dp[i]表示，考虑前i个数（下标 0 - i-1）不同非空子序列个数
+        int n = S.length();
+        int[] dp = new int[n + 1];  // dp[i]表示，考虑前i个数（下标 0 - i-1）不同非空子序列个数
         dp[0] = 1;
-        int[] last = new int[26];  // last[i]（i为当前字符与'a'的差值）表示"上一次"以"该字符"结尾时，获得了多少增益
+        int[] last = new int[26];  // last[i]（i为当前字符与'a'的差值）表示上一次出现该字符的位置
         Arrays.fill(last, -1);
 
-        for (int i = 0; i < N; ++i) {
+        for (int i = 0; i < n; ++i) {
             int x = S.charAt(i) - 'a';
             dp[i + 1] = dp[i] * 2 % MOD;
             if (last[x] >= 0) {
@@ -35,9 +40,9 @@ public class DP {
             last[x] = i;
         }
 
-        dp[N]--;
-        if (dp[N] < 0) dp[N] += MOD;
-        return dp[N];
+        dp[n]--;  // 减去dp[0]那个1
+        if (dp[n] < 0) dp[n] += MOD;
+        return dp[n];
     }
 
     // 5857. 不同的好子序列数目

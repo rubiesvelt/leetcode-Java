@@ -2,13 +2,14 @@ package main;
 
 import beans.TreeNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         List<Integer> list = new ArrayList<>();
+        int t = list.hashCode();
+
         Main main = new Main();
         char a = 'a';
         int i = 96;
@@ -19,72 +20,63 @@ public class Main {
 
         int[][] matrix = {{1, 0, 0}, {0, 1, 1}, {0, 1, 1}};
         int[][] matrix1 = {{1, 0, 0}, {0, 0, 1}, {1, 1, 0}};
-        int[] dist = {1, 0, 1};
-        int[] diff = {3,3,3};
+        int[] dist = {2,4,6,4};
+        int[] diff = {3, 3, 3};
         int[] speed = {5, 1, 5, 5, 1, 5, 3, 4, 5, 1, 4};
         char[][] matrix2 = {{'.', '.', 'W', '.', 'B', 'W', 'W', 'B'}, {'B', 'W', '.', 'W', '.', 'W', 'B', 'B'}, {'.', 'W', 'B', 'W', 'W', '.', 'W', 'W'}, {'W', 'W', '.', 'W', '.', '.', 'B', 'B'}, {'B', 'W', 'B', 'B', 'W', 'W', 'B', '.'}, {'W', '.', 'W', '.', '.', 'B', 'W', 'W'}, {'B', '.', 'B', 'B', '.', '.', 'B', 'B'}, {'.', 'W', '.', 'W', '.', 'W', '.', 'W'}};
-
+        main.sumOfBeauties(dist);
         return;
     }
 
-    // 一个已经排序的数组，给一个数字，找出数字在数组中的 起始点 和 终止点
-    // 1 2 3 3 3 4
-    public int[] findStartEnd(int[] nums, int k) {
-        int l = 0;
-        int r = nums.length - 1;
-        int[] ans = new int[2];
-
-        boolean found = false;
-        // find left
-        while (l < r) {
-            int m = (l + r) / 2;
-            if (nums[m] > k) {
-                r = m;
-            } else if (nums[m] < k) {
-                l = m + 1;
-            } else {
-                if (m - 1 < 0) {
-                    ans[0] = m;
-                    found = true;
-                    break;
+    public int sumOfBeauties(int[] nums) {
+        int n = nums.length;
+        // 下标 1 - (n - 2)
+        // front all < now < all back   -> 2
+        // front one < now < back one   -> 1
+        // 记录前面的最小值，利用单调栈记录后面的
+        Stack<Integer> stack = new Stack<>();  // 单调递增栈，存放下标
+        int frontMax = nums[0];
+        int[] acc = new int[n];
+        for (int i = 1; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                int index = stack.pop();
+                if (index == i - 1) {
+                    acc[index] = 0;
+                } else {
+                    acc[index] = 1;
                 }
-                if (nums[m - 1] < nums[m]) {
-                    ans[0] = m;
-                    found = true;
-                    break;
-                }
-                r = m;
+            }
+            if (frontMax < nums[i]) {
+                acc[i] = 2;
+                stack.add(i);
+                frontMax = nums[i];
+            } else if (nums[i - 1] < nums[i]) {
+                acc[i] = 1;
+                stack.add(i);
             }
         }
-
-        if (!found) {
-            return ans;
+        int ans = 0;
+        for (int i = 1; i < n - 1; i++) {
+            ans += acc[i];
         }
+        return ans;
+    }
 
-        // find right
-        // 1 2 2 3 3 3
-        l = 0;
-        r = nums.length - 1;
-        while (l < r) {
-            int m = (l + r) / 2;
-            if (nums[m] > k) {
-                r = m;
-            } else if (nums[m] < k) {
-                l = m + 1;
-            } else {
-                if (m + 1 == nums.length) {
-                    ans[1] = m;
-                    break;
-                }
-                if (nums[m + 1] > nums[m]) {
-                    ans[1] = m;
-                    break;
-                }
-                l = m + 1;
+    public int finalValueAfterOperations(String[] operations) {
+        Set<String> down = new HashSet<>();
+        Set<String> up = new HashSet<>();
+        down.add("X--");
+        down.add("--X");
+        up.add("X++");
+        up.add("++X");
+        int ans = 0;
+        for (String s : operations) {
+            if (down.contains(s)) {
+                ans--;
             }
-        }
-        if (nums[l] == k && l == nums.length - 1) {
-            ans[1] = l;
+            if (up.contains(s)) {
+                ans++;
+            }
         }
         return ans;
     }

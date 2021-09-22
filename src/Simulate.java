@@ -3,6 +3,101 @@ import java.util.*;
 
 public class Simulate {
 
+    // 微软
+    // 有n个人 圆圈，编号1-n，顺序围， 1-m，出列，求最后一个留下来的人
+    //
+    // 1 2 3 4 5 6
+    // m = 4
+    // 4
+    // (0 + 3) % 6 = 3
+    // (3 + 3) % 5 = 1
+    // (1 + 3) % 4 = 0
+    // (0 + 3) % 3 = 0
+    // (0 + 3) % 2 = 1
+    // 要求O(n)的时间复杂度，使用链表可以达到效果
+    public int findLast(int n, int m) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(i);
+        }
+        int left = n;
+        int now = 0;
+        while (left > 0) {
+            now = (now + m - 1) % left;
+            list.remove(now);  // list.remove() 为 O(n) 的时间复杂度
+            left--;
+            if (left == 1) {
+                int ans = list.get(0) + 1;
+                return ans;
+            }
+        }
+        return -1;
+    }
+
+    // 微软
+    // 一个已经从小到大排序的数组，给一个数字，找出数字在数组中的 起始点 和 终止点
+    // 要求O(log n)的时间复杂度
+    // 1 2 3 3 3 4
+    public int[] findStartEnd(int[] nums, int k) {
+        int l = 0;
+        int r = nums.length - 1;
+        int[] ans = new int[2];
+
+        boolean found = false;
+        // find left
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (nums[m] > k) {
+                r = m;
+            } else if (nums[m] < k) {
+                l = m + 1;
+            } else {
+                if (m - 1 < 0) {
+                    ans[0] = m;
+                    found = true;
+                    break;
+                }
+                if (nums[m - 1] < nums[m]) {
+                    ans[0] = m;
+                    found = true;
+                    break;
+                }
+                r = m;
+            }
+        }
+
+        if (!found) {
+            return ans;
+        }
+
+        // find right
+        // 1 2 2 3 3 3
+        l = 0;
+        r = nums.length - 1;
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (nums[m] > k) {
+                r = m;
+            } else if (nums[m] < k) {
+                l = m + 1;
+            } else {
+                if (m + 1 == nums.length) {
+                    ans[1] = m;
+                    break;
+                }
+                if (nums[m + 1] > nums[m]) {
+                    ans[1] = m;
+                    break;
+                }
+                l = m + 1;
+            }
+        }
+        if (nums[l] == k && l == nums.length - 1) {
+            ans[1] = l;
+        }
+        return ans;
+    }
+
     /*
      * 36. 有效的数独
      */
