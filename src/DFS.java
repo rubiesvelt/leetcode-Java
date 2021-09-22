@@ -84,8 +84,8 @@ public class DFS {
     }
 
     /**
-     * shopee 笔试二题
-     * <br/>回溯
+     * shopee 笔试二题<br/>
+     * 回溯
      * <p/>给出 由数字组成的，编码后的 字符串s，求字符串解码的方案数目
      * <br/>编码规则
      * <br/>a -> 1
@@ -469,7 +469,10 @@ public class DFS {
         }
     }
 
-    // 08.08
+    // 08.08. 有重复字符串的排列组合
+    // e.g.
+    // S = "qqe"
+    // -> ["eqq", "qeq", "qqe"]
     public String[] permutation(String S) {
         List<String> res = new ArrayList<String>();
         int len = S.length();

@@ -34,7 +34,7 @@ public class ThreadPrint {
     public static int line = 0;
     public static int cnt = 1;
 
-    // 12 23 13
+    // wait() 时立刻释放锁，不执行后续过程
     public static class FishThread extends Thread {
         @Override
         public void run() {

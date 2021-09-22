@@ -3,11 +3,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DP —— 子序列
+ */
 public class DPSubSeq {
+
+    /**
+     * 子序列：有序
+     * 子集：只是集合 Set 的概念
+     */
 
     // 115. 不同的子序列
     // 动态规划
     // 给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数
+    // e.g.
+    // s = "babgbag"
+    // t = "bag"
+    // -> 5
     public int numDistinct(String s, String t) {
         // 定义数组后，数组默认值全0
         /*
@@ -25,12 +37,12 @@ public class DPSubSeq {
         g 0 0 0 0 0 1 1 1 5
 
          */
-        int[][] dp = new int[t.length() + 1][s.length() + 1];
+        int[][] dp = new int[t.length() + 1][s.length() + 1];  // dp[i][j] 表示 t 串下标小于 i，s 串下标小于 j 时，不同的子序列个数
         for (int i = 0; i < s.length() + 1; i++) {  // 第i列
             dp[0][i] = 1;
         }
-        for (int i = 1; i < t.length() + 1; i++) {  // 第i行
-            for (int j = 1; j < s.length() + 1; j++) {  // 第j列
+        for (int i = 1; i < t.length() + 1; i++) {  // t 的第 i 行
+            for (int j = 1; j < s.length() + 1; j++) {  // s 的第 j 列
                 if (s.charAt(j - 1) == t.charAt(i - 1)) {
                     // s="babgbag", t="bag"
                     // 最后一项g与g对应上时，ba在g之前的匹配（使用g） + bag在g之前的匹配（不使用此g）
@@ -51,14 +63,14 @@ public class DPSubSeq {
         int ans = 0;
         List<Map<Long, Integer>> dp = new ArrayList<>();  // dp.get(i).get(diff) 表示为以 nums[i] 结尾，公差为 diff 的子序列的数量
         for (int i = 0; i < n; i++) {
-            Map<Long, Integer> mp = new HashMap<>();
-            dp.add(mp);
+            Map<Long, Integer> map = new HashMap<>();
+            dp.add(map);
             for (int j = 0; j < i; j++) {
                 long diff = nums[i] * 1L - nums[j];
                 int t = dp.get(j).getOrDefault(diff, 0);
                 ans += t;
-                int t1 = mp.getOrDefault(diff, 0);  // 此处直接用 mp, 不使用dp.get(i), 减少对map的访问，可轻微提速
-                mp.put(diff, t1 + t + 1);  // 此处也一样
+                int t1 = map.getOrDefault(diff, 0);  // 此处直接用 map, 不使用dp.get(i), 减少对map的访问，可轻微提速
+                map.put(diff, t1 + t + 1);  // 此处也一样
             }
         }
         return ans;
