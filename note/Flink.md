@@ -2,9 +2,23 @@
 
 ---
 
-## state and checkpoint
+## Catalog
 
-### State
+1. [State](#State)
+2. [Checkpoint](#Checkpoint)
+3. [Window](#Window)
+4. [Function](#Function)
+5. [Time](#Time)
+6. [WaterMark](#WaterMark)
+7. [Q&A](#Q&A)
+
+
+
+---
+
+## State
+
+---
 
 + 其实 非 keyBy 的 function，可以通过自己定义字段，实现state
 
@@ -52,13 +66,41 @@ where they are used to maintain the same state among all subtasks. This state ca
 3. such an operator can have multiple broadcast states with different names.
 
 
-### 状态有效期(TTl)
+#### 状态有效期(TTl)
 
 任何类型的 keyed state 都可以有 有效期 (TTL)
 
 如果配置了 TTL 且状态值已过期，则会尽最大可能清除对应的值
 
-### checkpoint
+
+
+
+
+
+
+
+
+
+
+---
+
+## Checkpoint
+
++ 精确一次对外部系统的要求？
+  
+  要求输入是可回放的，输出是事务的
+
+#### checkpoint 和 checkpoint barrier
+
++ Checkpoint n 将包含每个 operator 的 state
+
++ 这些 state 是对应的 operator ***消费了严格在 checkpoint barrier n 之前的所有事件***，并且***不包含在此（checkpoint barrier n）后的任何事件*** 后而生成的状态
+
+---
+
+
+
+
 
 
 
@@ -107,6 +149,14 @@ Built-in Triggers extents `Trigger`
 + `CountTrigger`
 + `PurgingTrigger`
 
+
+
+
+
+
+
+
+
 ---
 
 ## Function
@@ -131,10 +181,6 @@ Built-in Triggers extents `Trigger`
 
 `AbstractRichFunction` —— 可获取`RuntimeContext`
 
-`RichFilterFunction` extends `AbstractRichFunction` —— 
-
-`ProcessWindowFunction` extends `AbstractRichFunction` —— 
-
 ---
 
 ### ProcessFunction
@@ -147,9 +193,15 @@ Built-in Triggers extents `Trigger`
 
 It handles events by being invoked for each event received in the input stream(s).
 
+
+
+
+
+
+
 ---
 
-## Time and watermark
+## Time
 
 ### 时间语义
 
@@ -165,9 +217,13 @@ It handles events by being invoked for each event received in the input stream(s
 
   是数据流入到具体某个算子 (消息被计算处理) 时候相应的系统时间。也就是Flink程序处理该事件时当前系统时间。
 
+
+
+
+
 ---
 
-### WaterMark
+## WaterMark
 
 > WaterMark时间 >= window_end_time
 >
@@ -193,6 +249,16 @@ allowLateNess 是将窗口关闭时间再延迟一段时间
 ### 有waterMark的情况下，窗口何时触发？
 
 waterMark时间 超过了 窗口结束时间
+
+
+
+
+
+
+
+---
+
+## Q&A
 
 ---
 
