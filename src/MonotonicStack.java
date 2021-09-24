@@ -11,6 +11,50 @@ public class MonotonicStack {
      * 下一个更小的元素 —— 单调递增栈
      */
 
+    /*
+     * 2012. 数组美丽值求和
+     * 给你一个下标从 0 开始的整数数组 nums 。对于每个下标 i（1 <= i <= nums.length - 2），nums[i] 的 美丽值 等于：
+     *
+     * 2，比前面的都大，比后面的都小
+     * 1，比前一个大，比后一个小
+     * 0，都不满足
+     *
+     * 求 1 <= i <= nums.length - 2 的所有 nums[i] 的 美丽值的总和
+     */
+    public int sumOfBeauties(int[] nums) {
+        int n = nums.length;
+        // 下标 1 - (n - 2)
+        // front all < now < all back   -> 2
+        // front one < now < back one   -> 1
+        // 记录前面的最小值，利用单调栈记录后面的
+        Stack<Integer> stack = new Stack<>();  // 单调递增栈（严格），存放下标
+        int frontMax = nums[0];
+        int[] acc = new int[n];  // 存放美丽值
+        for (int i = 1; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                int index = stack.pop();  // 弹出来的index号元素 >= 该元素的，对index号元素意味着后面有 <= 他的，美丽值骤减
+                if (index == i - 1) {
+                    acc[index] = 0;
+                } else {
+                    acc[index] = 1;
+                }
+            }
+            if (frontMax < nums[i]) {  // i号元素比之前都大，美丽值拉满
+                acc[i] = 2;
+                stack.add(i);
+                frontMax = nums[i];
+            } else if (nums[i - 1] < nums[i]) {  // i号元素比 i - 1 大，美丽值1分
+                acc[i] = 1;
+                stack.add(i);
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < n - 1; i++) {
+            ans += acc[i];
+        }
+        return ans;
+    }
+
     // 1944. 队列中可以看到的人数
     public int[] canSeePersonsCount(int[] heights) {
         Stack<Integer> stack = new Stack<>();  // 单调递减栈；曾在他上面的，还有把他挤出去的，就是他能看到的

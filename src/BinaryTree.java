@@ -4,6 +4,53 @@ import java.util.*;
 
 public class BinaryTree {
 
+    // shopee 二面
+    // z 字形遍历二叉树
+    // 二叉树层序遍历，从根开始，第一层从左到右，第二层从右到左...求最终结果序列
+    public static class TreeNodeWrapper {
+        public TreeNode treeNode;
+        public int level;
+
+        public TreeNodeWrapper(TreeNode treeNode, int level) {
+            this.treeNode = treeNode;
+            this.level = level;
+        }
+    }
+
+    public List<Integer> traverse(TreeNode root) {
+
+        Queue<TreeNodeWrapper> q = new LinkedList<>();
+        q.offer(new TreeNodeWrapper(root, 0));
+        List<List<Integer>> lists = new ArrayList<>();
+
+        while (!q.isEmpty()) {
+            TreeNodeWrapper wrapper = q.poll();
+            TreeNode tn = wrapper.treeNode;
+            int level = wrapper.level;
+            int value = tn.val;
+            if (level == lists.size()) {
+                List<Integer> list = new ArrayList<>();
+                list.add(value);
+                lists.add(list);
+            } else {
+                List<Integer> list = lists.get(level);
+                list.add(value);
+            }
+            if (tn.left != null) q.offer(new TreeNodeWrapper(tn.left, level + 1));
+            if (tn.right != null) q.offer(new TreeNodeWrapper(tn.right, level + 1));
+        }
+
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < lists.size(); i++) {
+            List<Integer> list = lists.get(i);
+            if (i % 2 == 1) {
+                Collections.reverse(list);
+            }
+            ans.addAll(list);
+        }
+        return ans;
+    }
+
     /*
      * 美团一面
      * 寻找二叉树最大路径

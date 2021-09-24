@@ -14,11 +14,6 @@ public class DP {
      * 区间DP
      */
 
-    public static void main(String[] args) {
-        DP dp = new DP();
-        dp.distinctSubseqII("aba");
-    }
-
     // 940. 不同的子序列 II
     // 给定一个字符串 S，计算 S 的"不同"非空子序列的个数，
     // 如 "aba" -> 6 ("a", "b", "ab", "ba", "aa", "aba")
