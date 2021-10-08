@@ -211,16 +211,21 @@ public class Mathematics {
         return sum == 0 || nums.length % 2 == 0;
     }
 
-    // 137. 只出现一次的数字 II
-    // 有限状态自动机
+    /*
+     * 137. 只出现一次的数字 II
+     * 给你一个整数数组 nums ，除某个元素仅出现 一次 外，其余每个元素都恰出现 三次 。请你找出并返回那个只出现了一次的元素
+     * 位运算
+     * 有限状态自动机
+     */
     public int singleNumber(int[] nums) {
         int ones = 0, twos = 0;
         for (int num : nums) {
             /*
              * 每一位
-             * 第一次出现 two = 0, one = 1
-             * 第二次出现 two = 1, one = 0
-             * 第三次出现 two = 0, one = 0
+             * 第一次出现 1 —— two = 0, one = 1
+             * 第二次出现 1 —— two = 1, one = 0
+             * 第三次出现 1 —— two = 0, one = 0
+             * 出现 0 原地不变
              */
             ones = ones ^ num & ~twos;
             twos = twos ^ num & ~ones;
