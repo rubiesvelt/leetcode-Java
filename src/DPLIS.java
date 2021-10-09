@@ -9,12 +9,12 @@ public class DPLIS {
     // 有两种解法，一种 n方 的朴素解法，一种像如下这样 nlogn 解法
     public int lengthOfLIS(int[] nums) {
         int n = nums.length;
-        int[] arr = new int[n];  // 用做状态传递的数组，以这种方式 巧妙的记录了之前的状态
+        int[] f = new int[n];  // f[i]表示 最长递增子序列 长度 为i时，该序列结尾元素的大小（f[]递增）
         int ans = -1;
         int len = 0;
         for (int x : nums) {
-            int t = Utils.lowerBound(arr, 0, len, x);
-            arr[t] = x;
+            int t = Utils.lowerBound(f, 0, len, x);  // 找到第一个小于等于 x 的元素 的下标
+            f[t] = x;
             ans = Math.max(ans, t + 1);
             if (t == len) {
                 len++;
@@ -94,6 +94,7 @@ public class DPLIS {
                 return o2[1] - o1[1];
             }
         });
+
         int[] f = new int[n];
         int ans = 1;
         for (int i = 0; i < n; i++) {
