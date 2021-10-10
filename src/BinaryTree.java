@@ -4,9 +4,10 @@ import java.util.*;
 
 public class BinaryTree {
 
-    // shopee 二面
-    // z 字形遍历二叉树
-    // 二叉树层序遍历，从根开始，第一层从左到右，第二层从右到左...求最终结果序列
+    /*
+     * shopee 二面. z 字形遍历二叉树
+     * 二叉树层序遍历，从根开始，第一层从左到右，第二层从右到左...求最终结果序列
+     */
     public static class TreeNodeWrapper {
         public TreeNode treeNode;
         public int level;
@@ -52,8 +53,7 @@ public class BinaryTree {
     }
 
     /*
-     * 美团一面
-     * 寻找二叉树最大路径
+     * 美团一面. 寻找二叉树最大路径
      * 给定一个二叉树，请计算节点值之和最大的路径的节点值之和是多少
      * 这个路径的开始节点和结束节点可以是二叉树中的任意节点
      *
