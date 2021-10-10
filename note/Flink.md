@@ -86,21 +86,43 @@ where they are used to maintain the same state among all subtasks. This state ca
 
 ## Checkpoint
 
-+ 精确一次对外部系统的要求？
-  
-  要求输入是可回放的，输出是事务的
+---
 
-#### checkpoint 和 checkpoint barrier
+### 容错处理
 
+### [通过 ***状态 (state)*** 及 ***快照 (checkpoint)*** 实现容错处理](https://ci.apache.org/projects/flink/flink-docs-release-1.13/zh/docs/learn-flink/fault_tolerance/)
+
+1. 算子将正在使用的***状态(State)*** 存储在内存中(Working State)
+2. ***Checkpoint barrier***对齐时候 (exactly once 情况下) 会**触发checkpoint**
+3. 进行checkpoint时候会将 ***状态(State)*** 持久化到 ***状态后台(State backend)***
+
+---
+
+### 关于 Checkpoint
+
++ Flink 使用 Chandy-Lamport algorithm 算法的一种变体，称为异步 barrier 快照
+
++ exactly one 条件下 barrier 对齐，at least once 情况下无需对齐
+
++ 当 checkpoint coordinator（job manager 的一部分）指示 task manager 开始 checkpoint 时，它会让所有 sources 记录它们的偏移量，并将编号的 checkpoint barriers 插入到它们的流中。这些 barriers 流经 job graph，标注每个 checkpoint 前后的流部分
 + Checkpoint n 将包含每个 operator 的 state
-
 + 这些 state 是对应的 operator ***消费了严格在 checkpoint barrier n 之前的所有事件***，并且***不包含在此（checkpoint barrier n）后的任何事件*** 后而生成的状态
 
 ---
 
+### 精确一次？
 
+通过 checkpoint 与 state backend 配合实现精确一次
 
+可选模式：
 
++ at most once（不从快照中恢复）
++ 至少一次（不对齐）
++ 精确一次（对齐）
+
+精确一次对外部系统的要求：
+
++ 要求输入是可回放的，输出是事务的
 
 
 
@@ -225,15 +247,48 @@ It handles events by being invoked for each event received in the input stream(s
 
 ## WaterMark
 
+---
+
+### 什么是WaterMark
+
++ watermark是一种特殊的时间戳，也是一种被插入到数据流的特殊的数据结构，用于表示eventTime小于watermark的事件已经全部落入到相应的窗口中，此时可进行窗口操作
++ watermark与 实际时间，processing time，ingestion time 都无关，只于 event time 有关
++ allowLateNess 是将窗口关闭时间再延迟一段时间
+
+---
+
+### WaterMark的生成方式
+
+1. 周期性生成
+
+   周期性生成器 —— 周期性生成器会观察流事件数据并定期生成 watermark；典型 BoundedOutOfOrdernessWatermarks，以最新数据时间戳生成 watermark
+
+2. 标记生成
+
+   标记生成器 —— 将查看 onEvent() 中的事件数据，并等待检查在流中携带 watermark 的特殊标记事件或打点数据。当获取到这些事件数据时，它将立即发出 watermark
+
+---
+
+### 窗口触发条件
+
 > WaterMark时间 >= window_end_time
 >
 > [window_start_time,window_end_time)中有数据存在
->
-> watermark是一种特殊的时间戳，也是一种被插入到数据流的特殊的数据结构，用于表示eventTime小于watermark的事件已经全部落入到相应的窗口中，此时可进行窗口操作
 
-watermark与 实际时间，processing time，ingestion time 都无关，只于 event time 有关
+---
 
-allowLateNess 是将窗口关闭时间再延迟一段时间
+### Watermark生成策略 WatermarkStrategy
+
+WatermarkStrategy 可以在 Flink 应用程序中的两处使用：
+
+1. 直接在数据源上使用
+2. 直接在非数据源的操作之后使用
+
+第一种方式相比会更好，因为数据源可以利用 watermark 生成逻辑中有关分片/分区（shards/partitions/splits）的信息。使用这种方式，数据源通常可以更精准地跟踪 watermark，整体 watermark 生成将更精确。
+
+在使用 Kafka connector 时使用watermark的情况下，你可以使用 Flink 中可识别 Kafka 分区的 watermark 生成机制。使用此特性，将在 Kafka 消费端内部针对每个 Kafka 分区生成 watermark，并且不同分区 watermark 的合并方式与在数据流 shuffle 时的合并方式相同。（使用了 Kafka 记录自身的时间戳）
+
+对于两个流的情况，算子当前的 watermark 会取其两个输入的最小值
 
 ---
 
@@ -263,6 +318,8 @@ waterMark时间 超过了 窗口结束时间
 ---
 
 ### 数据倾斜
+
+---
 
 #### 数据倾斜的影响
 
@@ -297,5 +354,7 @@ waterMark时间 超过了 窗口结束时间
   > 预聚合：加盐局部聚合，在原来的 key 上加随机的前缀或者后缀
   > 
   > 去盐全局聚合，删除预聚合添加的前缀或者后缀，然后进行聚合统计
+
+---
 
 ### 如何利用Kafka实现精确一次消费
