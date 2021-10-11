@@ -9,6 +9,21 @@ public class BinarySearch {
      * - 我们需要的东西最大最小取值到哪里？
      */
 
+    /*
+     * 典型二分
+     */
+    public static int lower_bound(int[] nums, int l, int r, int t) {
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if (nums[mid] >= t) {
+                r = mid;
+            } else {
+                l = mid + 1;  // 此处如果 l = mid 可能陷入死循环 —— 由于是向下取整，l 与 r 相差 1 的时候会导致 mid = l；此时如果 l = mid 会造成死循环
+            }
+        }
+        return l;
+    }
+
     /**
      * 可信 1
      * <br/>二分
@@ -20,8 +35,9 @@ public class BinarySearch {
      * <br/>{1, 4, 2, 5, 5, 1, 6}, 13 -> 2
      * <br/>{1, 1, 1, 1, 1, 1, 25}, 13 -> 7
      * <p/>
+     *
      * @param nums 展厅列表数组
-     * @param cnt 本次参观最多容纳人数为cnt
+     * @param cnt  本次参观最多容纳人数为cnt
      * @return 展厅进入人数上限的最大值
      */
     public int manageTourists(int[] nums, int cnt) {

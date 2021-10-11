@@ -6,6 +6,7 @@ import java.util.Arrays;
 public class DPLIS {
 
     // 300. 最长递增子序列
+    // 严格递增
     // 有两种解法，一种 n方 的朴素解法，一种像如下这样 nlogn 解法
     public int lengthOfLIS(int[] nums) {
         int n = nums.length;
@@ -13,7 +14,7 @@ public class DPLIS {
         int ans = -1;
         int len = 0;
         for (int x : nums) {
-            int t = Utils.lowerBound(f, 0, len, x);  // 找到第一个小于等于 x 的元素 的下标
+            int t = Utils.lower_bound(f, 0, len, x);  // 找到第一个大于等于 x 的元素 的下标
             f[t] = x;
             ans = Math.max(ans, t + 1);
             if (t == len) {
@@ -32,7 +33,7 @@ public class DPLIS {
         int[] res = new int[n];  // 存储结果
         int len = 0, idx = 0;
         for (int x : obstacles) {
-            int ins = Utils.upperBound(arr, 0, len, x);
+            int ins = Utils.upper_bound(arr, 0, len, x);
             arr[ins] = x;
             res[idx] = ins + 1;
             if (ins == len) {

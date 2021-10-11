@@ -11,31 +11,49 @@ public class Utils {
         }
     }
 
-    // 二分 找到第一个 小于等于t 的元素，返回下标
-    public static int lowerBound(int[] arr, int left, int right, int t) {
-        while (left < right) {
-            int mid = (right - left) / 2 + left;
-            if (arr[mid] >= t) {
-                right = mid;
-            } else {
-                left = mid + 1;
-            }
-        }
-
-        return left;
+    public static void main(String[] args) {
+        int[] nums = {1, 4, 4, 5};
+        int ret = lower_bound(nums, 0, 4, 4);
+        System.out.println(ret);
     }
 
-    // 二分 找到第一个大于t的下标，就是 C++ 中的upper_bound函数
-    public static int upperBound(int[] arr, int left, int right, int t) {
-        while (left < right) {
-            int mid = (right - left) / 2 + left;
-            if (arr[mid] > t) {
-                right = mid;
+    /*
+     * lower_bound()函数 用来求一个容器中，第一个 大于等于 所要查找的元素的地址
+     * upper_bound()函数 用来求一个容器中，第一个 大于 所要查找的元素的地址
+     *
+     * 使用要求: 0 <= l <= r, l <= r <= nums.length()
+     * 下标判断范围: [l, r)，t返回范围 [l, r]
+     *
+     * e.g.
+     * nums = {1, 4, 4, 5}, t = 0 -> lower_bound = 0, upper_bound = 0
+     * nums = {1, 4, 4, 5}, t = 1 -> lower_bound = 0, upper_bound = 1
+     * nums = {1, 4, 4, 5}, t = 2 -> lower_bound = 1, upper_bound = 1
+     * nums = {1, 4, 4, 5}, t = 4 -> lower_bound = 1, upper_bound = 3
+     * nums = {1, 4, 4, 5}, t = 5 -> lower_bound = 3, upper_bound = 4
+     * nums = {1, 4, 4, 5}, t = 6 -> lower_bound = 4, upper_bound = 4
+     */
+    public static int lower_bound(int[] nums, int l, int r, int t) {
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if (nums[mid] >= t) {
+                r = mid;
             } else {
-                left = mid + 1;
+                l = mid + 1;  // 如果 l = mid 与 mid = (l + r) >> 1 一起可能陷入死循环
             }
         }
-        return left;
+        return l;
+    }
+
+    public static int upper_bound(int[] nums, int l, int r, int t) {
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if (nums[mid] > t) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
     }
 
     // 快速幂，求a的b次方，结果对mod取余
