@@ -13,12 +13,12 @@ public class DPLCS {
      * }
      */
     public int longestCommonSubsequence(String text1, String text2) {
-        int length1 = text1.length();
-        int length2 = text2.length();
-        int[][] dp = new int[length1 + 1][length2 + 1];
-        for (int i = 1; i < length1 + 1; i++) {
+        int m = text1.length();
+        int n = text2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i < m + 1; i++) {
             char c1 = text1.charAt(i - 1);
-            for (int j = 1; j < length2 + 1; j++) {
+            for (int j = 1; j < n + 1; j++) {
                 char c2 = text2.charAt(j - 1);
                 if (c1 == c2) {
                     dp[i][j] = dp[i - 1][j - 1] + 1;
@@ -27,7 +27,7 @@ public class DPLCS {
                 }
             }
         }
-        return dp[length1][length2];
+        return dp[m][n];
     }
 
     // 1035. 不相交的线
@@ -50,5 +50,4 @@ public class DPLCS {
         }
         return dp[m][n];
     }
-
 }

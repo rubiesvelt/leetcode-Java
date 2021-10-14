@@ -3,50 +3,21 @@
  */
 public class DPRob {
 
-    // 213. 打家劫舍 Ⅱ
+    // 198. 打家劫舍
     public int rob(int[] nums) {
-        if (nums.length == 1) {
+        int n = nums.length;
+        if (n == 1) {
             return nums[0];
         }
-        if (nums.length == 2) {
-            return Math.max(nums[0], nums[1]);
+        if (n == 2) {
+            return Math.max(nums[1], nums[0]);
         }
-        int[] nums1 = new int[nums.length - 1];
-        int[] nums2 = new int[nums.length - 1];
-        int index1 = 0;
-        int index2 = 0;
-        for (int i = 0; i < nums.length; i++) {
-            if (i != nums.length - 1) nums1[index1++] = nums[i];
-            if (i != 0) nums2[index2++] = nums[i];
+        int[] dp = new int[n];  // dp[i] 表示下标 [0, i] 内最高打劫钱财
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[1], nums[0]);
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(dp[i - 2] + nums[i], dp[i - 1]);  // 状态转移方程
         }
-        nums = nums1;
-        if (nums.length == 1) {
-            return nums[0];
-        }
-        if (nums.length == 2) {
-            return Math.max(nums[0], nums[1]);
-        }
-        int[] res = new int[nums.length];
-        res[0] = nums[0];
-        res[1] = Math.max(nums[0], nums[1]);
-        for (int i = 2; i < nums.length; i++) {
-            res[i] = Math.max(res[i - 1], res[i - 2] + nums[i]);
-        }
-        int ans1 = res[res.length - 1];
-        nums = nums2;
-        if (nums.length == 1) {
-            return nums[0];
-        }
-        if (nums.length == 2) {
-            return Math.max(nums[0], nums[1]);
-        }
-        res = new int[nums.length];
-        res[0] = nums[0];
-        res[1] = Math.max(nums[0], nums[1]);
-        for (int i = 2; i < nums.length; i++) {
-            res[i] = Math.max(res[i - 1], res[i - 2] + nums[i]);
-        }
-        int ans2 = res[res.length - 1];
-        return Math.max(ans1, ans2);
+        return dp[n - 1];
     }
 }

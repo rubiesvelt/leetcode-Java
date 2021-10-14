@@ -14,7 +14,7 @@ public class DPLIS {
         int ans = -1;
         int len = 0;
         for (int x : nums) {
-            int t = Utils.lower_bound(f, 0, len, x);  // 找到第一个大于等于 x 的元素 的下标
+            int t = Utils.lower_bound(f, 0, len, x);  // 找到第一个大于等于 x 的元素 的下标; t + 1 为必选 x 时，最长递增子序列的长度
             f[t] = x;
             ans = Math.max(ans, t + 1);
             if (t == len) {
@@ -24,8 +24,8 @@ public class DPLIS {
         return ans;
     }
 
-    // 5841. 找出到每个位置为止最长的有效障碍赛跑路线
-    // 求解最长不递减子序列长度，对数组中的每一项
+    // 1964. 找出到每个位置为止最长的有效障碍赛跑路线
+    // 求解最长"不递减"子序列长度，对数组中的每一项
     // 必须 nlogn 解法，否则超时
     public int[] longestObstacleCourseAtEachPosition1(int[] obstacles) {
         int n = obstacles.length;
@@ -33,10 +33,10 @@ public class DPLIS {
         int[] res = new int[n];  // 存储结果
         int len = 0, idx = 0;
         for (int x : obstacles) {
-            int ins = Utils.upper_bound(arr, 0, len, x);
-            arr[ins] = x;
-            res[idx] = ins + 1;
-            if (ins == len) {
+            int t = Utils.upper_bound(arr, 0, len, x);  // t + 1 为必选 x 时，最长不递减子序列的长度
+            arr[t] = x;
+            res[idx] = t + 1;
+            if (t == len) {
                 len++;
             }
             idx++;

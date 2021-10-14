@@ -19,7 +19,6 @@ public class BinaryTree {
     }
 
     public List<Integer> traverse(TreeNode root) {
-
         Queue<TreeNodeWrapper> q = new LinkedList<>();
         q.offer(new TreeNodeWrapper(root, 0));
         List<List<Integer>> lists = new ArrayList<>();

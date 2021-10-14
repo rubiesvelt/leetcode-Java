@@ -3,6 +3,10 @@ import java.util.*;
 public class DP {
 
     /**
+     *
+     * 发生过的事情不会改变，但会对未来造成影响
+     *
+     * <p>
      * 经典动态规划
      * <p>
      * 最长递增子序列 LIS
@@ -14,37 +18,13 @@ public class DP {
      * 区间DP
      */
 
-    // 940. 不同的子序列 II
-    // 给定一个字符串 S，计算 S 的"不同"非空子序列的个数，
-    // 如 "aba" -> 6 ("a", "b", "ab", "ba", "aa", "aba")
-    public int distinctSubseqII(String S) {
-        int MOD = 1_000_000_007;
-        int n = S.length();
-        int[] dp = new int[n + 1];  // dp[i]表示，考虑前i个数（下标 0 - i-1）不同非空子序列个数
-        dp[0] = 1;
-        int[] last = new int[26];  // last[i]（i为当前字符与'a'的差值）表示上一次出现该字符的位置
-        Arrays.fill(last, -1);
-
-        for (int i = 0; i < n; ++i) {
-            int x = S.charAt(i) - 'a';
-            dp[i + 1] = dp[i] * 2 % MOD;
-            if (last[x] >= 0) {
-                dp[i + 1] -= dp[last[x]];
-            }
-            dp[i + 1] %= MOD;
-            last[x] = i;
-        }
-
-        dp[n]--;  // 减去dp[0]那个1
-        if (dp[n] < 0) dp[n] += MOD;
-        return dp[n];
-    }
-
-    // 5857. 不同的好子序列数目
-    // 给出一个以 0, 1 组成的String，求 "好子序列" 的数目。好子序列，即以1开头的子序列，如 "1", "101" 等
+    /*
+     * 1987. 不同的好子序列数目
+     * 给出一个以 0, 1 组成的String，求 "好子序列" 的数目。好子序列，即以 无前导0 的子序列，如 "0", "1", "101" 等
+     */
     public int numberOfUniqueGoodSubsequences(String binary) {
         int n = binary.length();
-        int dp0 = 0, dp1 = 0;  // 以0，1开头的子序列的数目
+        int dp0 = 0, dp1 = 0;  // 以 0，1 开头的子序列的数目
         int has0 = 0;
         int MOD = (int) (1e9 + 7);
         // 0 0 0
@@ -52,6 +32,9 @@ public class DP {
             if (binary.charAt(i) == '0') {
                 has0 = 1;
                 dp0 = (dp0 + dp1 + 1) % MOD;
+                // e.g.
+                // binary = 1001, 对于 1(0)01
+                // 0[01], 0[0] + 0[1] + 0
             } else {
                 dp1 = (dp0 + dp1 + 1) % MOD;
             }
@@ -61,7 +44,7 @@ public class DP {
 
     /*
      * 1986. 完成任务的最少工作时间段
-     * 你被安排了 n 个任务。任务需要花费的时间用长度为 n 的整数数组tasks表示，第 i 个任务需要花费tasks[i]小时完成
+     * 你被安排了 n 个任务。任务需要花费的时间用长度为 n 的整数数组 tasks 表示，第 i 个任务需要花费 tasks[i] 小时完成
      * 一个 工作时间段中，你可以 至多连续工作 sessionTime 个小时
      * 求最少需要多少时间段，能够完成所有任务
      *
@@ -70,7 +53,7 @@ public class DP {
      * 15
      *
      * 答案为5 而不是6
-     * 若第一次取 10 + 4 + 1 那后面 7 + 7就没法安排，多出个2
+     * 若第一次取 10 + 4 + 1 那后面 7 + 7 就没法安排，多出个2
      *
      * 状压dp
      */
@@ -110,12 +93,27 @@ public class DP {
             }
         }
 
+        int ret = dp[m - 1];
         return dp[m - 1];
+    }
+
+    public static void main(String[] args) {
+        DP dp = new DP();
+        dp.minSessions1(new int[]{10,9,8,7,6,4,4,4,3,3,2}, 15);
+
     }
 
      /*
      * 化为多次 0-1 背包问题 —— 不可取
      * 可以通过贪心得到最优解，但当背包中元素最多的时候，不能确认都装了哪些东西
+     *
+     * 错误情景！！！
+     * [10,9,8,7,6,4,4,4,3,3,2]
+     * -> 4
+     *
+     * 答案为4不为5
+     *
+     * [10,10,10,10,7,7,4,4,4,2,2,1]
      *
      * 先入为主策略
      * 15 -> 7,4,4
@@ -146,23 +144,24 @@ public class DP {
         int cnt = 0;
         int n = oritasks.length;
         int left = oritasks.length;
-        int[] tasks = new int[oritasks.length];
-        Arrays.sort(oritasks);
-        for (int i = 0; i < tasks.length; i++) {
-            tasks[i] = oritasks[tasks.length - i - 1];
+        int[] tasks = new int[n];
+        Arrays.sort(oritasks);  // oritasks[]从小到大排序
+        for (int i = 0; i < n; i++) {
+            tasks[i] = oritasks[n - i - 1];  // tasks[]从大到小排序
         }
         while (left > 0) {
             Block[] f = new Block[sessionTime + 1];  // f[i] 表示元素和不超过 i 的时候，背包中装的物品最大和; f[i]永远小于i
             for (int i = 0; i < sessionTime + 1; i++) {
                 f[i] = new Block();
             }
+            // 每来一个元素，从高到低刷新 动态规划数组
             for (int i = 0; i < n; i++) {
-                if (i == n - 1) {
+                if (i == n - 1) {  // 最后一个元素
                     if (tasks[i] == 0) {
                         continue;
                     }
                     for (int j = sessionTime; j >= tasks[i]; j--) {
-                        if (f[j].total > f[j - tasks[i]].total + tasks[i]) {  // 后来居上策略
+                        if (f[j].total > f[j - tasks[i]].total + tasks[i]) {  // 原来的 > 新的 则跳过 即 新的 == 原来的 进行更新（后来居上）
                             continue;
                         }
                         Block block = f[j];
@@ -176,9 +175,10 @@ public class DP {
                     continue;
                 }
                 for (int j = sessionTime; j >= tasks[i]; j--) {
-                    if (f[j].total >= f[j - tasks[i]].total + tasks[i]) {  // 先入为主
+                    if (f[j].total >= f[j - tasks[i]].total + tasks[i]) {  // 原来的 >= 新的 则跳过 即 新的 == 原来的 不进行更新（先入为主）
                         continue;
                     }
+                    // 进行更新，把 f[j] 更新成新的
                     Block block = f[j];
                     block.total = f[j - tasks[i]].total + tasks[i];
                     block.used = new ArrayList<>(f[j - tasks[i]].used);
@@ -200,9 +200,24 @@ public class DP {
         List<Integer> used = new ArrayList<>();
     }
 
-    // 139. 单词拆分
-    // 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词，单词可重复使用
-    // 经典动态规划
+    /*
+     * 139. 单词拆分
+     * 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词，单词可重复使用
+     *
+     * e.g.
+     * s = "leetcode", wordDict = ["leet", "code"]
+     * -> true
+     *
+     * s = "applepenapple", wordDict = ["apple", "pen"]
+     * -> true
+     *
+     * s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+     * -> false
+     *
+     * 动态规划
+     * DFS
+     * BFS
+     */
     public boolean wordBreak(String s, List<String> wordDict) {
         Set<String> wordSet = new HashSet<>();  // wordDict允许复用，所以用Set去重
         int maxWordLength = 0;
@@ -212,7 +227,7 @@ public class DP {
                 maxWordLength = str.length();
             }
         }
-        boolean[] dp = new boolean[s.length() + 1];
+        boolean[] dp = new boolean[s.length() + 1];  // dp[i] 表示子串 [0, i) 是否为可行子串
         dp[0] = true;
         for (int i = 0; i <= s.length(); i++) {
             for (int j = (Math.max(i - maxWordLength, 0)); j < i; j++) {
@@ -225,13 +240,37 @@ public class DP {
         return dp[s.length()];
     }
 
+    // DFS
+    public boolean wordBreakDfs(String s, List<String> wordDict) {
+        boolean[] visited = new boolean[s.length() + 1];  // 使用 visited[] 做记忆化
+        return dfsWordBreak(s, 0, wordDict, visited);
+    }
+
+    private boolean dfsWordBreak(String s, int start, List<String> wordDict, boolean[] visited) {
+        for (String word : wordDict) {
+            int nextStart = start + word.length();
+            if (nextStart > s.length() || visited[nextStart]) {  // 记忆化剪枝
+                continue;
+            }
+            // 注意，此处用到了 s.indexOf() 寻找字符串中是否出现子串
+            // indexOf() returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
+            if (s.indexOf(word, start) == start) {
+                if (nextStart == s.length() || dfsWordBreak(s, nextStart, wordDict, visited)) {
+                    return true;
+                }
+                visited[nextStart] = true;
+            }
+        }
+        return false;
+    }
+
     // BFS
-    public static boolean wordBreakBfs(String s, List<String> wordDict) {
+    public boolean wordBreakBfs(String s, List<String> wordDict) {
         Queue<Integer> queue = new LinkedList<>();
         queue.add(0);
 
-        int slength = s.length();
-        boolean[] visited = new boolean[slength + 1];
+        int len = s.length();
+        boolean[] visited = new boolean[len + 1];
 
         while (!queue.isEmpty()) {
             int size = queue.size();
@@ -239,39 +278,17 @@ public class DP {
                 int start = queue.poll();
                 for (String word : wordDict) {
                     int nextStart = start + word.length();
-                    if (nextStart > slength || visited[nextStart]) {
+                    if (nextStart > len || visited[nextStart]) {  // 记忆化剪枝
                         continue;
                     }
                     if (s.indexOf(word, start) == start) {
-                        if (nextStart == slength) {
+                        if (nextStart == len) {
                             return true;
                         }
                         queue.add(nextStart);
                         visited[nextStart] = true;
                     }
                 }
-            }
-        }
-        return false;
-    }
-
-    // DFS
-    public boolean wordBreakDfs(String s, List<String> wordDict) {
-        boolean[] visited = new boolean[s.length() + 1];
-        return dfsWordBreak(s, 0, wordDict, visited);
-    }
-
-    private boolean dfsWordBreak(String s, int start, List<String> wordDict, boolean[] visited) {
-        for (String word : wordDict) {
-            int nextStart = start + word.length();
-            if (nextStart > s.length() || visited[nextStart]) {
-                continue;
-            }
-            if (s.indexOf(word, start) == start) {  // index of returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
-                if (nextStart == s.length() || dfsWordBreak(s, nextStart, wordDict, visited)) {
-                    return true;
-                }
-                visited[nextStart] = true;
             }
         }
         return false;
@@ -372,19 +389,12 @@ public class DP {
         }
     }
 
-
-    // 300. 最长递增子序列 —— LIS问题
-
-    /**
-     * 最长公共子序列 —— LCS
-     */
-
     // LCP 19. 秋叶收藏集
     /*
-    动态规划：通过增加维度，来全面规划问题。
-    某一个状态的值，往往是问题的解
-    都是有状态的
-    某一个状态，可以参考前面的状态，叫做"状态转移"
+     * 动态规划：通过增加维度，来全面规划问题。
+     * 某一个状态的值，往往是问题的解
+     * 都是有状态的
+     * 某一个状态，可以参考前面的状态，叫做"状态转移"
      */
     public int minimumOperations(String leaves) {
         int n = leaves.length();

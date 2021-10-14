@@ -11,12 +11,6 @@ public class Utils {
         }
     }
 
-    public static void main(String[] args) {
-        int[] nums = {1, 4, 4, 5};
-        int ret = lower_bound(nums, 0, 4, 4);
-        System.out.println(ret);
-    }
-
     /*
      * lower_bound()函数 用来求一个容器中，第一个 大于等于 所要查找的元素的地址
      * upper_bound()函数 用来求一个容器中，第一个 大于 所要查找的元素的地址
