@@ -28,7 +28,7 @@ public class DP {
         int has0 = 0;
         int MOD = (int) (1e9 + 7);
         // 0 0 0
-        for (int i = n - 1; i >= 0; i--) {
+        for (int i = n - 1; i >= 0; i--) {  // 从后往前
             if (binary.charAt(i) == '0') {
                 has0 = 1;
                 dp0 = (dp0 + dp1 + 1) % MOD;
@@ -47,26 +47,34 @@ public class DP {
      * 你被安排了 n 个任务。任务需要花费的时间用长度为 n 的整数数组 tasks 表示，第 i 个任务需要花费 tasks[i] 小时完成
      * 一个 工作时间段中，你可以 至多连续工作 sessionTime 个小时
      * 求最少需要多少时间段，能够完成所有任务
+     * 条件：
+     * 1 <= n <= 14
+     * 1 <= tasks[i] <= 10
+     * 1 <= tasks[i] <= 10
      *
-     * [2,10,1,10,4,4,7,10,7,4,10,2] -> [10,10,10,10,7,7,4,4,4,2,2,1]
-     * [13,14,14,1,1,2]
-     * 15
-     *
-     * 答案为5 而不是6
-     * 若第一次取 10 + 4 + 1 那后面 7 + 7 就没法安排，多出个2
+     * e.g.
+     * tasks = [10,9,8,7,6,4,4,4,3,3,2]
+     * sessionTime = 15
+     * -> 答案为4 而不是5
+     * 分组如下
+     * 10 3 2
+     * 9 6
+     * 8 7
+     * 4 4 4 3
      *
      * 状压dp
      */
     public int minSessions(int[] tasks, int sessionTime) {
         int n = tasks.length;
-        int m = 1 << n;
+        int m = 1 << n;  // n位
         final int INF = 20;
         int[] dp = new int[m];  // dp[i] 为选择状态为i(二进制)时，最小的分段数目
         Arrays.fill(dp, INF);
 
-        // 预处理每个状态，合法状态预设为 1
+        // 罗列 全不选 - 全选的所有状态，合法状态预设为 1
+        // 例如总共6个task，全不选 000000，全选 111111
         for (int i = 1; i < m; i++) {
-            int state = i;
+            int state = i;  // 表示一个状态
             int idx = 0;
             int spend = 0;
             while (state > 0) {
@@ -88,12 +96,20 @@ public class DP {
                 continue;
             }
             for (int j = i; j > 0; j = (j - 1) & i) {  // j永远是i的子集
-                // 111(3) 或 110(1) + 001(1)
+                /*
+                 * 111
+                 * 110 + 001
+                 * 101 + 010
+                 * 100 + 011
+                 * 011 + 100
+                 * 010 + 101
+                 * 001 + 110
+                 *
+                 * 111(3) 或 110(1) + 001(1)
+                 */
                 dp[i] = Math.min(dp[i], dp[j] + dp[i ^ j]);  // ^ 为 异或
             }
         }
-
-        int ret = dp[m - 1];
         return dp[m - 1];
     }
 
@@ -119,30 +135,6 @@ public class DP {
      * 答案为4不为5
      *
      * [10,10,10,10,7,7,4,4,4,2,2,1]
-     *
-     * 先入为主策略
-     * 15 -> 7,4,4
-     * 14 -> 10,4
-     *
-     * 后来居上策略
-     * 15 -> 10,2,2,1
-     * 14 -> 10,2,2
-     *
-     * -> 到最后一个元素的时候，实行后来居上策略
-     *
-     * [2,10,1,10,4,4,7,10,7,4,10,2] -> [10,10,10,10,7,7,4,4,4,2,2,1]
-     * 15
-     * 答案为5 而不是6
-     *
-     * 完全没法控制 先入为主 或者 后来居上
-     *
-     *
-     * [2,3,3,4,4,4,6,7,8,9,10]
-     * 10, 3, 2
-     * [3,4,4,4,6,7,8,9]
-     * 9,6
-     * 8,7
-     * [3,4,4,4]
      *
      */
     public int minSessions1(int[] oritasks, int sessionTime) {
@@ -307,7 +299,7 @@ public class DP {
         int n = points[0].length;
         long[] dp = new long[n];  // dp[] 存储到当前行的结果
         for (int i = 0; i < m; i++) {
-            long[] buff = new long[n];  // buff 表示下一行可以从上一行收获的"最大增益"
+            long[] buff = new long[n];  // buff 表示 下一行 可以从 上一行 收获的"最大增益"
             // 求增益，左扫描dp一遍，右扫描dp一遍，太秀了
             long lmax = 0;
             for (int j = 0; j < n; j++) {
@@ -319,6 +311,7 @@ public class DP {
                 rmax = Math.max(rmax - 1, dp[j]);
                 buff[j] = Math.max(buff[j], rmax);
             }
+
             // 更新dp[]，上一行 -> 当前行
             for (int j = 0; j < n; j++) {
                 dp[j] = buff[j] + points[i][j];
@@ -394,9 +387,13 @@ public class DP {
         }
     }
 
-    // LCP 19. 秋叶收藏集
     /*
-     * 动态规划：通过增加维度，来全面规划问题。
+     * LCP 19. 秋叶收藏集
+     * leaves为小写字符 r 和 y 组成的字符串
+     * 每一次操作可以将一个 r 变成 y，或者将一个 y 变成 r，
+     * 现需要将收藏集中树叶的排列调整成「红、黄、红」三部分，求最少操作次数
+     *
+     * 动态规划：通过增加维度，来全面规划问题
      * 某一个状态的值，往往是问题的解
      * 都是有状态的
      * 某一个状态，可以参考前面的状态，叫做"状态转移"
@@ -404,28 +401,30 @@ public class DP {
     public int minimumOperations(String leaves) {
         int n = leaves.length();
         int[][] f = new int[n][3];
+        /*
+         * f[i][j]表示：从头开始规整第 i 个元素 至 j 状态时，所需要调整的"最少"叶子数
+         * 状态
+         * j = 0 处于初级r状态
+         * j = 1 处于中间y状态
+         * j = 2 处于后段r状态
+         * 状态转移方程：
+         * f[i][0] = f[i-1][0] + 调整r
+         * f[i][1] = min( f[i-1][0], f[i-1][1] ) + 调整y
+         * f[i][2] = min( f[i-1][1], f[i-1][2] ) + 调整r
+         *
+         * e.g.
+         *     r r r y y y r y r r y
+         * [0] 0 0 0 1 2 3 3 4 4 x x   -> r... 看r
+         * [1] x 1 1 0 0 0 1 1 2 3 x   -> r...y... 看y —— 如果是y，可以从左上 + 0，或者左 + 0；如果是r，可以从左上 + 1，或者左 + 1
+         * [2] x x 1 2 1 1 0 1 1 1 2   -> r...y...r... 看r
+         *
+         */
+
         // 第一个元素一定为0
         f[0][0] = leaves.charAt(0) == 'y' ? 1 : 0;
         f[0][1] = f[0][2] = f[1][2] = Integer.MAX_VALUE;
 
-        /*
-        f[i][j]表示：从头开始规整第i个元素至j状态时，所需要调整的“最少”叶子数
-        状态
-        j = 0 处于初级r状态
-        j = 1 处于中间y状态
-        j = 2 处于后段r状态
-        状态转移方程：
-        f[i][0] = f[i-1][0] + 调整r
-        f[i][1] = min( f[i-1][0], f[i-1][1] ) + 调整y
-        f[i][2] = min( f[i-1][1], f[i-1][2] ) + 调整r
-
-            r r r y y y r y r r y
-        [0] 0 0 0 1 2 3 3 4 4 x x
-        [1] x 1 1 0 0 0 1 1 2 3 x
-        [2] x x 1 2 1 1 0 1 1 1 2
-
-         */
-        for (int i = 1; i < n; ++i) {
+        for (int i = 1; i < n; i++) {
             int isRed = leaves.charAt(i) == 'r' ? 1 : 0;
             int isYellow = leaves.charAt(i) == 'y' ? 1 : 0;
             f[i][0] = f[i - 1][0] + isYellow;
@@ -437,9 +436,24 @@ public class DP {
         return f[n - 1][2];
     }
 
-    // 1269. 停在原地的方案数
-    // 动态规划
-    int mod = (int) 1e9 + 7;
+    /*
+     * 1269. 停在原地的方案数
+     * 有一个长度为 arrLen 的数组，开始有一个指针在索引 0 处
+     * 每一步操作中，你可以将指针向左或向右移动 1 步，或者停在原地，指针不能被移动到数组范围外
+     * 给你两个整数 steps 和 arrLen ，请你计算并返回：在恰好执行 steps 次操作以后，指针仍然指向索引 0 处的方案数
+     *
+     * e.g.
+     * steps = 3, arrLen = 2
+     * -> 4
+     * 3 步后，总共有 4 种不同的方法可以停在索引 0 处。
+     * 向右，向左，不动
+     * 不动，向右，向左
+     * 向右，不动，向左
+     * 不动，不动，不动
+     *
+     * 动态规划
+     */
+    int MOD = (int) 1e9 + 7;
 
     public int numWays(int steps, int len) {
         int max = Math.min(steps / 2, len - 1);
@@ -450,11 +464,11 @@ public class DP {
             int edge = Math.min(i, max);
             for (int j = 0; j <= edge; j++) {
                 // 通过"留在原地"得到
-                f[i][j] = (f[i][j] + f[i + 1][j]) % mod;
+                f[i][j] = (f[i][j] + f[i + 1][j]) % MOD;
                 // 从j - 1右移得到
-                if (j - 1 >= 0) f[i][j] = (f[i][j] + f[i + 1][j - 1]) % mod;
+                if (j - 1 >= 0) f[i][j] = (f[i][j] + f[i + 1][j - 1]) % MOD;
                 // 从j + 1左移得到
-                if (j + 1 <= max) f[i][j] = (f[i][j] + f[i + 1][j + 1]) % mod;
+                if (j + 1 <= max) f[i][j] = (f[i][j] + f[i + 1][j + 1]) % MOD;
             }
         }
         return f[0][0];
@@ -464,12 +478,11 @@ public class DP {
     // 动态规划
     public int combinationSum4(int[] nums, int target) {
         // dfs会超时
-        // 使用dp数组，dp[i]代表组合数为i时使用nums中的数能组成的组合数的个数
-        // 别怪我写的这么完整
-        // dp[i]=dp[i-nums[0]]+dp[i-nums[1]]+dp[i=nums[2]]+...
-        // 举个例子比如nums=[1,3,4],target=7;
-        // dp[7]=dp[6]+dp[4]+dp[3]
-        // 其实就是说7的组合数可以由三部分组成，1和dp[6]，3和dp[4],4和dp[3];
+        // dp[i] 代表组合数为 i 时使用 nums 中的数能组成的组合数的个数
+        // dp[i] = dp[i - nums[0]] + dp[i - nums[1]]+dp[i = nums[2]]+...
+        // 举个例子比如 nums=[1,3,4], target = 7;
+        // dp[7] = dp[6] + dp[4] + dp[3]
+        // 其实就是说7的组合数可以由三部分组成，1 和 dp[6]，3和dp[4],4和dp[3];
         int[] dp = new int[target + 1];
         // 是为了算上自己的情况，比如dp[1]可以由dp[0]和1这个数的这种情况组成。
         dp[0] = 1;
@@ -566,5 +579,4 @@ public class DP {
         }
         return f[n];
     }
-
 }
