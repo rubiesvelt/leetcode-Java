@@ -31,6 +31,20 @@ public class Main {
 
     /*
      * 5904. 统计按位或能得到最大值的子集数目
+     * 给出数组 nums[] 求其 按位或 能得到最大值 的子集 的数目
+     * e.g.
+     * nums = [1,2,3,5]
+     *
+     * 按位或最大值 7
+     * 如下子集 进行按位或 可得到
+     * [2,5]
+     * [3,5]
+     * [1,2,5]
+     * [1,3,5]
+     * [2,3,5]
+     * [1,2,3,5]
+     * 共 6 个
+     * -> 6
      */
     public int countMaxOrSubsets1(int[] nums) {
         int n = nums.length;
@@ -55,7 +69,7 @@ public class Main {
     }
 
     /*
-     * 先求出最大和，然后遍历所有子集
+     * dfs遍历所有子集
      */
     public int countMaxOrSubsets(int[] nums) {
         int n = nums.length;
