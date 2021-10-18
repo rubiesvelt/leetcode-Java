@@ -28,4 +28,70 @@ public class Main {
 
         return;
     }
+
+    /*
+     * 5904. 统计按位或能得到最大值的子集数目
+     */
+    public int countMaxOrSubsets1(int[] nums) {
+        int n = nums.length;
+        int max = 0;
+        for (int num : nums) {
+            max |= num;
+        }
+        int ans = 0;
+        // n位 代表所有选项，从 0 到 2 ^ n
+        for (int i = 0; i < (1 << n); i++) {  // 对于每一个子集
+            int res = 0;
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 1) {
+                    res |= nums[j];
+                }
+            }
+            if (res == max) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+
+    /*
+     * 先求出最大和，然后遍历所有子集
+     */
+    public int countMaxOrSubsets(int[] nums) {
+        int n = nums.length;
+        int max = 0;  // 按位或的最大值
+        for (int num : nums) {
+            max |= num;
+        }
+        // 从 nums[] 中选 i 个
+        for (int i = 1; i < n; i++) {
+            dfs(nums, -1, 0, 0, i, max);
+        }
+        return ans;
+    }
+
+    int ans = 1;
+
+    public void dfs(int[] nums, int index, int current, int sum, int total, int max) {
+        /*
+         * 可变
+         * index 当前元素下标
+         * current 当前 总和
+         * sum 当前元素总数
+         *
+         * 不可变
+         * total 要求元素总数
+         * max 目标和
+         */
+        if (sum == total) {
+            if (max == current) {
+                ans++;
+            }
+            return;
+        }
+        for (int i = index + 1; i < nums.length; i++) {  // i为下一个目标
+            int t = current | nums[i];
+            dfs(nums, i, t, sum + 1, total, max);
+        }
+    }
 }
