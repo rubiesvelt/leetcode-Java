@@ -53,8 +53,8 @@ public class Main {
             max |= num;
         }
         int ans = 0;
-        // n位 代表所有选项，从 0 到 2 ^ n
-        for (int i = 0; i < (1 << n); i++) {  // 对于每一个子集
+        // 使用 n位 代表所有选项；1 << n 即 2 ^ n；共有 2 ^ n 个组合 (从 0 到 (2 ^ n) - 1)
+        for (int i = 0; i < (1 << n); i++) {  // 使用 状态压缩 获取数组元素的全组合
             int res = 0;
             for (int j = 0; j < n; j++) {
                 if (((i >> j) & 1) == 1) {

@@ -113,12 +113,6 @@ public class DP {
         return dp[m - 1];
     }
 
-    public static void main(String[] args) {
-        DP dp = new DP();
-        dp.minSessions1(new int[]{10,9,8,7,6,4,4,4,3,3,2}, 15);
-
-    }
-
      /*
      * 化为多次 0-1 背包问题 —— 不可取
      * 可以通过贪心得到最优解，但当背包中元素最多的时候，不能确认都装了哪些东西
