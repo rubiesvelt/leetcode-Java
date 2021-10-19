@@ -1,8 +1,12 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * DP —— 子序列
@@ -14,29 +18,157 @@ public class DPSubSeq {
      * 子集：只是集合 Set 的概念
      */
 
-    // 115. 不同的子序列
-    // 给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数
-    // e.g.
-    // s = "babgbag"
-    // t = "bag"
-    // -> 5
-    // 动态规划
+    /*
+     * 1987. 不同的好子序列数目
+     * 给出一个以 0, 1 组成的String，求 "好子序列" 的数目。好子序列，即以 无前导0 的子序列，如 "0", "1", "101" 等
+     */
+    public int numberOfUniqueGoodSubsequences(String binary) {
+        int n = binary.length();
+        int dp0 = 0, dp1 = 0;  // 以 0，1 开头的子序列的数目
+        int has0 = 0;
+        int MOD = (int) (1e9 + 7);
+        // 0 0 0
+        for (int i = n - 1; i >= 0; i--) {  // 从后往前
+            if (binary.charAt(i) == '0') {
+                has0 = 1;
+                dp0 = (dp0 + dp1 + 1) % MOD;
+                // e.g.
+                // binary = 1001, 对于 1(0)01
+                // 0[01], 0[0] + 0[1] + 0
+            } else {
+                dp1 = (dp0 + dp1 + 1) % MOD;
+            }
+        }
+        return dp1 + has0;
+    }
+
+    /*
+     * 139. 单词拆分
+     * 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词，单词可重复使用
+     *
+     * e.g.
+     * s = "leetcode", wordDict = ["leet", "code"]
+     * -> true
+     *
+     * s = "applepenapple", wordDict = ["apple", "pen"]
+     * -> true
+     *
+     * s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+     * -> false
+     *
+     * 动态规划
+     * DFS
+     * BFS
+     */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> wordSet = new HashSet<>();  // wordDict允许复用，所以用Set去重
+        int maxWordLength = 0;
+        for (String str : wordDict) {
+            wordSet.add(str);
+            if (str.length() > maxWordLength) {
+                maxWordLength = str.length();
+            }
+        }
+        boolean[] dp = new boolean[s.length() + 1];  // dp[i] 表示子串 [0, i) 是否为可行子串
+        dp[0] = true;
+        for (int i = 0; i <= s.length(); i++) {
+            for (int j = (Math.max(i - maxWordLength, 0)); j < i; j++) {
+                if (dp[j] && wordSet.contains(s.substring(j, i))) {  // substring(j, i)含j不含i
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+
+    // DFS
+    public boolean wordBreakDfs(String s, List<String> wordDict) {
+        boolean[] visited = new boolean[s.length() + 1];  // 使用 visited[] 做记忆化
+        return dfsWordBreak(s, 0, wordDict, visited);
+    }
+
+    private boolean dfsWordBreak(String s, int start, List<String> wordDict, boolean[] visited) {
+        for (String word : wordDict) {
+            int nextStart = start + word.length();
+            if (nextStart > s.length() || visited[nextStart]) {  // 记忆化剪枝
+                continue;
+            }
+            // 注意，此处用到了 s.indexOf() 寻找字符串中是否出现子串
+            // indexOf() returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
+            if (s.indexOf(word, start) == start) {
+                if (nextStart == s.length() || dfsWordBreak(s, nextStart, wordDict, visited)) {
+                    return true;
+                }
+                visited[nextStart] = true;
+            }
+        }
+        return false;
+    }
+
+    // BFS
+    public boolean wordBreakBfs(String s, List<String> wordDict) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+
+        int len = s.length();
+        boolean[] visited = new boolean[len + 1];
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int start = queue.poll();
+                for (String word : wordDict) {
+                    int nextStart = start + word.length();
+                    if (nextStart > len || visited[nextStart]) {  // 记忆化剪枝
+                        continue;
+                    }
+                    if (s.indexOf(word, start) == start) {
+                        if (nextStart == len) {
+                            return true;
+                        }
+                        queue.add(nextStart);
+                        visited[nextStart] = true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /*
+     * 115. 不同的子序列
+     * 给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数
+     *
+     * e.g.
+     * s = "babgbag"
+     * t = "bag"
+     * -> 5
+     *
+     * 公共子序列
+     */
     public int numDistinct(String s, String t) {
-        // 定义数组后，数组默认值全0
         /*
-        状态转移方程：
-        如果t[i] == s[j]
-        dp[i][j] = dp[i][j-1] (不用s[i]和t[j]) + dp[i-1][j-1] (用s[i]和t[j])
-
-        如果不
-        dp[i][j] = dp[i][j-1]
-
-            a b a b g b a g
-            1 1 1 1 1 1 1 1
-        b 0 0 1 1 2 2 3 3 3
-        a 0 0 0 1 1 1 1 4 4
-        g 0 0 0 0 0 1 1 1 5
-
+         * 状态转移方程：
+         * 如果t[i] == s[j]
+         *
+         *
+         * dp[i][j] =
+         * {
+         *     dp[i][j] = dp[i][j - 1]   —— t[i] != s[j]时
+         *     dp[i][j] = dp[i][j - 1] + dp[i - 1][j - 1]   —— t[i] == s[j]时
+         * }
+         *
+         * s="babgbaag"
+         * t="baag"
+         *
+         *     a b a b g b a a g
+         *     1 1 1 1 1 1 1 1 1
+         * b 0 0 1 1 2 2 3 3 3 3
+         * a 0 0 0 1 1 1 1 4 7 7
+         * a 0 0 0 0 1 1 1 2 6 6
+         * g 0 0 0 0 0 1 1 1 1 7
+         *
          */
         int[][] dp = new int[t.length() + 1][s.length() + 1];  // dp[i][j] 表示 t 串下标小于 i，s 串下标小于 j 时，不同的子序列个数
         for (int i = 0; i < s.length() + 1; i++) {  // 第i列
@@ -45,7 +177,6 @@ public class DPSubSeq {
         for (int i = 1; i < t.length() + 1; i++) {  // t 的第 i 行
             for (int j = 1; j < s.length() + 1; j++) {  // s 的第 j 列
                 if (s.charAt(j - 1) == t.charAt(i - 1)) {
-                    // s="babgbag", t="bag"
                     // 最后一项g与g对应上时，ba在g之前的匹配（使用此g） + bag在g之前的匹配（不使用此g）
                     dp[i][j] = dp[i - 1][j - 1] + dp[i][j - 1];
                 } else {
