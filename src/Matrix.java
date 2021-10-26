@@ -3,6 +3,24 @@ import java.util.*;
 public class Matrix {
 
     /*
+     * 240. 搜索二维矩阵 II
+     * 二维矩阵 matrix[][] 每一行，每一列的元素，都是从小到大排序（i < j 则 matrix[][i] < matrix[][j]）
+     * 给定数字 target，判断 target 是否存在于矩阵中
+     */
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int i = 0;
+        int j = n - 1;
+        while (i < m && j >= 0) {
+            if (matrix[i][j] == target) return true;
+            else if (matrix[i][j] < target) i++;
+            else if (matrix[i][j] > target) j--;
+        }
+        return false;
+    }
+
+    /*
      * 剑指 Offer 12. 矩阵中的路径
      * 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false
      */

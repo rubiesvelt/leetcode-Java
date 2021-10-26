@@ -12,6 +12,51 @@ public class MonotonicStack {
      */
 
     /*
+     * 496. 下一个更大元素 I
+     * 求 nums1[] 中每个元素 在 nums2[] 中的 下一个更大元素
+     */
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int n = nums2.length;
+        Stack<Integer> stack = new Stack<>();  // 单调递减栈
+        int[] map = new int[10005];  // 0 <= nums1[i], nums2[i] <= 10 ^ 4；有时题目中给的范围不可信
+        for (int i = 0; i < n; i++) {
+            int cur = nums2[i];
+            while (!stack.isEmpty() && nums2[stack.peek()] < cur) {
+                int t = stack.pop();
+                map[nums2[t]] = cur;
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int t = stack.pop();
+            map[nums2[t]] = -1;
+        }
+        int m = nums1.length;
+        int[] ans = new int[m];
+        for (int i = 0; i < m; i++) {
+            ans[i] = map[nums1[i]];
+        }
+        return ans;
+    }
+
+    // 503. 下一个更大元素 II
+    // nums[] 是循环数组
+    public int[] nextGreaterElements1(int[] nums) {
+        int n = nums.length;
+        int[] ret = new int[n];
+        Arrays.fill(ret, -1);
+        // 单调栈，栈中元素都是从底单调递减的
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < n * 2 - 1; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i % n]) {
+                ret[stack.pop()] = nums[i % n];
+            }
+            stack.push(i % n);
+        }
+        return ret;
+    }
+
+    /*
      * 2012. 数组美丽值求和
      * 给你一个下标从 0 开始的整数数组 nums 。对于每个下标 i（1 <= i <= nums.length - 2），nums[i] 的 美丽值 等于：
      *
@@ -147,23 +192,6 @@ public class MonotonicStack {
             sta.push(nums[i]);
         }
         return false;
-    }
-
-
-    // 503. 下一个更大元素 II
-    public int[] nextGreaterElements1(int[] nums) {
-        int n = nums.length;
-        int[] ret = new int[n];
-        Arrays.fill(ret, -1);
-        // 单调栈，栈中元素都是从底单调递减的
-        Deque<Integer> stack = new LinkedList<Integer>();
-        for (int i = 0; i < n * 2 - 1; i++) {
-            while (!stack.isEmpty() && nums[stack.peek()] < nums[i % n]) {
-                ret[stack.pop()] = nums[i % n];
-            }
-            stack.push(i % n);
-        }
-        return ret;
     }
 
 

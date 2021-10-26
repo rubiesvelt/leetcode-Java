@@ -5,6 +5,88 @@ import java.util.*;
 public class BinaryTree {
 
     /*
+     * 2049. 统计最高分的节点数目
+     *
+     * 二叉树以 int[] parents 数组给出
+     */
+    public int countHighestScoreNodes(int[] parents) {
+        int n = parents.length;
+        Struct[] structs = new Struct[n];
+        for (int i = 0; i < n; i++) {
+            structs[i] = new Struct();
+        }
+        for (int i = 0; i < n; i++) {
+            int p = parents[i];
+            if (p == -1) continue;
+            if (structs[p].left == -1) {
+                structs[p].left = i;
+            } else {
+                structs[p].right = i;
+            }
+        }
+
+        dfs123(structs, 0);
+        long max = 0;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            long t = findRes(i, structs, parents);
+            if (t > max) {
+                max = t;
+                count = 1;
+            } else if (t == max) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public long findRes(int current, Struct[] structs, int[] parents) {
+        Struct struct = structs[current];
+        int p = parents[current];
+        if (struct.left == -1 && struct.right == -1) {
+            return parents.length - 1;
+        }
+
+        long t;
+        if (struct.lNum == 0) {
+            t = struct.rNum;
+        } else if (struct.rNum == 0) {
+            t = struct.lNum;
+        } else t = (long) struct.lNum * struct.rNum;
+
+        if (p == -1) {
+            return t;
+        }
+
+        t *= (structs.length - struct.lNum - struct.rNum - 1);
+        return t;
+    }
+
+    public int dfs123(Struct[] structs, int current) {
+        int left = structs[current].left;
+        int right = structs[current].right;
+
+        // 每次都要遍历全部，才能获取到子节点，会超时，所以先处理找到每个元素的子节点
+        int lNum = 0;
+        int rNum = 0;
+
+        if (left != -1) lNum = dfs123(structs, left);
+        if (right != -1) rNum = dfs123(structs, right);
+
+        structs[current].lNum = lNum;
+        structs[current].rNum = rNum;
+
+        return lNum + rNum + 1;
+    }
+
+    public static class Struct {
+        int left = -1;
+        int right = -1;
+        int lNum;
+        int rNum;
+    }
+
+    /*
      * shopee 二面. z 字形遍历二叉树
      * 二叉树层序遍历，从根开始，第一层从左到右，第二层从右到左...求最终结果序列
      */

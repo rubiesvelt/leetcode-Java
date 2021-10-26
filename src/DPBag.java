@@ -28,50 +28,8 @@ public class DPBag {
      *
      * 问题转化为，选取xxx个元素，使这些元素和为count，求是否可行
      */
-    // 二维版
-    public boolean canPartition(int[] nums) {
-        int sum = 0;
-        for (int i : nums) {
-            sum += i;
-        }
-        if ((sum & 1) == 1) {
-            return false;
-        }
-        int count = sum >> 1;
-        int n = nums.length;
-
-        // 二维
-        boolean[][] dp = new boolean[n][count + 1];  // dp[i][j]表示从数组的 [0, i] 这个子区间内挑选一些正整数，每个数只能用一次，使得这些数的和恰好等于 j
-        // 状态转移方程
-        // dp[i][j] =
-        // dp[i - 1][j] 或 dp[i - 1][j - nums[i]]
-        // true   (nums[i] == j, 即 dp[i][num[i]])
-        if (nums[0] <= count) {
-            dp[0][nums[0]] = true;
-        }
-        if (count == nums[0]) {
-            return true;
-        }
-        for (int i = 1; i < n; i++) {
-            if (nums[i] <= count) {
-                dp[i][nums[i]] = true;
-            }
-            for (int j = 0; j <= count; j++) {  // 由于是"岔开的"所以 正序遍历 倒序遍历 没有区别; 需要遍历 0 -> count 全部，因为没有留下的状态
-                if (j >= nums[i]) {
-                    dp[i][j] = dp[i][j] || dp[i - 1][j - nums[i]] || dp[i - 1][j];
-                } else {
-                    dp[i][j] = dp[i][j] || dp[i - 1][j];
-                }
-                if (dp[i][count]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     // 一维版
-    public boolean canPartition1(int[] nums) {
+    public boolean canPartition(int[] nums) {
         int sum = 0;
         for (int i : nums) {
             sum += i;
@@ -116,7 +74,6 @@ public class DPBag {
             sum += i;
         }
         int t = sum / 2;
-        // dp[i][j] 表示前 i 个物品，凑成总和不超过 j 的最大价值
         int[] f = new int[t + 1];  // f[i] 表示凑成总和不超过i的最大价值，即f[i]不大于i
         for (int x : stones) {
             for (int j = t; j >= x; j--) {
@@ -133,33 +90,8 @@ public class DPBag {
      * 问题转化为：
      * 选出 xxx 个元素，使这些元素的和为 m，求方案总数
      */
-    // 二维
-    public int findTargetSumWays(int[] nums, int target) {
-        int n = nums.length;
-        int sum = 0;
-        for (int i : nums) sum += Math.abs(i);
-        if (target > sum || (sum - target) % 2 != 0) {
-            return 0;
-        }
-        int m = (sum - target) / 2;
-
-        // 问题转化为：选出 xxx 个元素，不可重复选，使这些元素的和为 m，求方案总数
-        int[][] dp = new int[n + 1][m + 1];  // dp[i][j] 为从数组nums中 0 - i 的元素进行 累加 可得到 j 的方法数量
-        dp[0][0] = 1;
-        for (int i = 1; i <= n; i++) {
-            int x = nums[i - 1];
-            for (int j = 0; j <= m; j++) {
-                dp[i][j] += dp[i - 1][j];
-                if (j >= x) {
-                    dp[i][j] += dp[i - 1][j - x];
-                }
-            }
-        }
-        return dp[n][m];
-    }
-
     // 一维
-    public int findTargetSumWays0(int[] nums, int target) {
+    public int findTargetSumWays(int[] nums, int target) {
         int sum = 0;
         for (int num : nums) {
             sum += num;

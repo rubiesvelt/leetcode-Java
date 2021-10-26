@@ -4,6 +4,15 @@ public class Graph {
 
     // TODO 拓扑排序，最小生成树，最短路径
 
+    /*
+     * --------------------------------------- 最短路径 ---------------------------------------
+     * 单源最短路径的几种求解算法
+     * 无权，采用BFS
+     * 有权，权重均为非负，采用dijkstra
+     * 有权，权重包含负值，采用bellman-ford
+     *
+     */
+
     /**
      * --------------------------------------- 拓扑排序 ---------------------------------------
      * <p>
@@ -15,6 +24,49 @@ public class Graph {
      * 拓扑排序不需要 used[]
      * 考虑是否存在 单节点元素重复入队，因为每次将入度为0的元素入队列，后续就不会有边再指向这个元素，
      */
+
+    /*
+     * 2050. 并行课程 III
+     * 有 n 个课程，下标 1 - n
+     * 课程之间有先后顺序在 relations[][] 中，e.g. 其中relations[j] = [a, b]，表示课程 a 必须在课程 b 之前完成（先修课的关系）
+     * 每个课程所需要的时间在 time[] 中，其中 time[i] 表示完成第 (i+1) 门课程需要花费的 月份 数
+     * 求修完所有课程需要的最短总月份数
+     *
+     * 拓扑排序，记录每门课程 最早开始时间
+     */
+    public int minimumTime(int n, int[][] relations, int[] time) {
+        // n 门课程，下标 1 - n
+        // in 中下标 0 - n-1
+        int[] in = new int[n];
+        List<Integer>[] rel = new List[n];
+        for (int i = 0; i < n; i++) {
+            rel[i] = new ArrayList<>();
+        }
+        int[] start = new int[n];
+        for (int[] relation : relations) {
+            in[relation[1] - 1]++;
+            rel[relation[0] - 1].add(relation[1] - 1);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) queue.add(i);
+        }
+        int ans = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            int stop = start[cur] + time[cur];
+            ans = Math.max(ans, stop);
+            List<Integer> next = rel[cur];
+            for (int index : next) {
+                in[index]--;
+                start[index] = Math.max(stop, start[index]);
+                if (in[index] == 0) {
+                    queue.add(index);
+                }
+            }
+        }
+        return ans;
+    }
 
     /*
      * 1857. 有向图中最大颜色值

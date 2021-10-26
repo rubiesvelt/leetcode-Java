@@ -3,6 +3,47 @@ import java.util.*;
 
 public class Simulate {
 
+    /*
+     * 5907. 下一个更大的数值平衡数
+     * 平衡数，指对于数中所有位，每一位 出现的次数 等于 该位的大小
+     * e.g.
+     * 1 -> 22
+     * 22 -> 122
+     * 1000 -> 1333
+     * 3000 -> 3133
+     * 3400 -> 4444
+     *
+     * 4445 -> 14444
+     * 5600 -> 14444
+     *
+     * 使用朴素方法，因为：
+     * 1. 只需要处理单个数字
+     * 2. 难以找到规律
+     */
+    public int nextBeautifulNumber(int n) {
+        int num = n + 1;
+        while (!check(num)) {
+            num++;
+        }
+        return num;
+    }
+
+    public boolean check(int num) {
+        int[] xf = new int[10];
+        while (num != 0) {
+            int x = num % 10;
+            xf[x]++;
+            num /= 10;
+        }
+
+        for (int x = 0; x < 10; x++) {
+            if (xf[x] != 0 && x != xf[x]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // 微软
     // 有n个人 圆圈，编号1-n，顺序围， 1-m，出列，求最后一个留下来的人
     //

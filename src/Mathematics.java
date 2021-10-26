@@ -233,29 +233,6 @@ public class Mathematics {
         return ones;
     }
 
-
-    // 面试题 17.10. 主要元素
-    // 数组中大于一半的元素叫主要元素
-    // 摩尔计数
-    public int majorityElement(int[] nums) {
-        int x = -1;
-        int cnt = 0;
-        for (int n : nums) {
-            if (cnt == 0) {
-                x = n;
-                cnt = 1;
-            } else {
-                if (n == x) cnt++;
-                else cnt -= 1;
-            }
-        }
-        cnt = 0;
-        for (int n : nums) {
-            if (n == x) cnt++;
-        }
-        return cnt > nums.length / 2 ? x : -1;
-    }
-
     // 633. 平方数之和
     // 平方开方
     public boolean judgeSquareSum(int c) {

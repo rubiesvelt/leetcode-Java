@@ -19,93 +19,89 @@ public class Main {
         TreeNode tn2 = new TreeNode(2, tn4, null);
         TreeNode tn1 = new TreeNode(1, tn2, tn3);
 
-        int[][] matrix = {{1, 0, 0}, {0, 1, 1}, {0, 1, 1}};
+        int[][] matrix = {{1, 2}};
         int[][] matrix1 = {{1, 0, 0}, {0, 0, 1}, {1, 1, 0}};
-        int[] dist = {2, 4, 6, 4};
+        int[] dist = {-1, 2, 0};
         int[] diff = {3, 3, 3};
         int[] speed = {5, 1, 5, 5, 1, 5, 3, 4, 5, 1, 4};
         char[][] matrix2 = {{'.', '.', 'W', '.', 'B', 'W', 'W', 'B'}, {'B', 'W', '.', 'W', '.', 'W', 'B', 'B'}, {'.', 'W', 'B', 'W', 'W', '.', 'W', 'W'}, {'W', 'W', '.', 'W', '.', '.', 'B', 'B'}, {'B', 'W', 'B', 'B', 'W', 'W', 'B', '.'}, {'W', '.', 'W', '.', '.', 'B', 'W', 'W'}, {'B', '.', 'B', 'B', '.', '.', 'B', 'B'}, {'.', 'W', '.', 'W', '.', 'W', '.', 'W'}};
-
         return;
     }
 
     /*
-     * 5904. 统计按位或能得到最大值的子集数目
-     * 给出数组 nums[] 求其 按位或 能得到最大值 的子集 的数目
-     * e.g.
-     * nums = [1,2,3,5]
-     *
-     * 按位或最大值 7
-     * 如下子集 进行按位或 可得到
-     * [2,5]
-     * [3,5]
-     * [1,2,5]
-     * [1,3,5]
-     * [2,3,5]
-     * [1,2,3,5]
-     * 共 6 个
-     * -> 6
+     * 638. 大礼包
+     * <p>
+     * [0,0,0]
+     * [[1,1,0,4],[2,2,1,9]]
+     * [1,1,1]
      */
-    public int countMaxOrSubsets1(int[] nums) {
-        int n = nums.length;
-        int max = 0;
-        for (int num : nums) {
-            max |= num;
-        }
-        int ans = 0;
-        // 使用 n位 代表所有选项；1 << n 即 2 ^ n；共有 2 ^ n 个组合 (从 0 到 (2 ^ n) - 1)
-        for (int i = 0; i < (1 << n); i++) {  // 使用 状态压缩 获取数组元素的全组合
-            int res = 0;
-            for (int j = 0; j < n; j++) {
-                if (((i >> j) & 1) == 1) {
-                    res |= nums[j];
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        int n = price.size();
+        List<List<Integer>> goodSpecial = new ArrayList<>();
+        // 筛选 能够优惠 且 可以选择 的大礼包
+        for (List<Integer> sp : special) {
+            int total = 0;  // 大礼包中元素的原价
+            for (int i = 0; i < n; i++) {
+                if (sp.get(i) > needs.get(i)) {
+                    total = 0x3f3f3f3f;
+                    break;
                 }
+                total += sp.get(i) * price.get(i);
             }
-            if (res == max) {
-                ans++;
+            if (total <= sp.get(n)) {
+                continue;
             }
+            goodSpecial.add(sp);
         }
-        return ans;
+
+        dfs(0, needs, goodSpecial, price, n);
+        return ans638;
     }
 
-    /*
-     * dfs遍历所有子集
-     */
-    public int countMaxOrSubsets(int[] nums) {
-        int n = nums.length;
-        int max = 0;  // 按位或的最大值
-        for (int num : nums) {
-            max |= num;
+    int ans638 = 0x3f3f3f3f;
+
+    public void dfs(int total, List<Integer> needs, List<List<Integer>> special, List<Integer> price, int n) {
+        boolean hasSpe = false;
+        for (List<Integer> spe : special) {
+            if (goodSpe(spe, needs)) {
+                hasSpe = true;
+                total += spe.get(n);
+                useSpe(spe, needs);
+                dfs(total, needs, special, price, n);
+                total -= spe.get(n);
+                releaseSpe(spe, needs);
+            }
         }
-        // 从 nums[] 中选 i 个
-        for (int i = 1; i < n; i++) {
-            dfs(nums, -1, 0, 0, i, max);
+        if (!hasSpe) {
+            for (int i = 0; i < n; i++) {
+                total += needs.get(i) * price.get(i);
+            }
+            ans638 = Math.min(ans638, total);
         }
-        return ans;
     }
 
-    int ans = 1;
-
-    public void dfs(int[] nums, int index, int current, int sum, int total, int max) {
-        /*
-         * 可变
-         * index 当前元素下标
-         * current 当前 总和
-         * sum 当前元素总数
-         *
-         * 不可变
-         * total 要求元素总数
-         * max 目标和
-         */
-        if (sum == total) {
-            if (max == current) {
-                ans++;
+    public boolean goodSpe(List<Integer> spe, List<Integer> needs) {
+        for (int i = 0; i < needs.size(); i++) {
+            if (spe.get(i) > needs.get(i)) {
+                return false;
             }
-            return;
         }
-        for (int i = index + 1; i < nums.length; i++) {  // i为下一个目标
-            int t = current | nums[i];
-            dfs(nums, i, t, sum + 1, total, max);
+        return true;
+    }
+
+    public void useSpe(List<Integer> spe, List<Integer> needs) {
+        for (int i = 0; i < needs.size(); i++) {
+            int t = needs.get(i) - spe.get(i);
+            needs.remove(i);
+            needs.add(i, t);
+        }
+    }
+
+    public void releaseSpe(List<Integer> spe, List<Integer> needs) {
+        for (int i = 0; i < needs.size(); i++) {
+            int t = needs.get(i) + spe.get(i);
+            needs.remove(i);
+            needs.add(i, t);
         }
     }
 }

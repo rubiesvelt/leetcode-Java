@@ -188,7 +188,7 @@ public class DP {
         dp[steps][0] = 1;
         for (int i = steps - 1; i >= 0; i--) {
             int edge = Math.min(i, max);
-            for (int j = 0; j <= edge; j++) {
+            for (int j = 0; j <= edge; j++) {  // j从0往上吗，为什么不从高往低？也可以从高往低，因为本轮低结果只与上轮有关
                 // 通过"留在原地"得到
                 dp[i][j] = (dp[i][j] + dp[i + 1][j]) % MOD;
                 // 从 j - 1 右移得到
@@ -200,15 +200,35 @@ public class DP {
         return dp[0][0];
     }
 
-    // 377. 组合总和 Ⅳ
-    // 动态规划
+    /*
+     * 377. 组合总和 Ⅳ
+     * 给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target
+     * 请你从 nums 中找出并返回总和为 target 的元素组合的个数
+     *
+     * e.g.
+     * nums = [1,2,3], target = 4
+     * -> 7
+     * 所有可能的组合为：
+     * (1, 1, 1, 1)
+     * (1, 1, 2)
+     * (1, 2, 1)
+     * (1, 3)
+     * (2, 1, 1)
+     * (2, 2)
+     * (3, 1)
+     * 注，顺序不同的序列被视作不同的组合
+     *
+     * 相似的完全背包问题 —— 选xxx个元素，可重复选，求和为 target 的可能性
+     */
     public int combinationSum(int[] nums, int target) {
-        // dfs会超时
-        // dp[i] 代表组合数为 i 时使用 nums 中的数能组成的组合数的个数
-        // dp[i] = dp[i - nums[0]] + dp[i - nums[1]] + dp[i = nums[2]]+...
-        // 如 nums=[1, 3, 4], target = 7;
-        // dp[7] = dp[6] + dp[4] + dp[3]
-        // 其实就是说7的组合数可以由三部分组成, 1 和 dp[6]，3 和 dp[4], 4 和 dp[3];
+        /*
+         * dp[i] 代表目标为 i 时使用 nums 中的数能组成的组合数的个数
+         * dp[i] = dp[i - nums[0]] + dp[i - nums[1]] + dp[i - nums[2]] + ...
+         *
+         * 如 nums=[1, 3, 4], target = 7;
+         * dp[7] = dp[6] + dp[4] + dp[3];
+         * 其实就是说 7 的组合数可以由三部分组成, 1 和 dp[6]，3 和 dp[4], 4 和 dp[3];
+         */
         int[] dp = new int[target + 1];
         // 是为了算上自己的情况，比如 dp[1] 可以由 dp[0] 和 1 这个数的这种情况组成
         dp[0] = 1;
