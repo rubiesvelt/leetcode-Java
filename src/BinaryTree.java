@@ -4,6 +4,80 @@ import java.util.*;
 
 public class BinaryTree {
 
+    // 993. 二叉树的堂兄弟节点
+    public boolean isCousins(TreeNode root, int x, int y) {
+        xVal993 = x;
+        yVal993 = y;
+        dfs993(root, root, 0);
+        return xDepth == yDepth && xParent != yParent;
+    }
+
+    public int xVal993;
+    public int yVal993;
+    public int xDepth;
+    public int yDepth;
+    public int xParent;
+    public int yParent;
+
+    public void dfs993(TreeNode root, TreeNode parent, int depth) {
+        if (root == null) return;
+        if (root.val == xVal993) {
+            xDepth = depth;
+            xParent = parent.val;
+        } else if (root.val == yVal993) {
+            yDepth = depth;
+            yParent = parent.val;
+        }
+        dfs993(root.left, root, depth + 1);
+        dfs993(root.right, root, depth + 1);
+    }
+
+    // 可信 2.
+    // 求二叉树节点值之和，平分路径节点除外
+    // dfs，回溯算法
+    public int bisectTreePath(TreeNode root) {
+        List<TreeNode> list = new ArrayList<>();
+        dfs2(root, list);
+        for (TreeNode tn : mark) {
+            sum -= tn.val;
+        }
+        return sum;
+    }
+
+    Set<TreeNode> mark = new HashSet<>();
+    int sum = 0;
+
+    public void dfs2(TreeNode root, List<TreeNode> list) {
+        if (root == null) {
+            return;
+        }
+        sum += root.val;
+        list.add(root);  // 回溯
+        if (root.left == null && root.right == null) {
+            handleTnList(list);
+        }
+
+        // 进入下一层
+        dfs2(root.left, list);
+        dfs2(root.right, list);
+        list.remove(list.size() - 1);  // 回溯
+    }
+
+    public void handleTnList(List<TreeNode> list) {
+        int sum = 0;
+        int acc = 0;
+        for (TreeNode tn : list) {
+            sum += tn.val;
+        }
+        for (TreeNode tn : list) {
+            if (sum - tn.val == acc) {
+                mark.add(tn);
+            }
+            sum -= tn.val;
+            acc += tn.val;
+        }
+    }
+
     /*
      * 2049. 统计最高分的节点数目
      *

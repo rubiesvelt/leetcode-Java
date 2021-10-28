@@ -4,6 +4,51 @@ import java.util.*;
 public class Simulate {
 
     /*
+     * 869. 重新排序得到 2 的幂
+     *
+     * 如果用dfs，都有什么可搜的
+     * 1. 将 n 中数字出现的频率记录，数字间排列组合 dfs
+     * 2. 将 n 按频率拆解，将所有2的幂按频率拆解并逐个与n的拆解匹配
+     * 3. 将 n 拆解成特定格式，将所有2的幂拆解成特定格式，放入set中匹配（当前使用）—— 对基本元素进行大量处理，在基本元素很多，适合一次处理，大量查询的情景
+     *
+     */
+    public boolean reorderedPowerOf2(int n) {
+        Set<Integer> set = new HashSet<>();
+        int index = 1;
+        while (index < 1_000_000_001) {
+            int t = reformat(index);
+            set.add(t);
+            index *= 2;
+        }
+        int t = reformat(n);
+        return set.contains(t);
+    }
+
+    public int reformat(int num) {
+        int[] arr = new int[10];
+        while (num > 0) {
+            int u = num % 10;
+            arr[u]++;
+            num /= 10;
+        }
+        String s = "";
+        for (int i = 1; i < 10; i++) {
+            if (arr[i] == 0) {
+                continue;
+            }
+            for (int j = 0; j < arr[i]; j++) {
+                s += i;
+            }
+        }
+        if (arr[0] > 0) {
+            for (int j = 0; j < arr[0]; j++) {
+                s += 0;
+            }
+        }
+        return Integer.parseInt(s);
+    }
+
+    /*
      * 5907. 下一个更大的数值平衡数
      * 平衡数，指对于数中所有位，每一位 出现的次数 等于 该位的大小
      * e.g.
