@@ -11,7 +11,6 @@ public class Main {
 
         List<Integer> list = new ArrayList<>();
         int t = list.hashCode();
-
         Main main = new Main();
         char a = 'a';
         int i = 96;
