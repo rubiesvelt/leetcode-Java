@@ -21,7 +21,55 @@ public class BinarySearch {
                 l = mid + 1;  // 此处如果 l = mid 可能陷入死循环 —— 由于是向下取整，l 与 r 相差 1 的时候会导致 mid = l；此时如果 l = mid 会造成死循环
             }
         }
+        return l;  // 最终状态，l 等于 r，并且停留位置是 "r侧第一个满足条件的"
+    }
+
+    /*
+     * 5920. 分配给商店的最多商品的最小值
+     * n 个商店，quantities[] 记录每一种产品的数量，每个商店只能分 一种 产品，要求 分到产品最多的商店 产品数最少 求该数
+     *
+     * 从 base 向上二分查找，而不是扩大商店动态分配 —— 不要将问题复杂化
+     *
+     * e.g.
+     * n = 6, quantities = [11, 6]
+     * -> 3 —— (6 个商店，分配方案 [2, 3, 3, 3, 3, 3])
+     *
+     */
+    public int minimizedMaximum(int n, int[] quantities) {
+        int sum = 0;
+        int max = 0;
+        int len = quantities.length;
+        for (int q : quantities) {
+            sum += q;
+            max = Math.max(max, q);
+        }
+        int base = sum / n;
+        if (sum % n > 0) base++;
+        // 使用二分
+        int l = base;
+        int r = max;
+        while (l < r) {
+            int m = (l + r) >> 1;
+            if (canBaseAfford(m, len, n, quantities)) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
         return l;
+    }
+
+    boolean canBaseAfford(int base, int left, int n, int[] quantities) {
+        int sum = 0;
+        // left 剪枝
+        for (int q : quantities) {
+            int cnt = q / base;
+            if (q % base > 0) cnt++;
+            sum += cnt;
+            if (sum > n - left) return false;
+            left--;
+        }
+        return true;
     }
 
     /**

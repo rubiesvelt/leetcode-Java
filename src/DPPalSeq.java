@@ -15,8 +15,8 @@ public class DPPalSeq {
         for (int i = 0; i < n; i++) {
             Arrays.fill(dp[i], true);
         }
-        for (int i = n - 1; i >= 0; i--) {  // 典型扩展，i 从 n - 1 向下，j 从 i 向上
-            for (int j = i + 1; j < n; j++) {
+        for (int i = n - 1; i >= 0; i--) {  // 由于 dp[i][j] 的状态与左下方 dp[i + 1][j - 1] 相关，故 i 从大往小
+            for (int j = i + 1; j < n; j++) {  // i = n - 1 的时候 j = n，不会进入循环
                 dp[i][j] = s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1];  // j = i + 1 时达到"无人区"，无人区应为 true
             }
         }

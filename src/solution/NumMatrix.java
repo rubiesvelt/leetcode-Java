@@ -1,5 +1,8 @@
 package solution;
 
+/*
+ * 304. 二维区域和检索 - 矩阵不可变
+ */
 public class NumMatrix {
 
     int[][] sum;

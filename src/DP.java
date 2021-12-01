@@ -3,7 +3,6 @@ import java.util.*;
 public class DP {
 
     /**
-     *
      * 发生过的事情不会改变，但会对未来造成影响
      *
      * <p>
@@ -17,6 +16,194 @@ public class DP {
      * 回文字串
      * 区间DP
      */
+
+    /*
+     * 1567. 乘积为正数的最长子数组长度
+     */
+    public int getMaxLen(int[] nums) {
+        int pos = 0;  // 选当前位 最长长度 乘积为正
+        int neg = 0;  // 选当前位 最长长度 乘积为负
+        int ans = 0;
+        for (int n : nums) {
+            if (n > 0) {
+                pos++;
+                if (neg > 0) neg++;
+            } else if (n < 0) {
+                int negBak = neg;
+                neg = pos + 1;
+
+                if (negBak > 0) {
+                    pos = negBak + 1;
+                } else {
+                    pos = 0;
+                }
+            } else {
+                pos = 0;
+                neg = 0;
+            }
+            ans = Math.max(ans, pos);
+        }
+        return ans;
+    }
+
+    /*
+     * 152. 乘积最大子数组
+     */
+    public int maxProduct(int[] nums) {
+        int ans = Integer.MIN_VALUE;
+        int n = nums.length;
+        if (n == 1) return nums[0];
+        int pos = -1;  // 选该位时 的正最大值
+        int neg = 1;  // 选该位时 的负最小值
+        int max = Integer.MIN_VALUE;
+        for (int t : nums) {
+            max = Math.max(max, t);
+            if (t > 0) {
+                if (pos != -1) pos *= t;
+                else pos = t;
+
+                if (neg != 1) neg *= t;
+            } else if (t < 0) {
+                int negBak = neg;
+
+                if (pos != -1) neg = pos * t;
+                else neg = t;
+
+                if (negBak != 1) pos = negBak * t;
+                else pos = -1;
+            } else {
+                pos = -1;
+                neg = 1;
+            }
+            if (pos > 0) ans = Math.max(ans, pos);
+        }
+        if (ans < 0) {
+            ans = max;
+        }
+        return ans;
+    }
+
+    /*
+     * 918. 环形子数组的最大和
+     */
+    public int maxSubarraySumCircular(int[] nums) {
+        int n = nums.length;
+        int t = 0;
+        int ans1 = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (t > 0) t += nums[i];
+            else {
+                t = nums[i];
+            }
+            ans1 = Math.max(ans1, t);
+        }
+        t = 0;
+        int acc = 0;
+        int u = Integer.MAX_VALUE;
+        boolean hasZero = false;
+        for (int i = 0; i < n; i++) {
+            if (t < 0) t += nums[i];
+            else {
+                t = nums[i];
+            }
+            acc += nums[i];
+            if (nums[i] == 0) hasZero = true;
+            u = Math.min(u, t);
+        }
+        int ans2 = acc - u;
+        if (ans2 == 0 && !hasZero) ans2 = Integer.MIN_VALUE;
+        return Math.max(ans1, ans2);
+    }
+
+    /*
+     * 53. 最大子序和
+     */
+    public int maxSubArray(int[] nums) {
+        int n = nums.length;
+        int t = 0;
+        int ans = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (t > 0) t += nums[i];
+            else {
+                t = nums[i];
+            }
+            ans = Math.max(ans, t);
+        }
+        return ans;
+    }
+
+    /*
+     * 55. 跳跃游戏 II
+     * 给出 nums[] 数组，在 i 位置最多能向前走 nums[i] 距离
+     * 初始在 i = 0 位置，最终都可以到达 i = n - 1 位置，求最终到达该位置时的 最小跳跃次数
+     *
+     * e.g.
+     * [2,3,1,1,4]
+     * -> 2   (2 -> 3 -> 4)
+     *
+     * [2,3,0,1,4]
+     * -> 2   (2 -> 3 -> 4)
+     *
+     *
+     */
+    public int jump1(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return 0;
+        int arr = 0;
+        int nextArr = 0;
+        int step = 0;
+        for (int i = 0; i < n; i++) {
+            nextArr = Math.max(nextArr, i + nums[i]);
+            if (nextArr >= n - 1) return step + 1;
+            if (i == arr) {
+                step++;
+                arr = nextArr;
+            }
+        }
+        return 0;
+    }
+
+    /*
+     * 反复遍历的低效版本
+     */
+    public int jump0(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 0x3f3f3f3f);
+        dp[0] = 0;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < i + nums[i]; j++) {
+                if (j >= n) break;
+                dp[j] = Math.min(dp[j], dp[i] + 1);
+            }
+        }
+        return dp[n - 1];
+    }
+
+    /*
+     * 55. 跳跃游戏
+     * 给出 nums[] 数组，在 i 位置最多能向前走 nums[i] 距离
+     * 初始在 i = 0 位置，求最终是否能到达 i = n - 1 位置
+     *
+     * e.g.
+     * nums = [2,3,1,1,4]
+     * -> true
+     *
+     * nums = [3,2,1,0,4]
+     * -> false
+     */
+    public boolean canJump(int[] nums) {
+        int n = nums.length;
+        int reachable = 0;
+        int cur = 0;
+        while (cur <= reachable) {
+            reachable = Math.max(reachable, cur + nums[cur]);
+            cur++;
+            if (reachable >= n - 1) return true;
+        }
+        return false;
+    }
 
     // 1937. 扣分后的最大得分
     // "左右"dp
@@ -218,7 +405,7 @@ public class DP {
      * (3, 1)
      * 注，顺序不同的序列被视作不同的组合
      *
-     * 相似的完全背包问题 —— 选xxx个元素，可重复选，求和为 target 的可能性
+     * 并非完全背包问题，易迷惑
      */
     public int combinationSum(int[] nums, int target) {
         /*
@@ -228,6 +415,17 @@ public class DP {
          * 如 nums=[1, 3, 4], target = 7;
          * dp[7] = dp[6] + dp[4] + dp[3];
          * 其实就是说 7 的组合数可以由三部分组成, 1 和 dp[6]，3 和 dp[4], 4 和 dp[3];
+         *
+         * [1, 2]
+         *
+         * dp[2] ->
+         * 1, 1
+         * 2
+         *
+         * dp[3] ->
+         * 1, 1, 1
+         * 1, 2
+         * 2, 1
          */
         int[] dp = new int[target + 1];
         // 是为了算上自己的情况，比如 dp[1] 可以由 dp[0] 和 1 这个数的这种情况组成
@@ -282,8 +480,9 @@ public class DP {
 
     // 264. 丑数Ⅱ
     // 动态规划，三指针
-    // 丑数 就是只包含质因数 2、3 和/或 5 的正整数
-    public static int nthUglyNumber2(int n) {
+    // 丑数 就是只包含质因数 2、3 和/或 5 的正整数，返回第 n 个丑数
+    // 1，2，3，4，5，6，8，9，10
+    public int nthUglyNumber2(int n) {
         List<Long> list = new ArrayList<>();
         list.add(1L);
         int index_2 = 0;
@@ -293,7 +492,7 @@ public class DP {
         for (int i = 1; i < n; i++) {
             long min_2_3 = Math.min(2 * list.get(index_2), 3 * list.get(index_3));
             min = Math.min(min_2_3, 5 * list.get(index_5));
-            list.add(i, min);
+            list.add(min);
             if (min == 2 * list.get(index_2)) index_2++;
             if (min == 3 * list.get(index_3)) index_3++;  // 此处不使用 else if，可达到去重效果
             if (min == 5 * list.get(index_5)) index_5++;

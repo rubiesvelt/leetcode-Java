@@ -1,6 +1,36 @@
+import main.Main;
+
 import java.util.*;
 
 public class SimulatePQ {
+
+    // 2054. 两个最好的不重叠活动
+    public int maxTwoEvents(int[][] events) {
+        int n = events.length;
+        Arrays.sort(events, (o1, o2) -> o1[0] - o2[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[1] - o2[1]);
+        int maxScore = 0;
+        int max = 0;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int start = events[i][0];
+            int score = events[i][2];
+
+            maxScore = Math.max(score, maxScore);
+            // 从pq中取出所有 endTime >= start 的元素
+            while (!pq.isEmpty()) {
+                int[] cur = pq.peek();
+                if (cur[1] >= start) break;
+                pq.poll();
+                max = Math.max(max, cur[2]);
+            }
+            ans = Math.max(ans, max + score);
+            pq.add(events[i]);
+        }
+
+        if (ans < maxScore) ans = maxScore;
+        return ans;
+    }
 
     // 743. 网络延迟时间
     public int networkDelayTime(int[][] times, int n, int k) {

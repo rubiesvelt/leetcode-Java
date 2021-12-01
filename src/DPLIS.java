@@ -5,23 +5,48 @@ import java.util.Arrays;
  */
 public class DPLIS {
 
-    // 300. 最长递增子序列
-    // 严格递增
-    // 有两种解法，一种 n方 的朴素解法，一种像如下这样 nlogn 解法
+    /*
+     * 300. 最长递增子序列
+     * 子序列，子集，子数组
+     *
+     * [10,9,2,5,3,7,101,18]
+     * -> 4 [2,3,7,101]
+     *
+     * 10 -> 1
+     * 9 -> 1
+     * 2 -> 1
+     * 5 -> 2
+     * 3 -> 2
+     * 7 -> 3
+     * 101 -> 4
+     * 18 -> 4
+     */
     public int lengthOfLIS(int[] nums) {
         int n = nums.length;
-        int[] f = new int[n];  // f[i]表示 最长递增子序列 长度 为i时，该序列结尾元素的大小（f[]递增）
+        int[] arr = new int[n];
         int ans = -1;
         int len = 0;
         for (int x : nums) {
-            int t = Utils.lower_bound(f, 0, len, x);  // 找到第一个大于等于 x 的元素 的下标; t + 1 为必选 x 时，最长递增子序列的长度
-            f[t] = x;
+            int t = lowerBound(arr, 0, len, x);
+            arr[t] = x;
             ans = Math.max(ans, t + 1);
             if (t == len) {
                 len++;
             }
         }
         return ans;
+    }
+
+    private int lowerBound(int[] arr, int left, int right, int t) {
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (arr[mid] >= t) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
     }
 
     // 1964. 找出到每个位置为止最长的有效障碍赛跑路线

@@ -61,25 +61,26 @@ public class DPSubSeq {
      * BFS
      */
     public boolean wordBreak(String s, List<String> wordDict) {
-        Set<String> wordSet = new HashSet<>();  // wordDict允许复用，所以用Set去重
-        int maxWordLength = 0;
-        for (String str : wordDict) {
-            wordSet.add(str);
-            if (str.length() > maxWordLength) {
-                maxWordLength = str.length();
-            }
-        }
-        boolean[] dp = new boolean[s.length() + 1];  // dp[i] 表示子串 [0, i) 是否为可行子串
+        int n = s.length();
+        Set<String> set = new HashSet<>(wordDict);
+        boolean[] dp = new boolean[n];
         dp[0] = true;
-        for (int i = 0; i <= s.length(); i++) {
-            for (int j = (Math.max(i - maxWordLength, 0)); j < i; j++) {
-                if (dp[j] && wordSet.contains(s.substring(j, i))) {  // substring(j, i)含j不含i
-                    dp[i] = true;
-                    break;
+        int index = 0;
+        while (index < n) {
+            if (!dp[index]) {
+                index++;
+                continue;
+            }
+            for (String t : set) {
+                if (s.substring(index).startsWith(t)) {
+                    int next = index + t.length();
+                    if (next == n) return true;
+                    dp[next] = true;
                 }
             }
+            index++;
         }
-        return dp[s.length()];
+        return false;
     }
 
     // DFS
