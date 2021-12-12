@@ -25,11 +25,78 @@ public class Main {
         int[][] matrix1 = {{22, 44, 9}, {93, 96, 48}, {56, 90, 3}, {80, 92, 45}, {63, 73, 69}, {73, 96, 33}, {11, 23, 84}, {59, 72, 29}, {89, 100, 46}};
         int[] dist = {25, 11, 29, 6, 24, 4, 29, 18, 6, 13, 25, 30};
         int[] diff = {10, 9, 2, 5, 3, 7, 101, 18};
-        int[] speed = {-5, -2, 5, 6, -2, -7, 0, 2, 8};
+        int[] speed = {28, 27, 13, 19, 23, 4, 29, 29, 7};
         char[][] matrix2 = {{'.', '.', 'W', '.', 'B', 'W', 'W', 'B'}, {'B', 'W', '.', 'W', '.', 'W', 'B', 'B'}, {'.', 'W', 'B', 'W', 'W', '.', 'W', 'W'}, {'W', 'W', '.', 'W', '.', '.', 'B', 'B'}, {'B', 'W', 'B', 'B', 'W', 'W', 'B', '.'}, {'W', '.', 'W', '.', '.', 'B', 'W', 'W'}, {'B', '.', 'B', 'B', '.', '.', 'B', 'B'}, {'.', 'W', '.', 'W', '.', 'W', '.', 'W'}};
 
-        main.kMirror(2, 5);
+
         return;
+    }
+
+    /*
+     * 5935. 适合打劫银行的日子
+     * 没必要用单调栈
+     */
+    public List<Integer> goodDaysToRobBank(int[] security, int time) {
+        int n = security.length;
+        int[] left = new int[n];
+        for (int i = 1; i < n; i++) {
+            if (security[i - 1] >= security[i]) {
+                left[i] = left[i - 1] + 1;
+            }
+        }
+        int[] right = new int[n];
+        for (int i = n - 2; i >= 0; i--) {
+            if (security[i + 1] >= security[i]) {
+                right[i] = right[i + 1] + 1;
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (left[i] >= time && right[i] >= time) {
+                ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+    public int[] maxSubsequence(int[] nums, int k) {
+        int n = nums.length;
+        int[] nums1 = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums1[i] = nums[i];
+        }
+        Arrays.sort(nums);
+        int cnt = k;
+        int[] mp = new int[200005];
+        for (int i = n - 1; i >= 0; i--) {
+            mp[nums[i] + 100001]++;
+            cnt--;
+            if (cnt == 0) break;
+        }
+        int[] ans = new int[k];
+        int cur = 0;
+        for (int i = 0; i < n; i++) {
+            if (mp[nums1[i] + 100001] > 0) {
+                ans[cur] = nums1[i];
+                cur++;
+                mp[nums1[i] + 100001]--;
+                if (cur == k) break;
+            }
+        }
+        return ans;
+    }
+
+    /*
+     * 343. 整数拆分
+     */
+    public int integerBreak(int n) {
+        int[] f = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j < i; j++) {
+                f[i] = Math.max(f[i], Math.max((i - j) * f[j], (i - j) * j));
+            }
+        }
+        return f[n];
     }
 
     /*

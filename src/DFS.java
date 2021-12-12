@@ -99,6 +99,56 @@ public class DFS {
     }
 
     /*
+     * 5936. 引爆最多的炸弹
+     * 构建图，从图的每一个顶点开启爆搜
+     */
+    public int maximumDetonation(int[][] bombs) {
+        List<List<Integer>> graph = new ArrayList<>();
+        int n = bombs.length;
+        for (int i = 0; i < n; i++) {
+            List<Integer> list = new ArrayList<>();
+            int a1 = bombs[i][0];
+            int b1 = bombs[i][1];
+            int r = bombs[i][2];
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+                int a2 = bombs[j][0];
+                int b2 = bombs[j][1];
+                if (reach(a1, b1, a2, b2, r)) {
+                    list.add(j);
+                }
+            }
+            graph.add(i, list);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            Set<Integer> visited = new HashSet<>();
+            int now = dfs(i, visited, graph);
+            ans = Math.max(ans, now);
+        }
+        return ans;
+    }
+
+    public int dfs(int cur, Set<Integer> visited, List<List<Integer>> graph) {
+        visited.add(cur);
+        List<Integer> list = graph.get(cur);
+        for (int next : list) {
+            if (visited.contains(next)) continue;
+            dfs(next, visited, graph);
+        }
+        return visited.size();
+    }
+
+    public boolean reach(int a1, int b1, int a2, int b2, int r) {
+        long a12 = a1 - a2;
+        long b12 = b1 - b2;
+        long x2 = a12 * a12;
+        long y2 = b12 * b12;
+        long r2 = (long) r * (long) r;
+        return r2 >= x2 + y2;
+    }
+
+    /*
      * 301. 删除无效的括号
      * 给你一个由若干括号和字母组成的字符串 s ，删除 最小数量 的无效括号，使得输入的字符串有效。
      * 返回所有可能的结果。答案可以按 任意顺序 返回。
