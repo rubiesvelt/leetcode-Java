@@ -6,29 +6,23 @@ public class SimulatePQ {
 
     // 2054. 两个最好的不重叠活动
     public int maxTwoEvents(int[][] events) {
-        int n = events.length;
         Arrays.sort(events, (o1, o2) -> o1[0] - o2[0]);
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[1] - o2[1]);
-        int maxScore = 0;
-        int max = 0;
+        int max = 0;  // 最大结果
         int ans = 0;
-        for (int i = 0; i < n; i++) {
-            int start = events[i][0];
-            int score = events[i][2];
-
-            maxScore = Math.max(score, maxScore);
-            // 从pq中取出所有 endTime >= start 的元素
+        for (int[] event : events) {
+            int start = event[0];
+            int score = event[2];
+            // 开始审视前面的；从pq中取出所有 endTime < start 的元素
             while (!pq.isEmpty()) {
                 int[] cur = pq.peek();
                 if (cur[1] >= start) break;
                 pq.poll();
-                max = Math.max(max, cur[2]);
+                max = Math.max(max, cur[2]);  // 结束时间早于当前开始时间 的活动 的最大收益
             }
             ans = Math.max(ans, max + score);
-            pq.add(events[i]);
+            pq.add(event);
         }
-
-        if (ans < maxScore) ans = maxScore;
         return ans;
     }
 
