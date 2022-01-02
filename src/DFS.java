@@ -99,6 +99,125 @@ public class DFS {
     }
 
     /*
+     * 2065. 最大化一张图中的路径价值
+     */
+    int ans2065 = 0;
+
+    public int maximalPathQuality(int[] values, int[][] edges, int maxTime) {
+        int n = values.length;
+        int[][] graph = new int[n][n];
+        for (int[] edge : edges) {
+            graph[edge[0]][edge[1]] = edge[2];
+            graph[edge[1]][edge[0]] = edge[2];
+        }
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        dfs2065(0, values[0], 0, n, visited, values, graph, maxTime);
+        return ans2065;
+    }
+
+    public void dfs2065(int cur, int curSum, int curTime, int n, boolean[] visited, int[] values, int[][] graph, int maxTime) {
+        if (cur == 0) {
+            ans2065 = Math.max(ans2065, curSum);
+        }
+        for (int i = 0; i < n; i++) {
+            if (i == cur) continue;
+            if (graph[cur][i] == 0) continue;
+
+            int time = graph[cur][i];
+            if (curTime + time > maxTime) continue;
+            if (i != 0 && curTime + 2 * time > maxTime) continue;
+
+            int nextSum = curSum;
+            if (!visited[i]) {
+                nextSum += values[i];
+                visited[i] = true;
+                dfs2065(i, nextSum, curTime + time, n, visited, values, graph, maxTime);
+                visited[i] = false;
+            } else {
+                dfs2065(i, nextSum, curTime + time, n, visited, values, graph, maxTime);
+            }
+        }
+    }
+
+    /*
+     * 638. 大礼包
+     *
+     * [0,0,0]
+     * [[1,1,0,4],[2,2,1,9]]
+     * [1,1,1]
+     */
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        int n = price.size();
+        List<List<Integer>> goodSpecial = new ArrayList<>();
+        // 筛选 能够优惠 且 可以选择 的大礼包
+        for (List<Integer> sp : special) {
+            int total = 0;  // 大礼包中元素的原价
+            for (int i = 0; i < n; i++) {
+                if (sp.get(i) > needs.get(i)) {
+                    total = 0x3f3f3f3f;
+                    break;
+                }
+                total += sp.get(i) * price.get(i);
+            }
+            if (total <= sp.get(n)) {
+                continue;
+            }
+            goodSpecial.add(sp);
+        }
+
+        dfs1(0, needs, goodSpecial, price, n);
+        return ans638;
+    }
+
+    int ans638 = 0x3f3f3f3f;
+
+    public void dfs1(int total, List<Integer> needs, List<List<Integer>> special, List<Integer> price, int n) {
+        boolean hasSpe = false;
+        for (List<Integer> spe : special) {
+            if (goodSpe(spe, needs)) {
+                hasSpe = true;
+                total += spe.get(n);
+                useSpe(spe, needs);
+                dfs1(total, needs, special, price, n);
+                total -= spe.get(n);
+                releaseSpe(spe, needs);
+            }
+        }
+        if (!hasSpe) {
+            for (int i = 0; i < n; i++) {
+                total += needs.get(i) * price.get(i);
+            }
+            ans638 = Math.min(ans638, total);
+        }
+    }
+
+    public boolean goodSpe(List<Integer> spe, List<Integer> needs) {
+        for (int i = 0; i < needs.size(); i++) {
+            if (spe.get(i) > needs.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void useSpe(List<Integer> spe, List<Integer> needs) {
+        for (int i = 0; i < needs.size(); i++) {
+            int t = needs.get(i) - spe.get(i);
+            needs.remove(i);
+            needs.add(i, t);
+        }
+    }
+
+    public void releaseSpe(List<Integer> spe, List<Integer> needs) {
+        for (int i = 0; i < needs.size(); i++) {
+            int t = needs.get(i) + spe.get(i);
+            needs.remove(i);
+            needs.add(i, t);
+        }
+    }
+
+    /*
      * 5936. 引爆最多的炸弹
      * 构建图，从图的每一个顶点开启爆搜
      */

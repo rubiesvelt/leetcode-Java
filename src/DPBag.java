@@ -9,9 +9,9 @@ public class DPBag {
 
     /**
      * --------------------------------------- 01背包 ---------------------------------------<p>
-     *
+     * <p>
      * 0-1 背包问题，不可重复选<br>
-     *
+     * <p>
      * 选取物品总量 不能超过 规定数量，问最多物品数<br>
      * 选取物品总量 恰好等于 规定数量，问最小物品数<br>
      * 选取物品总量 恰好等于 规定数量，问可行性<br>
@@ -147,9 +147,45 @@ public class DPBag {
 
     /**
      * --------------------------------------- 完全背包问题 ---------------------------------------<p>
-     *
+     * <p>
      * 完全背包问题，元素允许重用<br>
      */
+
+    /*
+     * 518. 零钱兑换 II
+     *
+     * 给定零钱 coins[] 和目标和 amount，零钱可以重用，求凑成 amount 有多少种零钱方案
+     *
+     * 典型的 完全背包问题
+     * 一维
+     */
+    public int change(int amount, int[] coins) {
+        int[] f = new int[amount + 1];  // f[i] 表示和为 i 时的方案数
+        f[0] = 1;
+        for (int coin : coins) {  // 先过 东西，再过 总和
+            for (int j = coin; j <= amount; j++) {  // 完全背包，从前往后
+                f[j] = f[j] + f[j - coin];
+            }
+        }
+        return f[amount];
+    }
+
+    /*
+     * 322. 零钱兑换
+     * 给定零钱 coins[] 和目标和 amount，零钱可以重用，求可以凑成总金额所需的 最少的硬币个数，如果没有返回 -1
+     */
+    public int coinChange(int[] coins, int amount) {
+        if (amount == 0) return 0;
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, 0x3f3f3f3f);
+        dp[0] = 0;
+        for (int coin : coins) {
+            for (int i = coin; i <= amount; i++) {
+                dp[i] = Math.min(dp[i - coin] + 1, dp[i]);
+            }
+        }
+        return dp[amount] == 0x3f3f3f3f ? -1 : dp[amount];
+    }
 
     /*
      * 279. 完全平方数

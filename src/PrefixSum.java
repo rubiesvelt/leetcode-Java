@@ -71,6 +71,32 @@ public class PrefixSum {
         return ans;
     }
 
+    /*
+     * 1314. 矩阵区域和
+     * 二维数组前缀和
+     */
+    public int[][] matrixBlockSum(int[][] mat, int k) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] preSum = new int[m + 1][n + 1];
+        for (int i = 1; i < m + 1; i++) {
+            for (int j = 1; j < n + 1; j++) {
+                preSum[i][j] = mat[i - 1][j - 1] + preSum[i - 1][j] + preSum[i][j - 1] - preSum[i - 1][j - 1];
+            }
+        }
+        int[][] ans = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int i0 = Math.max(i - k, 0);
+                int j0 = Math.max(j - k, 0);
+                int i1 = Math.min(1 + i + k, m);
+                int j1 = Math.min(1 + j + k, n);
+                ans[i][j] = preSum[i1][j1] + preSum[i0][j0] - preSum[i1][j0] - preSum[i0][j1];
+            }
+        }
+        return ans;
+    }
+
     // 1074. 元素和为目标值的子矩阵数量
     // 二维数组前缀和
     public int numSubmatrixSumTarget(int[][] mat, int t) {

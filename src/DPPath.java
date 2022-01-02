@@ -1,7 +1,72 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * DP —— 路径
  */
 public class DPPath {
+
+    /*
+     * 63. 不同路径 II
+     *
+     * 深信服面试题. 机器人可移动的总方案数
+     *
+     * 给出一个二维数组 graph[][]，graph[i][j] = 0 表示畅通，graph[i][j] = 1 表示障碍
+     * 机器人初始位置在图的左上角 (0, 0)，现需要移动到图的右下角，机器人只能往下或往右移动
+     * 求有多少种不同的路线
+     */
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int n = obstacleGrid.length;
+        int m = obstacleGrid[0].length;
+        if (obstacleGrid[0][0] == 1 || obstacleGrid[n - 1][m - 1] == 1) return 0;
+        int[][] dp = new int[n][m];  // dp[i][j] 表示到达 [i][j] 格子总路径数目
+        dp[0][0] = 1;
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(new Point(0, 0));
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            int i1 = p.i + 1;
+            int j1 = p.j + 1;
+            if (i1 < n && obstacleGrid[i1][p.j] == 0) {
+                if (dp[i1][p.j] == 0) queue.add(new Point(i1, p.j));
+                dp[i1][p.j] += dp[p.i][p.j];
+            }
+            if (j1 < m && obstacleGrid[p.i][j1] == 0) {
+                if (dp[p.i][j1] == 0) queue.add(new Point(p.i, j1));
+                dp[p.i][j1] += dp[p.i][p.j];
+            }
+        }
+        return dp[n - 1][m - 1];
+    }
+
+    public static class Point {
+        int i;
+        int j;
+
+        public Point(int i, int j) {
+            this.i = i;
+            this.j = j;
+        }
+    }
+
+    /*
+     * 62. 不同路径
+     */
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int j = 0; j < n; j++) {
+            dp[0][j] = 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
 
     // 576. 出界的路径数
     // 记忆化搜索

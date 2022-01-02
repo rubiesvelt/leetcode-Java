@@ -18,6 +18,19 @@ public class DP {
      */
 
     /*
+     * 343. 整数拆分
+     */
+    public int integerBreak(int n) {
+        int[] f = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j < i; j++) {
+                f[i] = Math.max(f[i], Math.max((i - j) * f[j], (i - j) * j));
+            }
+        }
+        return f[n];
+    }
+
+    /*
      * 1567. 乘积为正数的最长子数组长度
      */
     public int getMaxLen(int[] nums) {

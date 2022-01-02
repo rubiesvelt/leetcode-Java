@@ -5,6 +5,72 @@ import java.util.Arrays;
  */
 public class DPPalSeq {
 
+    /*
+     * 5. 最长回文子串
+     */
+    public String longestPalindrome(String s) {
+        int n = s.length();
+        int max = -1;
+        int l = 0, r = 0;
+        boolean[][] dp = new boolean[n][n];  // dp[i][j] 为 [i, j) 子串 是否为回文字串
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], true);
+        }
+        // 这样其实也可以
+        // for (int j = 0; j < n; j++) {
+        //     for (int i = j - 1; i >= 0; i--) {
+        //         dp[i][j] = s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1];
+        //         if (dp[i][j]) {
+        //             if (j - i > max) {
+        //                 max = j - i;
+        //                 l = i;
+        //                 r = j;
+        //             }
+        //         }
+        //     }
+        // }
+
+        // 这样先循环i，后循环j，比较符合常理
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {  // i = n - 1 的时候，j 不会进入循环
+                dp[i][j] = s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1];  // 此处不用担心 i + 1越界，因为到不了这块
+                if (dp[i][j]) {
+                    if (j - i > max) {
+                        max = j - i;
+                        l = i;
+                        r = j;
+                    }
+                }
+            }
+        }
+        return s.substring(l, r + 1);
+    }
+
+    // 中心扩展法
+    public String longestPalindrome1(String s) {
+        if (s == null || s.length() < 1) return "";
+        int start = 0, end = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int len1 = expandAroundCenter(s, i, i);  // aba
+            int len2 = expandAroundCenter(s, i, i + 1);  // abba
+            int len = Math.max(len1, len2);
+            if (len > end - start) {
+                start = i - (len - 1) / 2;
+                end = i + len / 2;
+            }
+        }
+        return s.substring(start, end + 1);
+    }
+
+    private int expandAroundCenter(String s, int left, int right) {
+        int L = left, R = right;
+        while (L >= 0 && R < s.length() && s.charAt(L) == s.charAt(R)) {
+            L--;
+            R++;
+        }
+        return R - L - 1;
+    }
+
     // 132. 分割回文串 II
     // 给你一个字符串 s，请你将 s 分割成一些子串，使每个子串都是回文，求最少分割次数
     public int minCut(String s) {

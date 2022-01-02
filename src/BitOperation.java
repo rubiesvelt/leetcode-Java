@@ -1,6 +1,64 @@
 public class BitOperation {
 
     /*
+     * 260. 只出现一次的数字 III
+     * 给出 nums[] 数组，数组中每个元素都出现两次，但其中有两个数只出现过一次，返回这两个 只出现一次的数字
+     *
+     * 把数字分成两组，每组分别包含两个数字之一
+     */
+    public int[] singleNumber(int[] nums) {
+
+        int u = 0;
+        for (int num : nums) u ^= num;  // 全部异或的值
+        // 两种方法， 取最低为为 1 的值
+        // 方法一
+        int diffNum = u & (~u + 1);  // 取最低为为 1 的值
+        // 方法二
+        int tmp = 1;
+        while (((tmp & u) == 0)) {
+            tmp <<= 1;
+        }
+
+        int a = 0, b = 0;
+
+        for (int c : nums) {  // 将nums分为2个部分,一部分DiffNum位置为1,另外一部分DiffNum为0  恰好需要查找的a b都分别属于这2部分
+            if ((c & tmp) == tmp)
+                a ^= c;
+            else
+                b ^= c;
+        }
+        return new int[]{a, b};
+    }
+
+    public int[] singleNumber0(int[] nums) {
+        int u = 0;
+        int n = nums.length;
+        for (int num : nums) {
+            u ^= num;
+        }
+        int[] nums0 = new int[n];
+        int[] nums1 = new int[n];
+        int p0 = 0, p1 = 0;
+        int dis = 0;
+        for (int i = 0; i < 32; i++) {
+            int t = u >> i & 1;
+            if (t == 1) {
+                dis = i;
+                break;
+            }
+        }
+        for (int num : nums) {
+            if ((num >> dis & 1) == 0) nums0[p0++] = num;
+            if ((num >> dis & 1) == 1) nums1[p1++] = num;
+        }
+
+        int r0 = 0, r1 = 0;
+        for (int num : nums0) r0 ^= num;
+        for (int num : nums1) r1 ^= num;
+        return new int[]{r0, r1};
+    }
+
+    /*
      * 2044. 统计按位或能得到最大值的子集数目
      * 给出数组 nums[] 求其 按位或 能得到最大值 的子集 的数目
      * e.g.

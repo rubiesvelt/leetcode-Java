@@ -4,6 +4,110 @@ import java.util.*;
 public class Simulate {
 
     /*
+     * 64. 最小路径和
+     */
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        for (int i = 1; i < m; i++) {
+            grid[i][0] += grid[i - 1][0];
+        }
+        for (int i = 1; i < n; i++) {
+            grid[0][i] += grid[0][i - 1];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                int min = Math.min(grid[i - 1][j], grid[i][j - 1]);
+                grid[i][j] += min;
+            }
+        }
+        return grid[m - 1][n - 1];
+    }
+
+    /*
+     * 120. 三角形最小路径和
+     */
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int n = triangle.size();
+        List<Integer> buff = new ArrayList<>();
+        buff.add(0);
+        for (int i = 0; i < n; i++) {
+            List<Integer> cur = triangle.get(i);
+            List<Integer> next = new ArrayList<>();
+            // 第i层，有i + 1个元素
+            for (int j = 0; j < cur.size(); j++) {
+                int l = 0x3f3f3f3f;  // j - 1
+                int r = 0x3f3f3f3f;  // j
+                if (j - 1 >= 0) l = buff.get(j - 1);
+                if (j < buff.size()) r = buff.get(j);
+                int t = Math.min(l, r) + cur.get(j);
+                next.add(t);
+            }
+            buff = next;
+        }
+        int ans = 0x3f3f3f3f;
+        for (int t : buff) {
+            ans = Math.min(ans, t);
+        }
+        return ans;
+    }
+
+    /*
+     * 931. 下降路径最小和
+     */
+    public int minFallingPathSum(int[][] matrix) {
+        int m = matrix[0].length;
+        int[] buff = new int[m];
+        for (int[] row : matrix) {
+            int[] cur = new int[m];
+            for (int i = 0; i < m; i++) {
+                cur[i] = buff[i] + row[i];
+            }
+            for (int i = 0; i < m; i++) {
+                int l = 0x3f3f3f3f;
+                int r = 0x3f3f3f3f;
+                if (i > 0) l = cur[i - 1];
+                if (i < m - 1) r = cur[i + 1];
+                int min_l_r = Math.min(l, r);
+                int min = Math.min(min_l_r, cur[i]);
+                buff[i] = min;
+            }
+        }
+        int ans = 0x3f3f3f3f;
+        for (int i = 0; i < m; i++) {
+            ans = Math.min(ans, buff[i]);
+        }
+        return ans;
+    }
+
+    /*
+     * 5935. 适合打劫银行的日子
+     * 没必要用单调栈
+     */
+    public List<Integer> goodDaysToRobBank(int[] security, int time) {
+        int n = security.length;
+        int[] left = new int[n];
+        for (int i = 1; i < n; i++) {
+            if (security[i - 1] >= security[i]) {
+                left[i] = left[i - 1] + 1;
+            }
+        }
+        int[] right = new int[n];
+        for (int i = n - 2; i >= 0; i--) {
+            if (security[i + 1] >= security[i]) {
+                right[i] = right[i + 1] + 1;
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (left[i] >= time && right[i] >= time) {
+                ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+    /*
      * 869. 重新排序得到 2 的幂
      *
      * 如果用dfs，都有什么可搜的
