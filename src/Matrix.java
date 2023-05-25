@@ -3,6 +3,46 @@ import java.util.*;
 public class Matrix {
 
     /*
+     * 2075. Decode the Slanted Ciphertext
+     *
+     * slanted metric
+     */
+    public String decodeCiphertext(String encodedText, int rows) {
+        if (rows == 1) return encodedText;
+        int n = encodedText.length();
+        int col = n / rows;
+        char[][] metric = new char[rows][col];
+        int index = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < col; j++) {
+                metric[i][j] = encodedText.charAt(index);
+                index++;
+            }
+        }
+        int cur = 0;
+        String ans = "";
+        boolean stopSign = false;
+        while (cur < col) {
+            for (int i = 0; i < rows; i++) {
+                if (cur + i < col) {
+                    ans += metric[i][cur + i];
+                } else {
+                    stopSign = true;
+                    break;
+                }
+            }
+            if (stopSign) break;
+            cur++;
+        }
+        int q = ans.length() - 1;
+        while (q >= 0 && ans.charAt(q) == ' ') {
+            q--;
+        }
+        String ret = ans.substring(0, q + 1);
+        return ret;
+    }
+
+    /*
      * 240. 搜索二维矩阵 II
      * 二维矩阵 matrix[][] 每一行，每一列的元素，都是从小到大排序（i < j 则 matrix[][i] < matrix[][j]）
      * 给定数字 target，判断 target 是否存在于矩阵中

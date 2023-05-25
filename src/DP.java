@@ -3,15 +3,16 @@ import java.util.*;
 public class DP {
 
     /**
+     * The things that have happened won't change, but will impose effect on the future
      * 发生过的事情不会改变，但会对未来造成影响
      *
      * <p>
      * 经典动态规划
      * <p>
-     * 最长递增子序列 LIS
-     * 最长公共子序列 LCS
-     * 单词拆分
-     * 打家劫舍
+     * 最长递增子序列 the Longest Increasing Sequence
+     * 最长公共子序列 the Longest Common Sequence
+     * 单词拆分 Word Split
+     * 打家劫舍 Robbery
      * 背包问题
      * 回文字串
      * 区间DP
@@ -537,4 +538,129 @@ public class DP {
         }
         return f[n];
     }
+
+    /*
+     * 72. Edit Distance
+     *
+     * word1 -> word2
+     */
+    public int minDistance(String word1, String word2) {
+        int m = word1.length();
+        int n = word2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        // dp[i][j] represents the minimum number of operations required to convert subsequence of word1 from 0 to i to become the subsequence of word2 from 0 to j
+        char[] cs1 = word1.toCharArray();
+        char[] cs2 = word2.toCharArray();
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i;
+        }
+        for (int j = 0; j <= n; j++) {
+            dp[0][j] = j;
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (cs1[i - 1] == cs2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    // dp[i][j] can be reached from past status by
+                    // add cs2[j] element，get from dp[i][j-1]
+                    // change cs1[i] to cs2[j]，get from dp[i-1][j-1]
+                    // delete cs1[i] element，get from dp[i-1][j]
+                    int min = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]);
+                    dp[i][j] = min + 1;
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    /*
+     * 376. Wiggle Subsequence
+     *
+     * [1,17,5,10,13,15,10,5,16,8]
+     * 当人上面, 当人下面
+     * 1 -> 1,1
+     * 17 -> 2,1
+     * 5 -> 2,3
+     * 10 -> 4,3
+     * 13 -> 4,3
+     * 15 -> 4,3
+     * 10 -> 4,5
+     * 5 -> 4,5
+     * 16 -> 6,5
+     * 8 -> 6,7
+     */
+    public int wiggleMaxLength(int[] nums) {
+        int n = nums.length;
+        if (n < 2) {
+            return n;
+        }
+        int up = 1;
+        int down = 1;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] > nums[i - 1]) {
+                up = down + 1;
+            }
+            if (nums[i] < nums[i - 1]) {
+                down = up + 1;
+            }
+        }
+        return Math.max(up, down);
+    }
+
+    /*
+     * 221. Maximal Square
+     */
+    public int maximalSquare(char[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == '1') {
+                ans = 1;
+                break;
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            if (matrix[0][j] == '1') {
+                ans = 1;
+                break;
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][j] == '0') continue;
+                int a = matrix[i - 1][j - 1] - '0';
+                int b = matrix[i - 1][j] - '0';
+                int c = matrix[i][j - 1] - '0';
+                int min = Math.min(a, b);
+                min = Math.min(min, c);
+                matrix[i][j] = (char) ('0' + min + 1);
+                ans = Math.max(ans, matrix[i][j] - '0');
+            }
+        }
+        return ans * ans;
+    }
+
+    /*
+     * 64. Minimum Path Sum
+     */
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        for (int i = 1; i < m; i++) {
+            grid[i][0] += grid[i - 1][0];
+        }
+        for (int i = 1; i < n; i++) {
+            grid[0][i] += grid[0][i - 1];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                int min = Math.min(grid[i - 1][j], grid[i][j - 1]);
+                grid[i][j] += min;
+            }
+        }
+        return grid[m - 1][n - 1];
+    }
+
 }

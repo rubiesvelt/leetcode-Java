@@ -41,211 +41,8 @@ public class Main {
     }
 
     /*
-     * 2451. Odd String Difference
-     *
-     * find one different in an array, we should look at first three
+     * 2071. Maximum Number of Tasks You Can Assign
      */
-    public String oddString(String[] words) {
-        String first = getDiff(words[0]);
-        String second = getDiff(words[1]);
-        String third = getDiff(words[2]);
-        if (first.equals(second)) {
-            if (!first.equals(third)) {
-                return words[2];
-            }
-        } else {
-            if (first.equals(third)) {
-                return words[1];
-            }
-            return words[0];
-        }
-        for (int i = 3; i < words.length; i++) {
-            if (!getDiff(words[i]).equals(first)) return words[i];
-        }
-        return "";
-    }
-
-    public String getDiff(String s) {
-        StringBuilder res = new StringBuilder();
-        for (int i = 1; i < s.length(); i++) {
-            res.append(s.charAt(i) - s.charAt(i - 1)).append(',');
-        }
-        return res.toString();
-    }
-
-    /*
-     * 72. 编辑距离
-     *
-     * word1 -> word2
-     */
-    public int minDistance(String word1, String word2) {
-        int m = word1.length();
-        int n = word2.length();
-        int[][] dp = new int[m + 1][n + 1];
-        // 如果 dp[i][j] 从 dp[i-1][j-1], dp[i-1][j], dp[i][j-1] 推导
-        // dp[i][j] 表示 word1 从 0 到 i，word2 到j 的子集需要的变化次数
-        char[] cs1 = word1.toCharArray();
-        char[] cs2 = word2.toCharArray();
-        for (int i = 0; i <= m; i++) {
-            dp[i][0] = i;
-        }
-        for (int j = 0; j <= n; j++) {
-            dp[0][j] = j;
-        }
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (cs1[i - 1] == cs2[j - 1]) {
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    // dp[i][j] 可从之前的状态，通过
-                    // 添加 dp[i][j-1]
-                    // 修改 dp[i-1][j-1]
-                    // 删除 dp[i-1][j] 得到
-                    int min = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]);
-                    dp[i][j] = min + 1;
-                }
-            }
-        }
-        return dp[m][n];
-    }
-
-    /*
-     * 392. 判断子序列
-     */
-    public boolean isSubsequence(String s, String t) {
-        int m = s.length();
-        if (m == 0) return true;
-        int n = t.length();
-        int cur = 0;
-        for (int i = 0; i < n; i++) {
-            if (s.charAt(cur) == t.charAt(i)) {
-                cur++;
-            }
-            if (cur == m) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /*
-     * 376. 摆动序列
-     *
-     * [1,17,5,10,13,15,10,5,16,8]
-     * 当人上面, 当人下面
-     * 1 -> 1,1
-     * 17 -> 2,1
-     * 5 -> 2,3
-     * 10 -> 4,3
-     * 13 -> 4,3
-     * 15 -> 4,3
-     * 10 -> 4,5
-     * 5 -> 2,5
-     * 16 -> 6,3
-     * 8 -> 6,7
-     */
-    public int wiggleMaxLength(int[] nums) {
-        int n = nums.length;
-        if (n < 2) {
-            return n;
-        }
-        int up = 1;
-        int down = 1;
-        for (int i = 1; i < n; i++) {
-            if (nums[i] > nums[i - 1]) {
-                up = down + 1;
-            }
-            if (nums[i] < nums[i - 1]) {
-                down = up + 1;
-            }
-        }
-        return Math.max(up, down);
-    }
-
-    /*
-     * 221. 最大正方形
-     */
-    public int maximalSquare(char[][] matrix) {
-        int m = matrix.length;
-        int n = matrix[0].length;
-        int ans = 0;
-        for (int i = 0; i < m; i++) {
-            if (matrix[i][0] == '1') {
-                ans = 1;
-                break;
-            }
-        }
-        for (int j = 0; j < n; j++) {
-            if (matrix[0][j] == '1') {
-                ans = 1;
-                break;
-            }
-        }
-        for (int i = 1; i < m; i++) {
-            for (int j = 1; j < n; j++) {
-                if (matrix[i][j] == '0') continue;
-                int a = matrix[i - 1][j - 1] - '0';
-                int b = matrix[i - 1][j] - '0';
-                int c = matrix[i][j - 1] - '0';
-                int min = Math.min(a, b);
-                min = Math.min(min, c);
-                matrix[i][j] = (char) ('0' + min + 1);
-                ans = Math.max(ans, matrix[i][j] - '0');
-            }
-        }
-        return ans * ans;
-    }
-
-    /*
-     * 64. 最小路径和
-     */
-    public int minPathSum(int[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length;
-        for (int i = 1; i < m; i++) {
-            grid[i][0] += grid[i - 1][0];
-        }
-        for (int i = 1; i < n; i++) {
-            grid[0][i] += grid[0][i - 1];
-        }
-        for (int i = 1; i < m; i++) {
-            for (int j = 1; j < n; j++) {
-                int min = Math.min(grid[i - 1][j], grid[i][j - 1]);
-                grid[i][j] += min;
-            }
-        }
-        return grid[m - 1][n - 1];
-    }
-
-    public String decodeCiphertext(String encodedText, int rows) {
-        if (rows == 1) return encodedText;
-        int n = encodedText.length();
-        int col = n / rows;
-        char[][] metric = new char[rows][col];
-        int index = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < col; j++) {
-                metric[i][j] = encodedText.charAt(index);
-                index++;
-            }
-        }
-        int cur = 0;
-        int k = col - rows + 2;
-        String ans = "";
-        while (cur < k) {
-            for (int i = 0; i < rows; i++) {
-                if (cur + i < col) ans += metric[i][cur + i];
-            }
-            cur++;
-        }
-        int q = ans.length() - 1;
-        while (q >= 0 && ans.charAt(q) == ' ') {
-            q--;
-        }
-        String ret = ans.substring(0, q + 1);
-        return ret;
-    }
-
     public int maxTaskAssign(int[] tasks, int[] workers, int pills, int strength) {
         // 每个工人最多一个药丸，提高 strength 点力量
         // 目标完成最多的工作。
@@ -258,32 +55,8 @@ public class Main {
         return 0;
     }
 
-    public int[] maximumBeauty(int[][] items, int[] queries) {
-        Arrays.sort(items, (o1, o2) -> o1[0] - o2[0]);  // 价格从小到大
-        int max = Integer.MIN_VALUE;
-
-        TreeSet<Integer> treeSet = new TreeSet<>();  // TreeSet yyds!!
-        Map<Integer, Integer> map = new HashMap<>();
-        for (int[] item : items) {
-            max = Math.max(item[1], max);
-            treeSet.add(item[0]);
-            map.put(item[0], max);
-        }
-        int n = queries.length;
-        int[] ans = new int[n];
-        for (int i = 0; i < n; i++) {
-            Integer index = treeSet.floor(queries[i]);
-            int score = 0;
-            if (index != null) {
-                score = map.get(index);
-            }
-            ans[i] = score;
-        }
-        return ans;
-    }
-
     /*
-     * 96. 不同的二叉搜索树
+     * 96. Unique Binary Search Trees
      * 1 -> 1
      * 2 -> 1 * 2 -> 2
      * 3 -> 2 * 2 + 1 -> 5
@@ -297,13 +70,14 @@ public class Main {
      */
     public int numTrees(int n) {
         List<Integer> list = new ArrayList<>();
+        // list[i] means when there are i nodes, num of structures when using i as bottom
         list.add(1);
         int acc = 0;
         for (int i = 1; i <= n; i++) {
             acc = 0;
             int half = i / 2;
             int left = i % 2;
-            for (int j = 1; j <= half; j++) {  // 以 j 为底
+            for (int j = 1; j <= half; j++) {  // use j as bottom
                 int l = list.get(j - 1);
                 int r = list.get(i - j);
                 acc += (l * r) * 2;
