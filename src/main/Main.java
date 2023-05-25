@@ -3,11 +3,17 @@ package main;
 import beans.ListNode;
 import beans.TreeNode;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ParseException {
 
         List<Integer> list = new ArrayList<>();
         int t = list.hashCode();
@@ -28,9 +34,42 @@ public class Main {
         int[] speed = {28, 27, 13, 19, 23, 4, 29, 29, 7};
         char[][] matrix2 = {{'.', '.', 'W', '.', 'B', 'W', 'W', 'B'}, {'B', 'W', '.', 'W', '.', 'W', 'B', 'B'}, {'.', 'W', 'B', 'W', 'W', '.', 'W', 'W'}, {'W', 'W', '.', 'W', '.', '.', 'B', 'B'}, {'B', 'W', 'B', 'B', 'W', 'W', 'B', '.'}, {'W', '.', 'W', '.', '.', 'B', 'W', 'W'}, {'B', '.', 'B', 'B', '.', '.', 'B', 'B'}, {'.', 'W', '.', 'W', '.', 'W', '.', 'W'}};
 
+
         return;
     }
 
+    /*
+     * 2451. Odd String Difference
+     *
+     * find one different in an array, we should look at first three
+     */
+    public String oddString(String[] words) {
+        String first = getDiff(words[0]);
+        String second = getDiff(words[1]);
+        String third = getDiff(words[2]);
+        if (first.equals(second)) {
+            if (!first.equals(third)) {
+                return words[2];
+            }
+        } else {
+            if (first.equals(third)) {
+                return words[1];
+            }
+            return words[0];
+        }
+        for (int i = 3; i < words.length; i++) {
+            if (!getDiff(words[i]).equals(first)) return words[i];
+        }
+        return "";
+    }
+
+    public String getDiff(String s) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 1; i < s.length(); i++) {
+            res.append(s.charAt(i) - s.charAt(i - 1)).append(',');
+        }
+        return res.toString();
+    }
 
     /*
      * 72. 编辑距离
