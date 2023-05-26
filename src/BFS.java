@@ -1,6 +1,26 @@
+import beans.TreeNode;
+
 import java.util.*;
 
 public class BFS {
+
+    /*
+     * Level Order Traversal
+     * 层序遍历 = BFS
+     */
+    public List<Integer> levelOrder(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+        List<Integer> ans = new ArrayList<>();
+        while (!q.isEmpty()) {
+            TreeNode n = q.poll();
+            ans.add(n.val);
+            if (n.left != null) q.add(n.left);
+            if (n.right != null) q.add(n.right);
+        }
+        Collections.reverse(ans);
+        return ans;
+    }
 
     /*
      * 2045. 到达目的地的第二短时间

@@ -162,6 +162,8 @@ public class BinaryTree {
 
     /*
      * shopee 二面. z 字形遍历二叉树
+     *
+     * Level Order Traversal
      * 二叉树层序遍历，从根开始，第一层从左到右，第二层从右到左...求最终结果序列
      */
     public static class TreeNodeWrapper {
@@ -200,7 +202,7 @@ public class BinaryTree {
         for (int i = 0; i < lists.size(); i++) {
             List<Integer> list = lists.get(i);
             if (i % 2 == 1) {
-                Collections.reverse(list);
+                Collections.reverse(list);  // reverse list
             }
             ans.addAll(list);
         }

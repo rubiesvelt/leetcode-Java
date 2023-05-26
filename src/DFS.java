@@ -59,6 +59,8 @@ public class DFS {
     }
 
     // 回溯
+    // 这种用于在 nums 个里面选出若干个，这种场景，
+    // 题目见可信 3，1723
     public boolean dfsBackTrackArray(int[] nums, int index, List<Integer> t) {
         // 递归边界
         if (index == nums.length) {
@@ -392,25 +394,25 @@ public class DFS {
         return ret;
     }
 
-    // 可信 3
-    // 回溯算法
-    int ans3 = Integer.MAX_VALUE;
-
     /*
-     * 有2 * num个表演队进行演出，每一个节目需要两个表演队配合完成，每一个表演队 只能 且 必须 表演一场节目<br/>
-     * 现给出节目列表，列表中每个元素中的三个数，分别为 {1队，2队，成本}<br/>
-     * e.g. {0,1,250} 代表一场节目由0号和1号表演队完成，花费250<br/>
-     * 可从节目列表中选取若干节目，现求如何编排节目，能使 最高节目花费 最少，求最少的最高节目花费的值<p/>
+    可信 3
+    回溯算法
+     * 有 2 * num 个表演队进行演出，每一个节目需要两个表演队配合完成，每一个表演队 只能 且 必须 表演一场节目
+     * 现给出节目列表，列表中每个元素中的三个数，分别为 {1队，2队，成本}
+     * e.g. {0,1,250} 代表一场节目由 0 号和 1 号表演队完成，花费 250
+     * 可从节目列表中选取若干节目，现求如何编排节目，能使 最高节目花费 最少，求最少的最高节目花费的值
      *
-     * e.g.<br/>
-     * num：2<br/>
-     * program：{{0,1,250},{0,3,10},{1,2,25},{1,3,80},{2,3,90}}<br/>
-     * 结果：25<p/>
+     * e.g.
+     * num：2
+     * program：{{0,1,250},{0,3,10},{1,2,25},{1,3,80},{2,3,90}}
+     * 结果：25
      *
      * @param num     数目
      * @param program 节目列表
      * @return 最低的 最高节目花费
      */
+    int ans3 = Integer.MAX_VALUE;
+
     public int cooperativePerformance(int num, int[][] program) {
         dfs3(program, num, program.length, -1, new HashSet<>(), -1);
         return ans3;
@@ -474,32 +476,34 @@ public class DFS {
         }
     }
 
-    // 1723. 完成所有工作的最短时间
+    // 1723. Find Minimum Time to Finish All Jobs
+    // given jobs and worker nums
     // dfs
     int[] jobs;
-    int n1723, k;
+    int jobsSum, k;
     int ans1723 = 0x3f3f3f3f;
 
     public int minimumTimeRequired(int[] _jobs, int _k) {
         jobs = _jobs;
-        n1723 = jobs.length;
+        jobsSum = jobs.length;
         k = _k;
         int[] sum = new int[k];
         dfs1723(0, 0, sum, 0);
         return ans1723;
     }
 
-    /**
+    /*
+     * 1723. Find Minimum Time to Finish All Jobs
      * 回溯 + 剪枝
      *
-     * @param u    当前处理到那个 job
-     * @param used 当前分配给了多少个工人了
+     * @param jobsId    当前处理到那个 job
+     * @param usedWorkerNum 当前分配给了多少个工人了
      * @param sum  工人的分配情况。例如：sum[0] = x 代表 0 号工人工作量为 x
      * @param max  当前的「最大工作时间」
      */
-    void dfs1723(int u, int used, int[] sum, int max) {
-        if (max >= ans1723) return;
-        if (u == n1723) {
+    void dfs1723(int jobsId, int usedWorkerNum, int[] sum, int max) {
+        if (max >= ans1723) return;  // 剪枝
+        if (jobsId == jobsSum) {
             ans1723 = max;
             return;
         }
@@ -507,22 +511,22 @@ public class DFS {
          * 剪枝 —— 优先分配给「空闲工人」
          * 第一份工作必定分给第一个人 只扫过一半的树、更好的利用剪枝条件
          */
-        if (used < k) {
-            sum[used] = jobs[u];
-            dfs1723(u + 1, used + 1, sum, Math.max(sum[used], max));
-            sum[used] = 0;  // 回溯
+        if (usedWorkerNum < k) {
+            sum[usedWorkerNum] = jobs[jobsId];
+            dfs1723(jobsId + 1, usedWorkerNum + 1, sum, Math.max(sum[usedWorkerNum], max));
+            sum[usedWorkerNum] = 0;  // 回溯
         }
-        // 当 used = k 进入此处时，意味对子树的完全遍历
-        // 当 used < k 进入此处
-        // i 号工人做 u 号工作
-        for (int i = 0; i < used; i++) {
-            sum[i] += jobs[u];
-            dfs1723(u + 1, used, sum, Math.max(sum[i], max));
-            sum[i] -= jobs[u];
+        // 当 usedWorkerNum = k 进入此处时，意味对子树的完全遍历
+        // 当 usedWorkerNum < k 进入此处
+        // i 号工人做 jobsId 号工作
+        for (int i = 0; i < usedWorkerNum; i++) {
+            sum[i] += jobs[jobsId];
+            dfs1723(jobsId + 1, usedWorkerNum, sum, Math.max(sum[i], max));
+            sum[i] -= jobs[jobsId];
         }
     }
 
-    // 690. 员工的重要性
+    // 690. Employee Importance
     // dfs
     int ans690 = 0;
     Map<Integer, Employee> map690 = new HashMap<>();  // 与其每次查找，不如一次直接先加载到map里

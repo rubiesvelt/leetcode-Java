@@ -40,6 +40,59 @@ public class Main {
         return;
     }
 
+    public static List<Integer> contacts1(List<List<String>> queries) {
+        List<String> names = new ArrayList<>();
+        List<Integer> ans = new ArrayList<>();
+        for(List<String> query : queries) {
+            if (query.get(0).equals("add")) {
+                names.add(query.get(1));
+            } else if (query.get(0).equals("find")) {
+                int num = 0;
+                for (String n : names) {
+                    if (n.startsWith(query.get(1))) {
+                        num++;
+                    }
+                }
+                ans.add(num);
+            }
+        }
+        return ans;
+    }
+
+    public static List<Integer> contacts(List<List<String>> queries) {
+        List<Integer> results = new ArrayList<Integer>();
+        Map<String, Integer> namePartials = new HashMap<String, Integer>();
+
+        for (List<String> list : queries) {
+            String operation = list.get(0);
+            String text = list.get(1);
+
+            if (operation.equals("add")) {
+                for (int i = 1; i <= text.length(); ++i) {
+                    String partial = text.substring(0, i);
+                    Integer count = namePartials.get(partial);
+                    if (count == null) {
+                        count = 0;
+                    }
+                    count++;
+                    namePartials.put(partial, count);
+                }
+            } else if (operation.equals("find")) {
+                Integer count = namePartials.get(text);
+                if (count == null) {
+                    count = 0;
+                }
+                results.add(count);
+            } else {
+                throw new RuntimeException("operation " + operation + " is not supported!");
+            }
+        }
+
+        return results;
+    }
+
+
+
     /*
      * 2071. Maximum Number of Tasks You Can Assign
      */
