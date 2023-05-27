@@ -11,14 +11,16 @@ public class BinarySearch {
 
     /*
      * 典型二分
+     * num sort from smallest to largest
+     * lower_bound —— find the first element that bigger or equal than (not less than) t
      */
     public static int lower_bound(int[] nums, int l, int r, int t) {
         while (l < r) {
             int mid = (l + r) >> 1;
-            if (nums[mid] >= t) {
+            if (nums[mid] >= t) {  // although there is a match that nums[mid] == t, we still try to find the nearest
                 r = mid;
             } else {
-                l = mid + 1;  // 此处如果 l = mid 可能陷入死循环 —— 由于是向下取整，l 与 r 相差 1 的时候会导致 mid = l；此时如果 l = mid 会造成死循环
+                l = mid + 1;  // if we use l = mid, may cause endless loop —— Since "mid = (l + r) >> 1" is rounded down，it will cause mid = l when r is 1 bigger than l, at this time if we use l = mid would cause endless loop
             }
         }
         return l;  // 最终状态，l 等于 r，并且停留位置是 "r侧第一个满足条件的"

@@ -4,6 +4,76 @@ import java.util.*;
 
 public class BinaryTree {
 
+    /*
+     * A few ways a Binary Tree is present in array
+     *
+     * parents mode, such as:
+     * parents[] =  [-1, 0, 0, 1, 1, 2, 3]
+     *
+     *
+     * incomplete children mode, such as:
+     * tree = [
+     *   [2, 3],
+     *   [-1, 4],
+     *   [-1, 5],
+     *   [-1, -1],
+     *   [-1, -1]
+     * ]
+     *
+     * An Array of full-binary tree, which can locate the position of a node by its position in an array.
+     */
+
+    /*
+     * hackerrank. Swap Nodes [Algo]
+     *
+     * tree = [
+     *   [2, 3]
+     *   [-1, 4]
+     *   [-1, 5]
+     *   [-1, -1]
+     *   [-1, -1]
+     * ]
+     *
+     * A very unusual way to express a Binary tree, which make it impossible for a treeNode to get its parent
+     * TreeNode which has a label i, lies in tree[i - 1] in the tree
+     *
+     */
+    public List<List<Integer>> swapNodes(List<List<Integer>> tree, List<Integer> queries) {
+        List<List<Integer>> ans = new ArrayList<>();
+        // List<> doesn't support insert in the middle. So use int[]
+        int[] levels = new int[tree.size()];
+        markLevel(tree, levels, 0, 1);
+        for (int k : queries) {
+            for(int i = 0; i<tree.size(); i++) {
+                int level = levels[i];
+                if (level % k == 0) {
+                    Collections.reverse(tree.get(i));
+                }
+            }
+
+            List<Integer> tmpAns = new ArrayList<>();
+            inOrderTraversal(tree, 0, tmpAns);
+            ans.add(tmpAns);
+        }
+        return ans;
+    }
+
+    public void markLevel(List<List<Integer>> tree, int[] levels, int cur, int level) {
+        levels[cur] = level;
+        if (tree.get(cur).get(0) != -1) {
+            markLevel(tree, levels, tree.get(cur).get(0) - 1, level + 1);
+        }
+        if (tree.get(cur).get(1) != -1) {
+            markLevel(tree, levels, tree.get(cur).get(1) - 1, level + 1);
+        }
+    }
+
+    public void inOrderTraversal(List<List<Integer>> tree, int cur, List<Integer> ans) {
+        if (tree.get(cur).get(0) != -1) inOrderTraversal(tree, tree.get(cur).get(0) - 1, ans);
+        ans.add(cur + 1);
+        if (tree.get(cur).get(1) != -1) inOrderTraversal(tree, tree.get(cur).get(1) - 1, ans);
+    }
+
     // 993. 二叉树的堂兄弟节点
     public boolean isCousins(TreeNode root, int x, int y) {
         xVal993 = x;
@@ -85,6 +155,7 @@ public class BinaryTree {
      */
     public int countHighestScoreNodes(int[] parents) {
         int n = parents.length;
+        // convert from parents mode to incomplete-children mode
         Struct[] structs = new Struct[n];
         for (int i = 0; i < n; i++) {
             structs[i] = new Struct();
@@ -214,7 +285,8 @@ public class BinaryTree {
      * 给定一个二叉树，请计算节点值之和最大的路径的节点值之和是多少
      * 这个路径的开始节点和结束节点可以是二叉树中的任意节点
      *
-     * 后序遍历
+     * post order traversal，后序遍历
+     * 可以收集到两边子树返回的信息后统一处理
      */
     int ans = Integer.MIN_VALUE;
 
@@ -230,6 +302,13 @@ public class BinaryTree {
         int left = dfsmt(root.left);
         int right = dfsmt(root.right);
         int val = root.val;
+
+        // num to pass to parents
+        int pass = root.val;
+        int bigger = Math.max(left, right);
+        if (bigger > 0) pass += bigger;
+
+        // calculate its sum right now
         if (left > 0) {
             val += left;
         }
@@ -237,7 +316,7 @@ public class BinaryTree {
             val += right;
         }
         ans = Math.max(ans, val);
-        return val;
+        return pass;
     }
 
     // 863. 二叉树中所有距离为 K 的结点

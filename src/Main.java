@@ -1,17 +1,13 @@
-package main;
-
 import beans.ListNode;
 import beans.TreeNode;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.TreeSet;
 
 public class Main {
 
@@ -19,13 +15,12 @@ public class Main {
 
         List<Integer> list = new ArrayList<>();
         int t = list.hashCode();
-        Main main = new Main();
         char a = 'a';
         int i = 96;
         TreeNode tn5 = new TreeNode(5);
         TreeNode tn4 = new TreeNode(4);
-        TreeNode tn3 = new TreeNode(3, tn5, null);
-        TreeNode tn2 = new TreeNode(2, tn4, null);
+        TreeNode tn3 = new TreeNode(3, null, null);
+        TreeNode tn2 = new TreeNode(2, tn4, tn5);
         TreeNode tn1 = new TreeNode(1, tn2, tn3);
 
         String s = "***|**|*****|**||**|*";

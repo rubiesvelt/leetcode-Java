@@ -1,5 +1,3 @@
-import main.Main;
-
 import java.util.*;
 
 public class SimulatePQ {
