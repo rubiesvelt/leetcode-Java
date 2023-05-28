@@ -3,14 +3,15 @@ import java.util.TreeSet;
 
 public class DoublePointers {
 
-    // 1838. 最高频元素的频数
+    // 1838. Frequency of the Most Frequent Element 最高频元素的频数
     // 滑动窗口
     public int maxFrequency(int[] nums, int k) {
         Arrays.sort(nums);
         int max = 0;
         int tempSum = 0;  // 记录当前 实体 的和
         int i = 0;
-        for (int j = 0; j < nums.length; j++) {
+        // j goes forward, i follow up!
+        for (int j = 0; j < nums.length; j++) {  // 这个循环，第二次来判断时候，即使没有进入，j 还是会 ++
             while (nums[j] * (j - i) - tempSum > k) {
                 tempSum -= nums[i++];
             }

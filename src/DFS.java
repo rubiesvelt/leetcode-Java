@@ -44,7 +44,8 @@ public class DFS {
         dfsThink(root.right, sb);
     }
 
-    // 回溯
+    // backtrack 回溯
+    // backtrack for Binary tree
     public void dfsBackTrackBinary(TreeNode root, List<TreeNode> t) {
         if (root == null) {
             return;
@@ -58,9 +59,13 @@ public class DFS {
         t.remove(t.size() - 1);  // 回溯
     }
 
-    // 回溯
+    // backtrack 回溯
     // 这种用于在 nums 个里面选出若干个，这种场景，
-    // 题目见可信 3，1723
+    // classical backtrack problems:
+    // 可信 3
+    // 1723. Find Minimum Time to Finish All Jobs
+    // 698. Partition to K Equal Sum Subsets
+    // 78. Subsets
     public boolean dfsBackTrackArray(int[] nums, int index, List<Integer> t) {
         // 递归边界
         if (index == nums.length) {

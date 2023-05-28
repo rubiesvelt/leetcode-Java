@@ -3,8 +3,10 @@
  */
 public class DPRob {
 
-    // 198. 打家劫舍
-    public int rob(int[] nums) {
+    // 198. House Robber
+    // 打家劫舍
+    // two adjacent houses can not be broken into on the same night
+    public int rob1(int[] nums) {
         int n = nums.length;
         if (n == 1) {
             return nums[0];

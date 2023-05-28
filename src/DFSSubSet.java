@@ -2,8 +2,8 @@ import java.util.*;
 
 public class DFSSubSet {
 
-    // 698. 划分为k个相等的子集
-    // 是否能将nums数组划分为k个元素和相等的子集？
+    // 698. Partition to K Equal Sum Subsets
+    // 是否能将 nums 数组划分为 k 个元素和相等的子集？
     // nums = [1,1,1,1,2,2,2,2], k = 4
     // 回溯算法
     public boolean canPartitionKSubsets(int[] cp, int k) {
@@ -64,28 +64,28 @@ public class DFSSubSet {
         return false;
     }
 
-    // 78. 子集
+    // 78. Subsets 子集
     // 给你一个整数数组 nums ，数组中的元素"互不相同" 。返回该数组所有可能的子集
     // 经典回溯
     List<List<Integer>> ans78 = new ArrayList<>();
 
     public List<List<Integer>> subsets(int[] nums) {
         List<Integer> current = new ArrayList<>();
-        dfs78(nums, -1, current);
+        dfs78(nums, 0, current);
         return ans78;
     }
 
     public void dfs78(int[] nums, int start, List<Integer> current) {
         ans78.add(new ArrayList<>(current));
 
-        for (int i = start + 1; i < nums.length; i++) {
+        for (int i = start; i < nums.length; i++) {
             current.add(nums[i]);
-            dfs78(nums, i, current);
+            dfs78(nums, i + 1, current);
             current.remove(current.size() - 1);  // List要用.size()，数组要用.length
         }
     }
 
-    // 90. 子集 II
+    // 90. Subsets II
     // 给你一个整数数组 nums ，其中可能包含重复元素，请你返回该数组所有可能的子集
     // dfs, 回溯算法
     // 回溯算法，回溯一棵树，就是回溯一棵树的一个个从根到叶的路径，使用List记录路径元素
@@ -97,6 +97,7 @@ public class DFSSubSet {
         return ans90;
     }
 
+    // [4,4,4,1,4]
     public void dfs90(int[] nums, int index, List<Integer> t) {
         ans90.add(new ArrayList<>(t));
         // 节点的父节点相同，叫同一层

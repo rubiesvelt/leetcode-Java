@@ -17,18 +17,18 @@ public class UnionFindSet {
             }
         }
 
-        public int getf(int[] f, int x) {
+        public int getf(int x) {
             if (f[x] == x) {
                 return x;
             }
-            int newf = getf(f, f[x]);
+            int newf = getf(f[x]);
             f[x] = newf;  // 路径压缩
             return newf;
         }
 
         public void union(int x, int y) {
-            int fa = getf(f, x);
-            int fb = getf(f, y);
+            int fa = getf(x);
+            int fb = getf(y);
             f[fb] = fa;
         }
     }
@@ -125,7 +125,7 @@ public class UnionFindSet {
     }
 
 
-    // 399. 除法求值
+    // 399. Evaluate Division 除法求值
     public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
         int equationsSize = equations.size();
         // 定义并查集

@@ -6,14 +6,14 @@ public class Trie {
         public TrieNode[] next = new TrieNode[2];
     }
 
-    public TrieNode root421 = new TrieNode();
+    public TrieNode root = new TrieNode();
 
     /*
      * 构建 1 + 32 层的前缀树
      * 每一条路径都是 1 + 32
      */
-    public void add421(int n) {
-        TrieNode r = root421;
+    public void add(int n) {
+        TrieNode r = root;
         for (int i = 31; i >= 0; i--) {
             int t = (n >> i) & 1;
             if (r.next[t] == null) {
@@ -27,8 +27,8 @@ public class Trie {
      * 获取树中与其异或结果最大的元素
      * 从 高位 往 低位 匹配，每一位尽量匹配相反，最后匹配到一个完整的
      */
-    public int getValue421(int n) {
-        TrieNode r = root421;
+    public int getValue(int n) {
+        TrieNode r = root;
         int ans = 0;
         for (int i = 31; i >= 0; i--) {
             int a = (n >> i) & 1;  // a是n的第i位，重要！！！**求数字n的 从小到大 第i位**
@@ -49,8 +49,8 @@ public class Trie {
     public int findMaximumXOR(int[] nums) {
         int ans = 0;
         for (int i : nums) {
-            add421(i);
-            int j = getValue421(i);
+            add(i);
+            int j = getValue(i);
             ans = Math.max(ans, i ^ j);
         }
         return ans;

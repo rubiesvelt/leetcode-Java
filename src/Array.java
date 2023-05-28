@@ -2,8 +2,11 @@ import java.util.TreeMap;
 
 public class Array {
 
-    // 413. 等差数列划分
-    // 将一个数组划分成几个子数组，使每个都是等差数列
+    // 413. Arithmetic Slices
+    // 等差数列 —— arithmetic progression
+    //
+    // 将一个数组划分成几个子数组，使每个都是等差数列。
+    // A subarray is a contiguous subsequence of the array. 子数组 是数组中的一个连续序列。
     // 1,2,4,6
     public int numberOfArithmeticSlices(int[] nums) {
         int n = nums.length;

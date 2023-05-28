@@ -3,6 +3,8 @@ import beans.TreeNode;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, ParseException {
 
         List<Integer> list = new ArrayList<>();
+        list.sort((o1, o2) -> o1 - o2);
         int t = list.hashCode();
         char a = 'a';
         int i = 96;
@@ -27,10 +30,11 @@ public class Main {
         int[][] matrix = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
         int[][] matrix1 = {{22, 44, 9}, {93, 96, 48}, {56, 90, 3}, {80, 92, 45}, {63, 73, 69}, {73, 96, 33}, {11, 23, 84}, {59, 72, 29}, {89, 100, 46}};
         int[] dist = {25, 11, 29, 6, 24, 4, 29, 18, 6, 13, 25, 30};
-        int[] diff = {1, 2, 1, 3, 2, 5};
+        int[] diff = {1, 2, 4};
         int[] speed = {28, 27, 13, 19, 23, 4, 29, 29, 7};
         char[][] matrix2 = {{'.', '.', 'W', '.', 'B', 'W', 'W', 'B'}, {'B', 'W', '.', 'W', '.', 'W', 'B', 'B'}, {'.', 'W', 'B', 'W', 'W', '.', 'W', 'W'}, {'W', 'W', '.', 'W', '.', '.', 'B', 'B'}, {'B', 'W', 'B', 'B', 'W', 'W', 'B', '.'}, {'W', '.', 'W', '.', '.', 'B', 'W', 'W'}, {'B', '.', 'B', 'B', '.', '.', 'B', 'B'}, {'.', 'W', '.', 'W', '.', 'W', '.', 'W'}};
 
+        Main main = new Main();
 
         return;
     }
